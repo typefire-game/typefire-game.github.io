@@ -295,9 +295,30 @@ header {
 }
 
 #app-spacer { display:none; }
+
+/* PULL TO REFRESH */
+#ptr-indicator {
+  position:fixed; top:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:center;
+  height:0; overflow:hidden; z-index:100;
+  transition:height .2s ease;
+  background:var(--bg);
+}
+#ptr-indicator svg {
+  width:28px; height:28px;
+  stroke:var(--accent); fill:none;
+  stroke-width:2.5; stroke-linecap:round;
+  transition:transform .2s;
+}
+#ptr-indicator.pulling svg { animation:none; }
+#ptr-indicator.refreshing svg { animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
+<div id="ptr-indicator">
+  <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+</div>
 <div id="app">
 
   <!-- START SCREEN -->
@@ -1067,6 +1088,48 @@ function escHtml(s){
 }
 
 genWords();render();
+
+// ── PULL TO REFRESH ──
+(function(){
+  const indicator = document.getElementById('ptr-indicator');
+  let startY = 0, pulling = false, triggered = false;
+  const THRESHOLD = 80;
+
+  document.addEventListener('touchstart', e => {
+    // only trigger when at top of page and no overlay is open
+    const anyOverlay = document.querySelector('.info-overlay.show, #lb-overlay.show, #result-screen.show');
+    if(anyOverlay) return;
+    if(window.scrollY === 0) {
+      startY = e.touches[0].clientY;
+      pulling = true;
+      triggered = false;
+    }
+  }, {passive:true});
+
+  document.addEventListener('touchmove', e => {
+    if(!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if(dist <= 0){ pulling = false; return; }
+    const h = Math.min(dist * 0.5, 60);
+    indicator.style.height = h + 'px';
+    indicator.classList.toggle('pulling', dist < THRESHOLD);
+    if(dist >= THRESHOLD && !triggered) triggered = true;
+  }, {passive:true});
+
+  document.addEventListener('touchend', () => {
+    if(!pulling) return;
+    pulling = false;
+    if(triggered){
+      indicator.classList.remove('pulling');
+      indicator.classList.add('refreshing');
+      indicator.style.height = '48px';
+      setTimeout(() => location.reload(), 800);
+    } else {
+      indicator.style.height = '0';
+      indicator.classList.remove('pulling','refreshing');
+    }
+  });
+})();
 
 // ── ABOUT / PRIVACY OVERLAYS ──
 document.querySelectorAll('.info-close').forEach(btn=>{
