@@ -205,21 +205,28 @@ header {
 .start-mode-btn.active { border-color:var(--accent); color:var(--accent); background:#fff5f2; }
 .start-btn { background:var(--accent); color:#fff; border:none; border-radius:12px; padding:1rem 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:.2em; cursor:pointer; width:100%; max-width:280px; transition:transform .1s; }
 .start-btn:active { transform:scale(.97); }
+.start-lb-btn {
+  background:none; border:1.5px solid var(--border); border-radius:12px;
+  padding:.65rem 2rem; font-family:var(--font); font-size:.8rem;
+  color:var(--muted); cursor:pointer; letter-spacing:.12em;
+  text-transform:uppercase; transition:all .15s; width:100%; max-width:280px;
+}
+.start-lb-btn:hover, .start-lb-btn:active { border-color:var(--accent); color:var(--accent); }
 
 /* RESULT SCREEN */
-#result-screen { display:none; position:absolute; inset:0; background:var(--bg); flex-direction:column; align-items:center; justify-content:center; z-index:10; padding:2rem 1.5rem; gap:.5rem; overflow-y:auto; }
+#result-screen { display:none; position:absolute; inset:0; background:var(--bg); flex-direction:column; align-items:center; justify-content:flex-start; z-index:10; padding:1.2rem 1.5rem 2rem; gap:.35rem; overflow-y:auto; }
 #result-screen.show { display:flex; }
 .result-label { font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:var(--muted); }
-.result-wpm { font-family:'Bebas Neue',sans-serif; font-size:7rem; color:var(--accent); line-height:1; }
-.result-sub { font-size:.7rem; letter-spacing:.2em; color:var(--muted); margin-bottom:.8rem; }
-.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; width:100%; max-width:320px; margin-bottom:.8rem; }
-.result-cell { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:.9rem; }
-.result-cell .v { font-family:'Bebas Neue',sans-serif; font-size:2rem; line-height:1; }
+.result-wpm { font-family:'Bebas Neue',sans-serif; font-size:5.5rem; color:var(--accent); line-height:1; }
+.result-sub { font-size:.7rem; letter-spacing:.2em; color:var(--muted); margin-bottom:.3rem; }
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4rem; width:100%; max-width:320px; margin-bottom:.3rem; }
+.result-cell { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:.6rem .7rem; }
+.result-cell .v { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; line-height:1; }
 .result-cell .l { font-size:.55rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-top:.2rem; }
 
 /* nickname input on result */
 .nickname-row {
-  display:flex; gap:.5rem; width:100%; max-width:320px; margin-bottom:.4rem;
+  display:flex; gap:.5rem; width:100%; max-width:320px; margin-bottom:.3rem;
 }
 .nickname-input {
   flex:1; border:1.5px solid var(--border); background:var(--surface);
@@ -231,9 +238,9 @@ header {
 
 /* result buttons */
 .result-btns { display:flex; gap:.5rem; width:100%; max-width:320px; }
-.again-btn { flex:1; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:.9rem 0; font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:.2em; cursor:pointer; transition:transform .1s; }
+.again-btn { flex:1; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:.75rem 0; font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:.2em; cursor:pointer; transition:transform .1s; }
 .again-btn:active { transform:scale(.97); }
-.share-btn { background:var(--surface); color:var(--ink); border:1.5px solid var(--border); border-radius:12px; padding:.9rem 1.2rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:.15em; cursor:pointer; transition:all .15s; white-space:nowrap; }
+.share-btn { background:var(--surface); color:var(--ink); border:1.5px solid var(--border); border-radius:12px; padding:.75rem 1.2rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:.15em; cursor:pointer; transition:all .15s; white-space:nowrap; }
 .share-btn:active { transform:scale(.97); }
 
 /* rank badge on result */
@@ -284,8 +291,41 @@ header {
 .lb-empty { text-align:center; color:var(--muted); font-size:.8rem; padding:3rem 0; letter-spacing:.1em; }
 .lb-loading { text-align:center; color:var(--muted); font-size:.75rem; padding:2rem 0; letter-spacing:.15em; text-transform:uppercase; }
 
-/* hidden canvas for share card */
-#share-canvas { display:none; }
+/* MODE PICKER MODAL */
+#mode-picker {
+  display:none; position:absolute; inset:0; z-index:50;
+  align-items:center; justify-content:center;
+  background:rgba(26,26,26,.45); padding:2rem;
+}
+#mode-picker.show { display:flex; }
+.mode-picker-box {
+  background:var(--bg); border-radius:16px;
+  padding:1.8rem 1.5rem; width:100%; max-width:300px;
+  display:flex; flex-direction:column; align-items:center; gap:1rem;
+}
+.mode-picker-title {
+  font-family:'Bebas Neue',sans-serif; font-size:1.6rem;
+  letter-spacing:.1em; color:var(--ink);
+}
+.mode-picker-btns { display:flex; gap:.5rem; width:100%; }
+.mode-pick-btn {
+  flex:1; border:1.5px solid var(--border); background:var(--surface);
+  color:var(--muted); font-family:var(--font); font-size:.8rem;
+  padding:.55rem 0; border-radius:8px; cursor:pointer; transition:all .15s;
+}
+.mode-pick-btn.active { border-color:var(--accent); color:var(--accent); background:#fff5f2; }
+.mode-pick-go {
+  background:var(--accent); color:#fff; border:none; border-radius:12px;
+  padding:.85rem 0; font-family:'Bebas Neue',sans-serif; font-size:1.4rem;
+  letter-spacing:.2em; cursor:pointer; width:100%; transition:transform .1s;
+}
+.mode-pick-go:active { transform:scale(.97); }
+.mode-pick-cancel {
+  background:none; border:none; font-family:var(--font); font-size:.7rem;
+  color:var(--muted); cursor:pointer; letter-spacing:.1em; text-transform:uppercase;
+}
+
+
 
 @media(min-width:600px){
   header{padding:1.4rem 2rem .7rem;}
@@ -330,7 +370,11 @@ header {
       <button class="start-mode-btn" data-time="30">30s</button>
       <button class="start-mode-btn" data-time="60">60s</button>
     </div>
-    <button class="start-btn" id="start-btn">START</button>
+    <button class="start-btn" id="start-btn">GO</button>
+    <button class="start-lb-btn" id="start-lb-btn">🏆 LEADERBOARD</button>
+    <div style="width:100%;max-width:320px;margin-top:.4rem;">
+      <div class="ad-placeholder" style="min-height:70px;">Advertisement</div>
+    </div>
   </div>
 
   <!-- RESULT SCREEN -->
@@ -365,7 +409,7 @@ header {
   <div id="lb-overlay">
     <div class="lb-header">
       <div class="lb-title">LEADER<em>BOARD</em></div>
-      <button class="lb-close" id="lb-close">PLAY !</button>
+      <button class="lb-close" id="lb-close">PLAY</button>
     </div>
     <div class="lb-tabs">
       <button class="lb-tab active" data-time="15">15s</button>
@@ -381,7 +425,7 @@ header {
   <header>
     <div class="logo">TYPE<em>FIRE</em></div>
     <div class="header-right">
-      <button class="lb-btn" id="lb-open-btn">🏆 RANK</button>
+      <button class="lb-btn" id="lb-open-btn">🏆 LEADERBOARD</button>
       <div class="header-time" id="time-display">15</div>
     </div>
   </header>
@@ -505,6 +549,20 @@ header {
 
     <h2>Contact</h2>
     <p>If you have any questions about this Privacy Policy, please open an issue or discussion on our GitHub repository.</p>
+  </div>
+</div>
+
+<!-- MODE PICKER MODAL -->
+<div id="mode-picker">
+  <div class="mode-picker-box">
+    <div class="mode-picker-title">SELECT MODE</div>
+    <div class="mode-picker-btns">
+      <button class="mode-pick-btn active" data-time="15">15s</button>
+      <button class="mode-pick-btn" data-time="30">30s</button>
+      <button class="mode-pick-btn" data-time="60">60s</button>
+    </div>
+    <button class="mode-pick-go" id="mode-pick-go">GO</button>
+    <button class="mode-pick-cancel" id="mode-pick-cancel">cancel</button>
   </div>
 </div>
 
@@ -877,17 +935,71 @@ $('start-btn').addEventListener('click',()=>{
 });
 
 $('again-btn').addEventListener('click',()=>{
-  // submit score before resetting
+  // submit score first
   const nick=$('nickname-input').value;
   if(nick.trim())submitScore(lastResult.wpm,lastResult.acc,nick);
+  // open mode picker with result screen as background
+  openModePicker('result');
+});
+
+// ── MODE PICKER ──
+let pickerSelectedTime = totalTime;
+let pickerCaller = null; // track who opened the picker
+
+function openModePicker(caller){
+  pickerCaller = caller || null;
+  pickerSelectedTime = totalTime;
+  document.querySelectorAll('.mode-pick-btn').forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.time)===pickerSelectedTime);
+  });
+  $('mode-picker').classList.add('show');
+}
+
+function closeModePicker(){
+  $('mode-picker').classList.remove('show');
+  // caller='lb': leaderboard stays open
+  // caller='result': result screen stays open
+  // otherwise: close lb-overlay
+  if(pickerCaller !== 'lb' && pickerCaller !== 'result'){
+    $('lb-overlay').classList.remove('show');
+  }
+  pickerCaller = null;
+}
+
+document.querySelectorAll('.mode-pick-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    pickerSelectedTime=parseInt(btn.dataset.time);
+    document.querySelectorAll('.mode-pick-btn').forEach(b=>
+      b.classList.toggle('active', parseInt(b.dataset.time)===pickerSelectedTime)
+    );
+  });
+});
+
+$('mode-pick-go').addEventListener('click',()=>{
+  totalTime=pickerSelectedTime;
+  document.querySelectorAll('[data-time]').forEach(b=>
+    b.classList.toggle('active', parseInt(b.dataset.time)===totalTime)
+  );
+  $('mode-picker').classList.remove('show');
+  $('lb-overlay').classList.remove('show');
+  $('result-screen').classList.remove('show');
+  $('start-screen').style.display='none';
+  pickerCaller = null;
   resetGame();
   setTimeout(()=>{inp.focus();hideTapHint();},150);
 });
 
-document.querySelectorAll('[data-time]').forEach(btn=>{
+$('mode-pick-cancel').addEventListener('click', closeModePicker);
+$('mode-picker').addEventListener('click', e=>{ if(e.target===$('mode-picker')) closeModePicker(); });
+
+
+
+
+
+document.querySelectorAll('.mode-btn, .start-mode-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const t=parseInt(btn.dataset.time);totalTime=t;
-    document.querySelectorAll('[data-time]').forEach(b=>
+    document.querySelectorAll('.mode-btn, .start-mode-btn').forEach(b=>
       b.classList.toggle('active',parseInt(b.dataset.time)===t)
     );
   });
@@ -1017,12 +1129,23 @@ $('share-btn').addEventListener('click',async()=>{
 // ── LEADERBOARD ──
 let lbTime=15;
 
+$('start-lb-btn').addEventListener('click',()=>{
+  $('start-screen').style.display='none';
+  lbTime=totalTime;
+  document.querySelectorAll('.lb-tab').forEach(t=>{
+    t.classList.toggle('active',parseInt(t.dataset.time)===lbTime);
+  });
+  $('lb-overlay').classList.add('show');
+  loadLeaderboard(lbTime);
+});
+
 $('lb-open-btn').addEventListener('click',()=>{
   $('lb-overlay').classList.add('show');
   loadLeaderboard(lbTime);
 });
 $('lb-close').addEventListener('click',()=>{
-  $('lb-overlay').classList.remove('show');
+  // Keep lb-overlay open in background; mode picker overlays on top
+  openModePicker('lb');
 });
 
 document.querySelectorAll('.lb-tab').forEach(tab=>{
