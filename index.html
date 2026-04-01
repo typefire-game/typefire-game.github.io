@@ -1018,7 +1018,7 @@ async function loadLeaderboard(duration){
   list.innerHTML='<div class="lb-loading">Loading...</div>';
   const DB_URL='https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
   try{
-    const res=await fetch(`${DB_URL}/scores/${duration}.json?orderBy="wpm"&limitToLast=20`,
+    const res=await fetch(`${DB_URL}/scores/${duration}.json`,
       {headers:{'Accept':'application/json'}});
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const data=await res.json();
