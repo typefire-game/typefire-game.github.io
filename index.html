@@ -143,7 +143,7 @@ header {
 
 /* AD */
 .ad-slot { padding:.5rem 1.2rem; flex-shrink:0; }
-.ad-placeholder { border:1px dashed var(--border); border-radius:6px; padding:.55rem; text-align:center; font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--border); }
+.ad-placeholder { border:1px dashed var(--border); border-radius:10px; padding:2.2rem .8rem; text-align:center; font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--border); }
 
 /* FOOTER */
 .site-footer {
@@ -258,7 +258,7 @@ header {
 }
 .lb-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:.08em; }
 .lb-title em { color:var(--accent); font-style:normal; }
-.lb-close { background:none; border:1.5px solid var(--border); border-radius:6px; padding:.3rem .6rem; cursor:pointer; font-size:.75rem; color:var(--muted); font-family:var(--font); }
+.lb-close { background:var(--accent); border:none; border-radius:8px; padding:.4rem 1rem; cursor:pointer; font-size:.85rem; color:#fff; font-family:'Bebas Neue',sans-serif; letter-spacing:.12em; }
 .lb-tabs { display:flex; gap:.4rem; padding:.6rem 1.2rem; flex-shrink:0; }
 .lb-tab { flex:1; border:1.5px solid var(--border); background:var(--surface); color:var(--muted); font-family:var(--font); font-size:.72rem; padding:.4rem 0; border-radius:6px; cursor:pointer; transition:all .15s; }
 .lb-tab.active { border-color:var(--accent); background:var(--accent); color:#fff; }
@@ -347,7 +347,7 @@ header {
     </div>
     <div class="ad-slot" style="width:100%;max-width:320px;margin-bottom:.4rem;">
       <!-- AdSense: replace with your ad unit code -->
-      <div class="ad-placeholder">Advertisement</div>
+      <div class="ad-placeholder" style="min-height:100px;">Advertisement</div>
     </div>
     <div class="nickname-row">
       <input class="nickname-input" id="nickname-input" type="text" maxlength="16"
@@ -365,7 +365,7 @@ header {
   <div id="lb-overlay">
     <div class="lb-header">
       <div class="lb-title">LEADER<em>BOARD</em></div>
-      <button class="lb-close" id="lb-close">CLOSE</button>
+      <button class="lb-close" id="lb-close">PLAY !</button>
     </div>
     <div class="lb-tabs">
       <button class="lb-tab active" data-time="15">15s</button>
@@ -1063,7 +1063,7 @@ async function loadLeaderboard(duration){
           </div>
           <div class="lb-acc">${s.acc?s.acc+'%':''}</div>
         </div>`;
-    }).join('') + `<div class="ad-slot" style="margin-top:.8rem;"><!-- AdSense: replace with your ad unit code --><div class="ad-placeholder">Advertisement</div></div>`;
+    }).join('') + `<div class="ad-slot" style="margin-top:.8rem;padding:0;"><div class="ad-placeholder" style="min-height:100px;">Advertisement</div></div>`;
   }catch(e){
     console.warn('Leaderboard REST error:',e);
     try{
