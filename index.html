@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TYPEFIRE — Typing Speed Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f2eb;
+  --surface: #ffffff;
+  --border: #e0dbd0;
+  --ink: #1a1a1a;
+  --muted: #bbb;
+  --accent: #ff4500;
+  --correct: #1a7a4a;
+  --wrong: #cc2200;
+  --wrong-bg: #ffe8e4;
+  --font: 'DM Mono', monospace;
+  --word-size: 1.35rem;
+  --word-lh: 2.6;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { background:var(--bg); color:var(--ink); font-family:var(--font); overscroll-behavior:none; }
+
+#app {
+  display:flex; flex-direction:column;
+  max-width:680px; margin:0 auto;
+  position:relative; min-height:100vh;
+}
+
+/* HEADER */
+header {
+  padding:.9rem 1.2rem .45rem;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0;
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:.08em; line-height:1; }
+.logo em { color:var(--accent); font-style:normal; }
+.header-right { display:flex; align-items:center; gap:.7rem; }
+.header-time { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; color:var(--accent); line-height:1; }
+.lb-btn {
+  background:none; border:1.5px solid var(--border); border-radius:6px;
+  padding:.3rem .55rem; cursor:pointer; font-size:.75rem; color:var(--muted);
+  font-family:var(--font); transition:all .15s; line-height:1;
+}
+.lb-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+/* MODES */
+.modes { display:flex; gap:.4rem; padding:0 1.2rem .55rem; flex-shrink:0; }
+.mode-btn {
+  flex:1; border:1.5px solid var(--border); background:var(--surface);
+  color:var(--muted); font-family:var(--font); font-size:.75rem;
+  padding:.45rem 0; border-radius:6px; cursor:pointer; transition:all .15s;
+}
+.mode-btn.active { border-color:var(--accent); background:var(--accent); color:#fff; font-weight:500; }
+
+/* STATS */
+.stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.4rem; padding:0 1.2rem .5rem; flex-shrink:0; }
+.stat-box { background:var(--surface); border:1.5px solid var(--border); border-radius:8px; padding:.5rem .7rem; }
+.stat-box .val { font-family:'Bebas Neue',sans-serif; font-size:1.7rem; line-height:1; }
+.stat-box .lbl { font-size:.5rem; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-top:.1rem; }
+
+/* PROGRESS */
+.progress-wrap { padding:0 1.2rem .45rem; flex-shrink:0; }
+.progress-track { height:3px; background:var(--border); border-radius:99px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--accent); border-radius:99px; width:100%; transition:width 1s linear; }
+
+/* WORD AREA */
+.words-wrap {
+  flex-shrink:0;
+  padding:1.4rem 1.2rem .8rem;
+  position:relative;
+  cursor:text;
+}
+.words-clip {
+  overflow:hidden;
+  height:calc(var(--word-size) * var(--word-lh) * 2);
+  position:relative;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+#word-display {
+  font-size:var(--word-size);
+  line-height:var(--word-lh);
+  letter-spacing:.02em;
+  color:var(--muted);
+  word-break:normal;
+  overflow-wrap:normal;
+  white-space:normal;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  position:relative;
+}
+/* each word is inline-block so it never breaks mid-word */
+.word-unit { display:inline-block; white-space:nowrap; max-width:100%; }
+.char { display:inline; }
+.char.correct { color:var(--correct); }
+.char.wrong   { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
+.char.cursor  { position:relative; }
+.char.cursor::before {
+  content:'';
+  position:absolute; left:-1px; top:18%; height:64%;
+  width:2px; background:var(--accent); border-radius:2px;
+  animation:blink .9s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+#ghost-input {
+  position:absolute;
+  inset:0;
+  width:100%; height:100%;
+  opacity:0;
+  font-size:16px;
+  border:none; outline:none;
+  background:transparent;
+  color:transparent;
+  caret-color:transparent;
+  cursor:text;
+  autocomplete:off;
+  -webkit-user-modify:read-write-plaintext-only;
+}
+
+#tap-hint {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none;
+}
+#tap-hint span {
+  background:rgba(245,242,235,.88);
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  padding:.55rem 1.2rem;
+  font-size:.75rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--ink);
+}
+
+/* AD */
+.ad-slot { padding:.5rem 1.2rem; flex-shrink:0; }
+.ad-placeholder { border:1px dashed var(--border); border-radius:6px; padding:.55rem; text-align:center; font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--border); }
+
+/* FOOTER */
+.site-footer {
+  flex-shrink:0; padding:.6rem 1.2rem .9rem;
+  display:flex; align-items:center; justify-content:center; gap:1.2rem;
+  border-top:1.5px solid var(--border); margin-top:.2rem;
+}
+.site-footer a {
+  font-size:.6rem; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none; transition:color .15s;
+}
+.site-footer a:hover { color:var(--accent); }
+.footer-sep { color:var(--border); font-size:.6rem; }
+
+/* ABOUT / PRIVACY OVERLAY */
+.info-overlay {
+  display:none; position:absolute; inset:0; background:var(--bg);
+  z-index:30; flex-direction:column; overflow-y:auto;
+}
+.info-overlay.show { display:flex; }
+.info-header {
+  padding:1rem 1.2rem .6rem;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; border-bottom:1.5px solid var(--border);
+}
+.info-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:.08em; }
+.info-title em { color:var(--accent); font-style:normal; }
+.info-close {
+  background:none; border:1.5px solid var(--border); border-radius:6px;
+  padding:.3rem .6rem; cursor:pointer; font-size:.75rem; color:var(--muted);
+  font-family:var(--font);
+}
+.info-body {
+  padding:1.4rem 1.2rem 2rem; flex:1;
+  font-size:.82rem; line-height:1.85; color:var(--ink);
+  max-width:560px;
+}
+.info-body h2 {
+  font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:.1em;
+  color:var(--accent); margin:1.4rem 0 .4rem;
+}
+.info-body h2:first-child { margin-top:0; }
+.info-body p { margin-bottom:.8rem; color:#444; }
+.info-body a { color:var(--accent); text-decoration:none; }
+.info-body ul { padding-left:1.2rem; margin-bottom:.8rem; }
+.info-body li { margin-bottom:.3rem; color:#444; }
+
+/* START SCREEN */
+#start-screen {
+  position:absolute; inset:0; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:10; gap:1.4rem; padding:2rem;
+}
+.start-logo { font-family:'Bebas Neue',sans-serif; font-size:5rem; letter-spacing:.1em; line-height:1; text-align:center; }
+.start-logo em { color:var(--accent); font-style:normal; }
+.start-desc { font-size:.8rem; color:var(--muted); text-align:center; line-height:1.8; }
+.start-modes { display:flex; gap:.5rem; }
+.start-mode-btn { border:1.5px solid var(--border); background:var(--surface); color:var(--muted); font-family:var(--font); font-size:.8rem; padding:.5rem 1.2rem; border-radius:8px; cursor:pointer; transition:all .15s; }
+.start-mode-btn.active { border-color:var(--accent); color:var(--accent); background:#fff5f2; }
+.start-btn { background:var(--accent); color:#fff; border:none; border-radius:12px; padding:1rem 3rem; font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:.2em; cursor:pointer; width:100%; max-width:280px; transition:transform .1s; }
+.start-btn:active { transform:scale(.97); }
+
+/* RESULT SCREEN */
+#result-screen { display:none; position:absolute; inset:0; background:var(--bg); flex-direction:column; align-items:center; justify-content:center; z-index:10; padding:2rem 1.5rem; gap:.5rem; overflow-y:auto; }
+#result-screen.show { display:flex; }
+.result-label { font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:var(--muted); }
+.result-wpm { font-family:'Bebas Neue',sans-serif; font-size:7rem; color:var(--accent); line-height:1; }
+.result-sub { font-size:.7rem; letter-spacing:.2em; color:var(--muted); margin-bottom:.8rem; }
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; width:100%; max-width:320px; margin-bottom:.8rem; }
+.result-cell { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:.9rem; }
+.result-cell .v { font-family:'Bebas Neue',sans-serif; font-size:2rem; line-height:1; }
+.result-cell .l { font-size:.55rem; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-top:.2rem; }
+
+/* nickname input on result */
+.nickname-row {
+  display:flex; gap:.5rem; width:100%; max-width:320px; margin-bottom:.4rem;
+}
+.nickname-input {
+  flex:1; border:1.5px solid var(--border); background:var(--surface);
+  border-radius:8px; padding:.6rem .8rem; font-family:var(--font); font-size:.85rem;
+  color:var(--ink); outline:none; transition:border-color .15s;
+}
+.nickname-input:focus { border-color:var(--accent); }
+.nickname-input::placeholder { color:var(--muted); }
+
+/* result buttons */
+.result-btns { display:flex; gap:.5rem; width:100%; max-width:320px; }
+.again-btn { flex:1; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:.9rem 0; font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:.2em; cursor:pointer; transition:transform .1s; }
+.again-btn:active { transform:scale(.97); }
+.share-btn { background:var(--surface); color:var(--ink); border:1.5px solid var(--border); border-radius:12px; padding:.9rem 1.2rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:.15em; cursor:pointer; transition:all .15s; white-space:nowrap; }
+.share-btn:active { transform:scale(.97); }
+
+/* rank badge on result */
+.rank-badge {
+  font-size:.7rem; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--accent); border:1.5px solid var(--accent);
+  border-radius:99px; padding:.25rem .9rem; margin-bottom:.2rem;
+  display:none;
+}
+.rank-badge.show { display:block; }
+
+/* LEADERBOARD OVERLAY */
+#lb-overlay {
+  display:none; position:absolute; inset:0; background:var(--bg);
+  z-index:20; flex-direction:column;
+}
+#lb-overlay.show { display:flex; }
+.lb-header {
+  padding:1rem 1.2rem .6rem;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; border-bottom:1.5px solid var(--border);
+}
+.lb-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:.08em; }
+.lb-title em { color:var(--accent); font-style:normal; }
+.lb-close { background:none; border:1.5px solid var(--border); border-radius:6px; padding:.3rem .6rem; cursor:pointer; font-size:.75rem; color:var(--muted); font-family:var(--font); }
+.lb-tabs { display:flex; gap:.4rem; padding:.6rem 1.2rem; flex-shrink:0; }
+.lb-tab { flex:1; border:1.5px solid var(--border); background:var(--surface); color:var(--muted); font-family:var(--font); font-size:.72rem; padding:.4rem 0; border-radius:6px; cursor:pointer; transition:all .15s; }
+.lb-tab.active { border-color:var(--accent); background:var(--accent); color:#fff; }
+.lb-list { flex:1; overflow-y:auto; padding:0 1.2rem 1.2rem; }
+.lb-row {
+  display:flex; align-items:center; gap:.8rem;
+  padding:.65rem .8rem; border-radius:10px;
+  border:1.5px solid transparent; margin-bottom:.4rem;
+  background:var(--surface); border-color:var(--border);
+  transition:border-color .15s;
+}
+.lb-row.top1 { border-color:#ffd700; background:#fffef0; }
+.lb-row.top2 { border-color:#c0c0c0; }
+.lb-row.top3 { border-color:#cd7f32; }
+.lb-rank { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; color:var(--muted); width:1.6rem; text-align:center; flex-shrink:0; }
+.lb-row.top1 .lb-rank { color:#ffd700; }
+.lb-row.top2 .lb-rank { color:#a0a0a0; }
+.lb-row.top3 .lb-rank { color:#cd7f32; }
+.lb-name { flex:1; font-size:.85rem; }
+.lb-wpm { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--accent); }
+.lb-wpm-label { font-size:.5rem; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); }
+.lb-acc { font-size:.7rem; color:var(--muted); min-width:2.5rem; text-align:right; }
+.lb-empty { text-align:center; color:var(--muted); font-size:.8rem; padding:3rem 0; letter-spacing:.1em; }
+.lb-loading { text-align:center; color:var(--muted); font-size:.75rem; padding:2rem 0; letter-spacing:.15em; text-transform:uppercase; }
+
+/* hidden canvas for share card */
+#share-canvas { display:none; }
+
+@media(min-width:600px){
+  header{padding:1.4rem 2rem .7rem;}
+  .modes,.stats-row,.words-wrap,.progress-wrap,.ad-slot{padding-left:2rem;padding-right:2rem;}
+  :root{--word-size:1.5rem;}
+  .lb-header,.lb-tabs,.lb-list{padding-left:2rem;padding-right:2rem;}
+}
+
+#app-spacer { display:none; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <div class="start-logo">TYPE<em>FIRE</em></div>
+    <p class="start-desc">Type the words as fast as you can.<br>Press <strong>Space</strong> after each word.</p>
+    <div class="start-modes">
+      <button class="start-mode-btn active" data-time="15">15s</button>
+      <button class="start-mode-btn" data-time="30">30s</button>
+      <button class="start-mode-btn" data-time="60">60s</button>
+    </div>
+    <button class="start-btn" id="start-btn">START</button>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen">
+    <div class="result-label">Your Speed</div>
+    <div class="result-wpm" id="result-wpm">0</div>
+    <div class="result-sub">words per minute</div>
+    <div class="rank-badge" id="rank-badge"></div>
+    <div class="result-grid">
+      <div class="result-cell"><div class="v" id="r-acc">—</div><div class="l">Accuracy</div></div>
+      <div class="result-cell"><div class="v" id="r-err">0</div><div class="l">Errors</div></div>
+      <div class="result-cell"><div class="v" id="r-chars">0</div><div class="l">Correct Chars</div></div>
+      <div class="result-cell"><div class="v" id="r-time">0s</div><div class="l">Duration</div></div>
+    </div>
+    <div class="ad-slot" style="width:100%;max-width:320px;margin-bottom:.4rem;">
+      <!-- AdSense: replace with your ad unit code -->
+      <div class="ad-placeholder">Advertisement</div>
+    </div>
+    <div class="nickname-row">
+      <input class="nickname-input" id="nickname-input" type="text" maxlength="16"
+        placeholder="Your name (for leaderboard)"
+        autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
+    </div>
+    <div class="result-btns">
+      <button class="again-btn" id="again-btn">TRY AGAIN</button>
+      <button class="share-btn" id="share-btn">SHARE</button>
+    </div>
+    <button class="share-btn" id="result-lb-btn" style="width:100%;max-width:320px;margin-top:.3rem;text-align:center;">🏆 LEADERBOARD</button>
+  </div>
+
+  <!-- LEADERBOARD OVERLAY -->
+  <div id="lb-overlay">
+    <div class="lb-header">
+      <div class="lb-title">LEADER<em>BOARD</em></div>
+      <button class="lb-close" id="lb-close">CLOSE</button>
+    </div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" data-time="15">15s</button>
+      <button class="lb-tab" data-time="30">30s</button>
+      <button class="lb-tab" data-time="60">60s</button>
+    </div>
+    <div class="lb-list" id="lb-list">
+      <div class="lb-loading">Loading...</div>
+    </div>
+  </div>
+
+  <!-- GAME UI -->
+  <header>
+    <div class="logo">TYPE<em>FIRE</em></div>
+    <div class="header-right">
+      <button class="lb-btn" id="lb-open-btn">🏆 RANK</button>
+      <div class="header-time" id="time-display">15</div>
+    </div>
+  </header>
+
+  <div class="modes">
+    <button class="mode-btn active" data-time="15">15s</button>
+    <button class="mode-btn" data-time="30">30s</button>
+    <button class="mode-btn" data-time="60">60s</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="val" id="wpm-live">0</div><div class="lbl">WPM</div></div>
+    <div class="stat-box"><div class="val" id="acc-live">—</div><div class="lbl">Acc %</div></div>
+    <div class="stat-box"><div class="val" id="err-live">0</div><div class="lbl">Errors</div></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div id="app-spacer"></div>
+
+  <div class="words-wrap" id="words-wrap">
+    <div class="words-clip" id="words-clip">
+      <div id="word-display"></div>
+    </div>
+    <input id="ghost-input" type="text"
+      autocomplete="off" autocorrect="off"
+      autocapitalize="none" spellcheck="false"
+      inputmode="text">
+    <div id="tap-hint"><span>Tap to start typing</span></div>
+  </div>
+
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <a href="#" id="footer-about">About</a>
+    <span class="footer-sep">·</span>
+    <a href="#" id="footer-privacy">Privacy Policy</a>
+    <span class="footer-sep">·</span>
+    <a href="#" id="footer-contact">Contact</a>
+  </footer>
+
+</div>
+
+<!-- ABOUT OVERLAY -->
+<div class="info-overlay" id="about-overlay">
+  <div class="info-header">
+    <div class="info-title">ABOUT <em>TYPEFIRE</em></div>
+    <button class="info-close" data-close="about-overlay">CLOSE</button>
+  </div>
+  <div class="info-body">
+    <h2>What is TYPEFIRE?</h2>
+    <p>TYPEFIRE is a minimalist typing speed test designed for people who want to improve their words-per-minute (WPM) and accuracy. It's fast, distraction-free, and works on any device.</p>
+
+    <h2>How it works</h2>
+    <p>Choose a duration — 15, 30, or 60 seconds — then start typing. Words are drawn from a curated library of science, philosophy, and general knowledge passages, so every session feels fresh.</p>
+    <ul>
+      <li>Green characters = correctly typed</li>
+      <li>Red characters = mistakes</li>
+      <li>Press <strong>Space</strong> to advance to the next word</li>
+    </ul>
+
+    <h2>Leaderboard</h2>
+    <p>After each round, enter a nickname to submit your score to the global leaderboard. Compete with players around the world and see where you rank.</p>
+
+    <h2>Sharing</h2>
+    <p>Tap the SHARE button on the results screen to generate a score card image you can share on social media or send to friends.</p>
+
+    <h2>Tips to improve</h2>
+    <ul>
+      <li>Focus on accuracy first — speed follows naturally</li>
+      <li>Keep your eyes on the word display, not your fingers</li>
+      <li>Practice daily, even just one 30-second session</li>
+      <li>Try the 60s mode to build stamina</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY OVERLAY -->
+<div class="info-overlay" id="privacy-overlay">
+  <div class="info-header">
+    <div class="info-title">PRIVACY <em>POLICY</em></div>
+    <button class="info-close" data-close="privacy-overlay">CLOSE</button>
+  </div>
+  <div class="info-body">
+    <p>Last updated: April 2026</p>
+
+    <h2>Overview</h2>
+    <p>TYPEFIRE ("we", "us", or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and handle information when you use TYPEFIRE.</p>
+
+    <h2>Information We Collect</h2>
+    <p>We collect minimal information necessary to operate the service:</p>
+    <ul>
+      <li><strong>Leaderboard scores:</strong> If you choose to submit a score, we store your chosen nickname, WPM score, accuracy percentage, and submission timestamp in our database (Firebase Realtime Database by Google).</li>
+      <li><strong>Usage data:</strong> We may use Google Analytics to collect anonymised data about how visitors interact with TYPEFIRE, including pages visited and session duration. No personally identifiable information is collected.</li>
+    </ul>
+
+    <h2>Cookies and Advertising</h2>
+    <p>TYPEFIRE may display advertisements served by Google AdSense. Google uses cookies to serve ads based on your prior visits to this and other websites. You can opt out of personalised advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank">Google Ads Settings</a>.</p>
+    <p>For more information on how Google uses data, please visit <a href="https://policies.google.com/technologies/partner-sites" target="_blank">Google's Privacy &amp; Terms</a>.</p>
+
+    <h2>Third-Party Services</h2>
+    <ul>
+      <li><strong>Firebase (Google):</strong> used for leaderboard data storage. <a href="https://firebase.google.com/support/privacy" target="_blank">Firebase Privacy Policy</a></li>
+      <li><strong>Wikipedia API:</strong> used to fetch typing passages. No personal data is sent.</li>
+      <li><strong>Google Fonts:</strong> used to load fonts. <a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a></li>
+    </ul>
+
+    <h2>Data Retention</h2>
+    <p>Leaderboard entries are retained indefinitely unless you request removal. To request deletion of a leaderboard entry you submitted, contact us (see below).</p>
+
+    <h2>Children's Privacy</h2>
+    <p>TYPEFIRE is not directed at children under 13. We do not knowingly collect personal information from children.</p>
+
+    <h2>Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. Changes will be reflected by the "Last updated" date at the top of this page.</p>
+
+    <h2>Contact</h2>
+    <p>If you have any questions about this Privacy Policy, please open an issue or discussion on our GitHub repository.</p>
+  </div>
+</div>
+
+<!-- Hidden canvas for share card generation -->
+<canvas id="share-canvas" width="800" height="420"></canvas>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, query, orderByChild, limitToLast, get }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClQ0SV1vuQiy_2Ji3_1YpnYJcmmt_WXlQ",
+  authDomain: "typefire-e5c68.firebaseapp.com",
+  databaseURL: "https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "typefire-e5c68",
+  storageBucket: "typefire-e5c68.firebasestorage.app",
+  messagingSenderId: "1065566297610",
+  appId: "1:1065566297610:web:c109b00d44a8cbb3fec9f3"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── PASSAGE LIBRARY (local fallback — science / math / philosophy only) ──
+const PASSAGES = [
+  "Light travels at nearly three hundred thousand kilometers per second making it the fastest thing in the known universe. When you look at the night sky you are not seeing stars as they are now but as they were years decades or even millions of years ago depending on their distance from Earth.",
+  "The human brain contains roughly eighty six billion neurons each connected to thousands of others through synaptic links. Every thought every memory and every emotion emerges from the electrical and chemical signals passing between these cells at speeds that can exceed four hundred kilometers per hour.",
+  "Bees communicate through a behavior called the waggle dance. When a scout bee finds food it performs a figure eight movement encoding the direction and distance of the source relative to the sun. Other bees decode this message and fly directly to the flowers often traveling several kilometers with remarkable accuracy.",
+  "Climate scientists study ancient air bubbles trapped in Antarctic ice to reconstruct past atmospheres. By drilling deep into ice sheets they extract cylinders containing bubbles of air from hundreds of thousands of years ago revealing how carbon dioxide levels and temperatures have changed across geological time.",
+  "The ocean covers more than seventy percent of our planet yet remains one of the least explored frontiers. Hydrothermal vents on the ocean floor support entire ecosystems powered not by sunlight but by chemical energy from the Earth itself in a process called chemosynthesis.",
+  "Quantum mechanics describes the behavior of particles at the smallest scales and its predictions have been confirmed with extraordinary precision. One of its strangest features is superposition whereby a particle can exist in multiple states simultaneously until it is observed and the wave function collapses.",
+  "DNA is a double helix composed of four chemical bases adenine thymine guanine and cytosine. The sequence of these bases encodes the instructions for building every protein in a living organism. A single human cell contains roughly three billion base pairs packed into a nucleus just six micrometers across.",
+  "Black holes form when massive stars collapse under their own gravity at the end of their lives. Their gravitational pull is so strong that not even light can escape beyond the boundary known as the event horizon. Time itself slows dramatically near a black hole a prediction confirmed by general relativity.",
+  "The periodic table arranges elements by atomic number and groups them by shared chemical properties. When Mendeleev published his version in eighteen sixty nine he left gaps for elements yet to be discovered and accurately predicted their properties years before they were found in nature.",
+  "Plate tectonics describes the movement of large sections of the lithosphere across the surface of the Earth. The continents we see today were once joined in a supercontinent called Pangaea that began breaking apart roughly two hundred million years ago driven by convection currents in the mantle below.",
+  "Socrates believed that the unexamined life is not worth living and that wisdom begins with acknowledging the limits of one's own knowledge. His method of questioning assumptions through dialogue became the foundation of Western philosophical inquiry and remains central to how we reason about ethics and truth.",
+  "Immanuel Kant argued that moral actions must be guided by a principle he called the categorical imperative which holds that one should act only according to rules that could be universally applied to all rational beings without contradiction or inconsistency.",
+  "The philosophy of mind asks what consciousness is and how subjective experience arises from physical processes. The hard problem as David Chalmers framed it is explaining why there is something it is like to be a conscious creature rather than simply information processing happening in the dark.",
+  "Aristotle distinguished between two kinds of knowledge episteme which is scientific understanding of universal truths and phronesis which is practical wisdom about how to act well in particular situations. He believed virtue was a habit cultivated through practice rather than an innate quality.",
+  "Karl Popper proposed that what distinguishes science from non-science is falsifiability. A theory is scientific only if it makes predictions that could in principle be proven wrong by experiment. This criterion helped clarify why astrology and psychoanalysis in their traditional forms fall outside the domain of science.",
+];
+
+// ── WIKIPEDIA: science / math / philosophy topics only ──
+const WIKI_TOPICS = [
+  'Photosynthesis','Black hole','DNA','Volcano','Earthquake','Solar system',
+  'Coral reef','Plate tectonics','Vaccination','Quantum mechanics','Gravity',
+  'Biodiversity','Telescope','Neuroscience','Artificial intelligence',
+  'Climate change','Antibiotic','Human evolution','Big Bang','Natural selection',
+  'Thermodynamics','Electromagnetism','Periodic table','General relativity',
+  'Special relativity','Prime number','Pythagorean theorem','Calculus',
+  'Game theory','Information theory','Set theory','Mathematical logic',
+  'Philosophy of mind','Epistemology','Ethics','Stoicism','Empiricism',
+  'Rationalism','Scientific method','Karl Popper','Immanuel Kant',
+  'Aristotle','Socrates','René Descartes','David Hume','Consciousness',
+  'Free will','Determinism','Utilitarianism','Existentialism','Logic'
+];
+
+// ── WIKIQUOTE: science / math / philosophy figures (quotes unrestricted by topic) ──
+const WIKIQUOTE_SUBJECTS = [
+  'Albert Einstein','Richard Feynman','Carl Sagan','Stephen Hawking',
+  'Nikola Tesla','Marie Curie','Charles Darwin','Isaac Newton',
+  'Aristotle','Socrates','Immanuel Kant','Bertrand Russell',
+  'Friedrich Nietzsche','Blaise Pascal','Galileo Galilei','Max Planck',
+  'Erwin Schrödinger','Werner Heisenberg','Paul Dirac','Henri Poincaré',
+  'René Descartes','David Hume','John Stuart Mill','William James'
+];
+
+// ── GUTENBERG: science / philosophy books (public domain, curated IDs) ──
+// 1228 = Darwin, Origin of Species
+// 2300 = Darwin, Descent of Man
+// 5827 = Bertrand Russell, Problems of Philosophy
+// 2940 = Huxley, Evolution and Ethics
+// 39713 = Poincaré, Science and Hypothesis
+// 14474 = Faraday, Chemical History of a Candle
+const GUTENBERG_IDS = [1228, 2300, 5827, 2940, 39713, 14474];
+
+let wikiPassageCache = [];
+
+async function fetchWikiPassage() {
+  try {
+    const topic = WIKI_TOPICS[Math.floor(Math.random() * WIKI_TOPICS.length)];
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topic)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const text = (data.extract || '')
+      .replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
+    if (text.length < 100) throw new Error();
+    return text;
+  } catch(e) { return null; }
+}
+
+async function fetchWikiquotePassage() {
+  try {
+    const subject = WIKIQUOTE_SUBJECTS[Math.floor(Math.random() * WIKIQUOTE_SUBJECTS.length)];
+    const url = `https://en.wikiquote.org/api/rest_v1/page/summary/${encodeURIComponent(subject)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const text = (data.extract || '').replace(/\[[^\]]*\]/g, '').trim();
+    if (text.length < 60) throw new Error();
+    return text;
+  } catch(e) { return null; }
+}
+
+async function fetchGutenbergPassage() {
+  try {
+    const id = GUTENBERG_IDS[Math.floor(Math.random() * GUTENBERG_IDS.length)];
+    const url = `https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error();
+    const full = await res.text();
+    const body = full.slice(2000, 10000).replace(/\r/g, '');
+    const paras = body.split(/\n\n+/)
+      .map(p => p.replace(/\n/g, ' ').trim())
+      .filter(p => p.length > 150 && p.length < 600);
+    if (!paras.length) throw new Error();
+    return paras[Math.floor(Math.random() * paras.length)];
+  } catch(e) { return null; }
+}
+
+async function prefetchWikiPassages() {
+  const results = await Promise.all([
+    fetchWikiPassage(),
+    fetchWikiPassage(),
+    fetchWikiquotePassage(),
+    fetchGutenbergPassage(),
+  ]);
+  const fresh = results.filter(Boolean);
+  if (fresh.length > 0) wikiPassageCache = fresh;
+}
+
+function getPassageWords() {
+  const pool = wikiPassageCache.length > 0
+    ? [...wikiPassageCache, ...PASSAGES]
+    : PASSAGES;
+  // Pick one passage at random, use it in full from the beginning
+  const passage = pool[Math.floor(Math.random() * pool.length)];
+  return passage
+    .replace(/[""'']/g, "'")
+    .replace(/[^a-zA-Z0-9'\-.,!?;: ]/g, '')
+    .split(/\s+/)
+    .filter(w => w.length > 0);
+}
+
+prefetchWikiPassages();
+
+const $=id=>document.getElementById(id);
+let words=[],curWord=0,timer=null;
+let timeLeft=15,totalTime=15;
+let correctChars=0,totalTyped=0,errors=0;
+let active=false,done=false,startTime=null;
+let lastVal='';
+let lastResult={wpm:0,acc:'—',errors:0,chars:0};
+
+const inp=$('ghost-input');
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function genWords(){words=getPassageWords();}
+
+function render(){
+  const d=$('word-display');
+  // Each word is wrapped in a word-unit span (inline, nowrap) so it never breaks mid-word
+  d.innerHTML=words.map((w,wi)=>{
+    const chars=(w+' ').split('').map((c,ci)=>
+      `<span class="char" id="c${wi}_${ci}">${c===' '?'&nbsp;':c}</span>`
+    ).join('');
+    return `<span class="word-unit">${chars}</span>`;
+  }).join('');
+  d.style.marginTop='0';
+  setCursor();
+  // snap first word to top of clip after layout
+  requestAnimationFrame(()=>scrollToCurrent());
+}
+
+function el(wi,ci){return document.getElementById(`c${wi}_${ci}`);}
+
+function setCursor(){
+  document.querySelectorAll('.char.cursor').forEach(e=>e.classList.remove('cursor'));
+  const pos=Math.min(lastVal.length,(words[curWord]||'').length);
+  const e2=el(curWord,pos);
+  if(e2)e2.classList.add('cursor');
+}
+
+function colorWord(wi,t){
+  const word=words[wi]+' ';
+  for(let i=0;i<word.length;i++){
+    const e2=el(wi,i);
+    if(!e2)continue;
+    e2.classList.remove('correct','wrong');
+    if(i<t.length)e2.classList.add(t[i]===word[i]?'correct':'wrong');
+  }
+}
+
+function scrollToCurrent(){
+  // Use the first char span of curWord to get accurate offsetTop
+  const firstChar = el(curWord, 0);
+  if(!firstChar) return;
+  const d = $('word-display');
+  // word-display has position:relative, so firstChar.offsetParent === word-display
+  // offsetTop gives us the line's top relative to word-display
+  const lineTop = firstChar.offsetTop;
+  d.style.marginTop = `-${lineTop}px`;
+}
+
+function updateLive(){
+  const elapsed=startTime?(Date.now()-startTime)/60000:0;
+  const wpm=elapsed>0?Math.round((correctChars/5)/elapsed):0;
+  const acc=totalTyped>0?Math.round(correctChars/totalTyped*100):'—';
+  $('wpm-live').textContent=wpm;
+  $('acc-live').textContent=acc;
+  $('err-live').textContent=errors;
+}
+
+function advance(typedVal){
+  const word=words[curWord]||'';
+  const len=Math.max(typedVal.length,word.length);
+  for(let i=0;i<len;i++){
+    if(i<typedVal.length&&typedVal[i]===word[i])correctChars++;
+    else if(i<typedVal.length)errors++;
+  }
+  // count the space as a correct char (word separator)
+  correctChars++;
+  totalTyped+=typedVal.length+1;
+  colorWord(curWord,typedVal+' ');
+  curWord++;
+  lastVal='';
+  inp.value='';
+  if(curWord>words.length-20){
+    // refill from passages
+    const extra=getPassageWords().slice(0,60);
+    const start=words.length;
+    words.push(...extra);
+    const d=$('word-display');
+    extra.forEach((w,i)=>{
+      const wi=start+i;
+      const wrapSpan=document.createElement('span');
+      wrapSpan.className='word-unit';
+      (w+' ').split('').forEach((c,ci)=>{
+        const span=document.createElement('span');
+        span.className='char';
+        span.id=`c${wi}_${ci}`;
+        span.innerHTML=c===' '?'&nbsp;':c;
+        wrapSpan.appendChild(span);
+      });
+      d.appendChild(wrapSpan);
+    });
+  }
+  scrollToCurrent();
+}
+
+inp.addEventListener('input',()=>{
+  if(done)return;
+  if(!active)startGame();
+  const raw=inp.value;
+  if(raw.includes(' ')){
+    const t=raw.replace(/ /g,'');
+    advance(t);setCursor();updateLive();return;
+  }
+  lastVal=raw;colorWord(curWord,raw);setCursor();updateLive();
+});
+
+inp.addEventListener('keydown',e=>{
+  if(done)return;
+  if(!active)startGame();
+  if(e.key===' '||e.key==='Enter'){
+    e.preventDefault();
+    const t=inp.value.trim();
+    advance(t);setCursor();updateLive();
+  }
+});
+
+$('words-wrap').addEventListener('click',()=>{ if(!done)inp.focus(); });
+
+function hideTapHint(){const h=$('tap-hint');if(h)h.style.display='none';}
+
+function startGame(){
+  if(active)return;
+  active=true;hideTapHint();startTime=Date.now();
+  timeLeft=totalTime;
+  $('time-display').textContent=timeLeft;
+  const fill=$('progress-fill');
+  fill.style.transition='none';fill.style.width='100%';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    fill.style.transition=`width ${totalTime}s linear`;
+    fill.style.width='0%';
+  }));
+  timer=setInterval(()=>{timeLeft--;$('time-display').textContent=timeLeft;if(timeLeft<=0)endGame();},1000);
+}
+
+async function endGame(){
+  clearInterval(timer);active=false;done=true;
+  // Force keyboard dismiss
+  inp.blur();
+  inp.disabled=true;
+  setTimeout(()=>{inp.disabled=false;},2000);
+
+  const elapsed=(Date.now()-startTime)/60000;
+  const wpm=Math.round((correctChars/5)/elapsed);
+  const acc=totalTyped>0?Math.round(correctChars/totalTyped*100)+'%':'—';
+  lastResult={wpm,acc,errors,chars:correctChars};
+
+  $('result-wpm').textContent=wpm;
+  $('r-acc').textContent=acc;
+  $('r-err').textContent=errors;
+  $('r-chars').textContent=correctChars;
+  $('r-time').textContent=totalTime+'s';
+
+  // Show result screen but disable buttons briefly to prevent accidental taps
+  const screen=$('result-screen');
+  screen.classList.add('show');
+  const btns=screen.querySelectorAll('button,.again-btn,.share-btn');
+  btns.forEach(b=>{b.disabled=true;b.style.opacity='.45';b.style.pointerEvents='none';});
+  setTimeout(()=>{
+    btns.forEach(b=>{b.disabled=false;b.style.opacity='';b.style.pointerEvents='';});
+  },1000);
+
+  // check rank without saving yet
+  checkRank(wpm);
+}
+
+async function checkRank(wpm){
+  try{
+    const snap=await get(query(ref(db,`scores/${totalTime}`),orderByChild('wpm'),limitToLast(10)));
+    const badge=$('rank-badge');
+    if(!snap.exists()){badge.textContent='🏆 You could be #1!';badge.classList.add('show');return;}
+    const scores=[];
+    snap.forEach(c=>scores.push(c.val().wpm));
+    scores.sort((a,b)=>b-a);
+    const rank=scores.filter(s=>s>wpm).length+1;
+    if(rank<=10){
+      badge.textContent=rank===1?'🏆 New #1!':rank<=3?`🥈 Top ${rank}!`:`#${rank} on leaderboard`;
+      badge.classList.add('show');
+    }
+  }catch(e){}
+}
+
+async function submitScore(wpm,acc,nickname){
+  if(!nickname.trim())return null;
+  const nick=nickname.trim().slice(0,16);
+  const accNum=parseInt(acc)||0;
+  try{
+    await push(ref(db,`scores/${totalTime}`),{
+      name:nick, wpm, acc:accNum, ts:Date.now()
+    });
+  }catch(e){console.warn('Score submit failed',e);}
+}
+
+function resetGame(){
+  clearInterval(timer);active=false;done=false;
+  curWord=0;lastVal='';correctChars=0;totalTyped=0;errors=0;startTime=null;
+  inp.value='';
+  $('time-display').textContent=totalTime;
+  $('wpm-live').textContent='0';$('acc-live').textContent='—';$('err-live').textContent='0';
+  const fill=$('progress-fill');fill.style.transition='none';fill.style.width='100%';
+  $('result-screen').classList.remove('show');
+  $('rank-badge').classList.remove('show');
+  const h=$('tap-hint');if(h)h.style.display='flex';
+  genWords();render();
+  // prefetch fresh Wikipedia passages for next game
+  prefetchWikiPassages();
+}
+
+$('start-btn').addEventListener('click',()=>{
+  $('start-screen').style.display='none';
+  resetGame();
+  setTimeout(()=>{inp.focus();hideTapHint();},150);
+});
+
+$('again-btn').addEventListener('click',()=>{
+  // submit score before resetting
+  const nick=$('nickname-input').value;
+  if(nick.trim())submitScore(lastResult.wpm,lastResult.acc,nick);
+  resetGame();
+  setTimeout(()=>{inp.focus();hideTapHint();},150);
+});
+
+document.querySelectorAll('[data-time]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const t=parseInt(btn.dataset.time);totalTime=t;
+    document.querySelectorAll('[data-time]').forEach(b=>
+      b.classList.toggle('active',parseInt(b.dataset.time)===t)
+    );
+  });
+});
+
+document.addEventListener('keydown',e=>{
+  if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&!done)inp.focus();
+});
+
+// ── SHARE CARD ──
+function drawShareCard(wpm,acc,errors,duration){
+  return new Promise(resolve=>{
+    const canvas=$('share-canvas');
+    const ctx=canvas.getContext('2d');
+    const W=800,H=420;
+    ctx.clearRect(0,0,W,H);
+
+    // background
+    ctx.fillStyle='#f5f2eb';
+    ctx.fillRect(0,0,W,H);
+
+    // left accent bar
+    ctx.fillStyle='#ff4500';
+    ctx.fillRect(0,0,8,H);
+
+    // bottom accent line
+    ctx.fillStyle='#ff4500';
+    ctx.fillRect(0,H-6,W,6);
+
+    // TYPEFIRE logo
+    ctx.font='bold 52px "Bebas Neue", sans-serif';
+    ctx.letterSpacing='4px';
+    ctx.fillStyle='#1a1a1a';
+    ctx.fillText('TYPE',48,74);
+    const tw=ctx.measureText('TYPE').width;
+    ctx.fillStyle='#ff4500';
+    ctx.fillText('FIRE',48+tw,74);
+
+    // WPM big number
+    ctx.font='bold 180px "Bebas Neue", sans-serif';
+    ctx.fillStyle='#ff4500';
+    ctx.letterSpacing='-4px';
+    ctx.fillText(wpm,44,290);
+    const wpmW=ctx.measureText(wpm).width;
+
+    // WPM label
+    ctx.font='500 18px "DM Mono", monospace';
+    ctx.fillStyle='#bbbbbb';
+    ctx.letterSpacing='4px';
+    ctx.fillText('WPM',50,320);
+
+    // stats
+    const stats=[
+      {label:'ACCURACY',value:acc},
+      {label:'ERRORS',value:String(errors)},
+      {label:'DURATION',value:duration+'s'},
+    ];
+    const sx=420,sy=140,gap=90;
+    stats.forEach((s,i)=>{
+      const y=sy+i*gap;
+      ctx.font='bold 48px "Bebas Neue", sans-serif';
+      ctx.fillStyle='#1a1a1a';
+      ctx.letterSpacing='1px';
+      ctx.fillText(s.value,sx,y);
+      ctx.font='500 13px "DM Mono", monospace';
+      ctx.fillStyle='#bbbbbb';
+      ctx.letterSpacing='3px';
+      ctx.fillText(s.label,sx,y+20);
+    });
+
+    // tagline
+    ctx.font='500 14px "DM Mono", monospace';
+    ctx.fillStyle='#bbbbbb';
+    ctx.letterSpacing='2px';
+    ctx.fillText('typefire.app',W-160,H-24);
+
+    resolve(canvas);
+  });
+}
+
+$('result-lb-btn').addEventListener('click',()=>{
+  lbTime = totalTime;
+  document.querySelectorAll('.lb-tab').forEach(t=>{
+    t.classList.toggle('active', parseInt(t.dataset.time)===lbTime);
+  });
+  $('lb-overlay').classList.add('show');
+  loadLeaderboard(lbTime);
+});
+
+$('share-btn').addEventListener('click',async()=>{
+  const nick=$('nickname-input').value;
+  if(nick.trim())submitScore(lastResult.wpm,lastResult.acc,nick);
+
+  const canvas=await drawShareCard(
+    lastResult.wpm, lastResult.acc,
+    lastResult.errors, totalTime
+  );
+
+  canvas.toBlob(async blob=>{
+    const file=new File([blob],'typefire-result.png',{type:'image/png'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({
+          files:[file],
+          title:`TYPEFIRE — ${lastResult.wpm} WPM`,
+          text:`I just typed ${lastResult.wpm} WPM on TYPEFIRE! Can you beat me?`
+        });
+      }catch(e){
+        // AbortError = user cancelled, do nothing
+        // Other errors fall through to download
+        if(e.name==='AbortError')return;
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download='typefire-result.png';
+        a.click();
+      }
+      return;
+    }
+    // fallback: download (no Web Share API)
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='typefire-result.png';
+    a.click();
+  },'image/png');
+});
+
+// ── LEADERBOARD ──
+let lbTime=15;
+
+$('lb-open-btn').addEventListener('click',()=>{
+  $('lb-overlay').classList.add('show');
+  loadLeaderboard(lbTime);
+});
+$('lb-close').addEventListener('click',()=>{
+  $('lb-overlay').classList.remove('show');
+});
+
+document.querySelectorAll('.lb-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    lbTime=parseInt(tab.dataset.time);
+    loadLeaderboard(lbTime);
+  });
+});
+
+async function loadLeaderboard(duration){
+  const list=$('lb-list');
+  list.innerHTML='<div class="lb-loading">Loading...</div>';
+  const DB_URL='https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
+  try{
+    const res=await fetch(`${DB_URL}/scores/${duration}.json?orderBy="wpm"&limitToLast=20`,
+      {headers:{'Accept':'application/json'}});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    if(!data||typeof data!=='object'||Object.keys(data).length===0){
+      list.innerHTML='<div class="lb-empty">No scores yet.<br>Be the first!</div>';
+      return;
+    }
+    const scores=Object.values(data).filter(s=>s&&typeof s.wpm==='number');
+    scores.sort((a,b)=>b.wpm-a.wpm);
+    const top=scores.slice(0,10);
+    list.innerHTML=top.map((s,i)=>{
+      const rankClass=i===0?'top1':i===1?'top2':i===2?'top3':'';
+      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+      return `
+        <div class="lb-row ${rankClass}">
+          <div class="lb-rank">${medal||i+1}</div>
+          <div class="lb-name">${escHtml(s.name||'Anonymous')}</div>
+          <div>
+            <div class="lb-wpm">${s.wpm}</div>
+            <div class="lb-wpm-label">WPM</div>
+          </div>
+          <div class="lb-acc">${s.acc?s.acc+'%':''}</div>
+        </div>`;
+    }).join('') + `<div class="ad-slot" style="margin-top:.8rem;"><!-- AdSense: replace with your ad unit code --><div class="ad-placeholder">Advertisement</div></div>`;
+  }catch(e){
+    console.warn('Leaderboard REST error:',e);
+    try{
+      const snap=await get(query(ref(db,`scores/${duration}`),orderByChild('wpm'),limitToLast(20)));
+      if(!snap.exists()){list.innerHTML='<div class="lb-empty">No scores yet.<br>Be the first!</div>';return;}
+      const scores=[];snap.forEach(c=>scores.push(c.val()));
+      scores.sort((a,b)=>b.wpm-a.wpm);
+      const top=scores.slice(0,10);
+      list.innerHTML=top.map((s,i)=>{
+        const rankClass=i===0?'top1':i===1?'top2':i===2?'top3':'';
+        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+        return `<div class="lb-row ${rankClass}"><div class="lb-rank">${medal||i+1}</div><div class="lb-name">${escHtml(s.name||'Anonymous')}</div><div><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div><div class="lb-acc">${s.acc?s.acc+'%':''}</div></div>`;
+      }).join('');
+    }catch(e2){
+      list.innerHTML='<div class="lb-empty">Could not load scores.<br><span style="font-size:.65rem;opacity:.6">Check your connection.</span></div>';
+    }
+  }
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+genWords();render();
+
+// ── ABOUT / PRIVACY OVERLAYS ──
+document.querySelectorAll('.info-close').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id=btn.dataset.close;
+    document.getElementById(id).classList.remove('show');
+  });
+});
+
+function openOverlay(id){
+  document.getElementById(id).classList.add('show');
+}
+
+document.getElementById('footer-about').addEventListener('click',e=>{
+  e.preventDefault(); openOverlay('about-overlay');
+});
+document.getElementById('footer-privacy').addEventListener('click',e=>{
+  e.preventDefault(); openOverlay('privacy-overlay');
+});
+document.getElementById('footer-contact').addEventListener('click',e=>{
+  e.preventDefault(); openOverlay('privacy-overlay');
+  // scroll to contact section
+  setTimeout(()=>{
+    const overlay=document.getElementById('privacy-overlay');
+    const links=overlay.querySelectorAll('h2');
+    links.forEach(h=>{ if(h.textContent==='Contact') h.scrollIntoView({behavior:'smooth'}); });
+  },100);
+});
+
+// (viewport height management removed — using CSS 2-line clip)
+</script>
+</body>
+</html>
