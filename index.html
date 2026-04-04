@@ -132,22 +132,6 @@ header {
   -webkit-user-modify:read-write-plaintext-only;
 }
 
-#tap-hint {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  pointer-events:none;
-}
-#tap-hint span {
-  background:rgba(245,242,235,.88);
-  border:1.5px solid var(--border);
-  border-radius:10px;
-  padding:.55rem 1.2rem;
-  font-size:.95rem;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--ink);
-}
-
 /* AD */
 .ad-slot { padding:.5rem 1.2rem; flex-shrink:0; }
 .ad-placeholder { border:1px dashed var(--border); border-radius:10px; padding:2.2rem .8rem; text-align:center; font-size:.75rem; letter-spacing:.12em; text-transform:uppercase; color:var(--border); }
@@ -465,7 +449,6 @@ header {
       autocomplete="off" autocorrect="off"
       autocapitalize="none" spellcheck="false"
       inputmode="text">
-    <div id="tap-hint"><span>Tap to start typing</span></div>
   </div>
 
 
@@ -1255,11 +1238,9 @@ inp.addEventListener('keydown',e=>{
 
 $('words-wrap').addEventListener('click',()=>{ if(!done)inp.focus(); });
 
-function hideTapHint(){const h=$('tap-hint');if(h)h.style.display='none';}
-
 function startGame(){
   if(active)return;
-  active=true;hideTapHint();startTime=Date.now();
+  active=true; startTime=Date.now();
   timeLeft=totalTime;
   $('time-display').textContent=timeLeft;
   const fill=$('progress-fill');
@@ -1375,14 +1356,13 @@ function resetGame(){
   const fill=$('progress-fill');fill.style.transition='none';fill.style.width='100%';
   $('result-screen').classList.remove('show');
   $('rank-badge').classList.remove('show');
-  const h=$('tap-hint');if(h)h.style.display='flex';
   genWords();render();
 }
 
 $('start-btn').addEventListener('click',()=>{
   $('start-screen').style.display='none';
   resetGame();
-  setTimeout(()=>{inp.focus();hideTapHint();},150);
+  setTimeout(()=>{inp.focus();},150);
 });
 
 $('again-btn').addEventListener('click',async()=>{
@@ -1434,7 +1414,7 @@ $('mode-pick-go').addEventListener('click',()=>{
   $('start-screen').style.display='none';
   pickerCaller = null;
   resetGame();
-  setTimeout(()=>{inp.focus();hideTapHint();},150);
+  setTimeout(()=>{inp.focus();},150);
 });
 
 $('mode-pick-cancel').addEventListener('click', closeModePicker);
