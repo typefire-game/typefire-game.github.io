@@ -1066,13 +1066,23 @@ function getPassageWords() {
     }
   }
 
-  // Both pools not ready yet — schedule retry and show neutral placeholder
+  // Both pools not ready yet — keep retrying until we have words
   if (combined.length === 0) {
     setTimeout(async () => {
       await _poolReadyPromise;
-      if (hardPool.length === 0) hardPool = shuffleArray(PASSAGE_POOL_DATA);
+      if (hardPool.length === 0 && PASSAGE_POOL_DATA.length > 0)
+        hardPool = shuffleArray(PASSAGE_POOL_DATA);
+      // Poll every 300ms until at least one pool has content
+      await new Promise(resolve => {
+        if (livePool.length > 0 || hardPool.length > 0) { resolve(); return; }
+        const check = setInterval(() => {
+          if (livePool.length > 0 || hardPool.length > 0) {
+            clearInterval(check); resolve();
+          }
+        }, 300);
+      });
       genWords(); render();
-    }, 500);
+    }, 100);
     return ['\u2026']; // single ellipsis, won't match any real word
   }
 
