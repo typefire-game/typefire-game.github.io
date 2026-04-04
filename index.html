@@ -820,7 +820,8 @@ function isGoodParagraph(p) {
 // Decompressed at runtime into PASSAGE_POOL_DATA via DecompressionStream.
 const _POOL_B64 = 'H4sIAGusz2kC/4uOBQApu0wNAgAAAA==';
 let PASSAGE_POOL_DATA = [];
-(async function decompressPool() {
+// _poolReadyPromise resolves after decompression — hardPool must wait for this
+const _poolReadyPromise = (async function decompressPool() {
   try {
     const bin = Uint8Array.from(atob(_POOL_B64), c => c.charCodeAt(0));
     const ds  = new DecompressionStream('gzip');
@@ -991,8 +992,11 @@ function shuffleArray(a) {
   return b;
 }
 
-const hardPool = shuffleArray(PASSAGE_POOL_DATA);
+// hardPool is filled only after decompression finishes (async)
+// — reading PASSAGE_POOL_DATA synchronously here would always give []
+let hardPool = [];
 const livePool = [];  // filled by background fetches
+_poolReadyPromise.then(() => { hardPool = shuffleArray(PASSAGE_POOL_DATA); });
 
 async function replenishOne() {
   // Wikipedia 80%, Gutenberg 20%
@@ -1103,7 +1107,17 @@ function getPassageWords() {
     }
   }
 
-  return combined.length > 0 ? combined : ['Loading...'];
+  // Both pools not ready yet — schedule retry and show neutral placeholder
+  if (combined.length === 0) {
+    setTimeout(async () => {
+      await _poolReadyPromise;
+      if (hardPool.length === 0) hardPool = shuffleArray(PASSAGE_POOL_DATA);
+      genWords(); render();
+    }, 500);
+    return ['\u2026']; // single ellipsis, won't match any real word
+  }
+
+  return combined;
 }
 
 function resetArticleForNewGame() {
