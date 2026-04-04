@@ -1323,61 +1323,52 @@ async function endGame(){
     btns.forEach(b=>{b.disabled=false;b.style.opacity='';b.style.pointerEvents='';});
   },1000);
 
-  // Rank check fires once after nickname has ≥1 char typed.
-  // Only checks rank & shows badge — submission happens on navigation (see submitOnLeave).
+  // Show rank badge: fires once when nickname has ≥1 char.
+  // Score submission is separate — happens when user leaves result screen.
   const nickField = $('nickname-input');
   let _rankChecked = false;
   const doRankCheck = () => {
     if (_rankChecked) return;
-    const nick = nickField.value.trim();
-    if (nick.length >= 1) { _rankChecked = true; checkRank(wpm); }
+    if (nickField.value.trim().length >= 1) { _rankChecked = true; checkRank(wpm); }
   };
   nickField.addEventListener('input', doRankCheck);
+  // Also fire on focus-out in case of autofill
+  nickField.addEventListener('change', doRankCheck);
 }
 
-// _pendingSubmit holds the score to upload until the user navigates away.
-// Separating rank-check from submit avoids the race where Firebase SDK
-// isn't ready at the exact moment checkRank finishes.
-let _pendingSubmit = null; // { wpm, acc, eligible }
 let scoreSubmitted = false;
 
+// checkRank: badge display only. Does not submit score.
 async function checkRank(wpm){
-  _pendingSubmit = null;
   try{
     const DB_URL='https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
-    const res=await fetch(`${DB_URL}/scores/${totalTime}.json?orderBy="wpm"&limitToLast=100`,
+    // Fetch all scores without orderBy (avoids index requirement)
+    const res=await fetch(`${DB_URL}/scores/${totalTime}.json`,
       {headers:{'Accept':'application/json'}});
     if(!res.ok) throw new Error();
     const data=await res.json();
     const badge=$('rank-badge');
-    const isEmpty=!data||typeof data!=='object'||!Object.keys(data).length;
-    if(isEmpty){
+    if(!data||typeof data!=='object'||!Object.keys(data).length){
       badge.textContent='🏆 You could be #1!'; badge.classList.add('show');
-      _pendingSubmit = { wpm, acc: lastResult.acc, eligible: true };
       return;
     }
-    const scores=Object.values(data).map(s=>s.wpm).filter(n=>typeof n==='number');
+    const scores=Object.values(data).map(s=>s?.wpm).filter(n=>typeof n==='number');
     scores.sort((a,b)=>b-a);
     const rank=scores.filter(s=>s>wpm).length+1;
     if(rank<=10){
       badge.textContent=rank===1?'🏆 New #1!':rank<=3?`🥉 Top ${rank}!`:`#${rank} on leaderboard`;
       badge.classList.add('show');
     }
-    _pendingSubmit = { wpm, acc: lastResult.acc, eligible: rank<=100 };
-  }catch(e){
-    // Network error: mark eligible so we try anyway when user navigates
-    _pendingSubmit = { wpm, acc: lastResult.acc, eligible: true };
-  }
+  }catch(e){ /* badge stays hidden — not critical */ }
 }
 
-// Called just before leaving the result screen (TRY AGAIN / LEADERBOARD).
-// Submits score if eligible and nickname is filled. Retries once on failure.
+// submitOnLeave: called when user leaves result screen.
+// Always attempts to submit if nickname is filled — no rank gating.
 async function submitOnLeave(){
   if(scoreSubmitted) return;
-  if(!_pendingSubmit?.eligible) return;
   const nick = $('nickname-input').value.trim();
   if(!nick) return;
-  await submitScore(_pendingSubmit.wpm, _pendingSubmit.acc, nick);
+  await submitScore(lastResult.wpm, lastResult.acc, nick);
 }
 
 async function submitScore(wpm,acc,nickname){
@@ -1386,18 +1377,15 @@ async function submitScore(wpm,acc,nickname){
   scoreSubmitted = true;
   const nick = nickname.trim().slice(0,16);
   const accNum = parseInt(acc)||0;
+  const payload = { name:nick, wpm, acc:accNum, ts:Date.now() };
   try{
-    await push(ref(db,`scores/${totalTime}`),{
-      name:nick, wpm, acc:accNum, ts:Date.now()
-    });
+    await push(ref(db,`scores/${totalTime}`), payload);
   }catch(e){
     // Retry once after 1.5s
     scoreSubmitted = false;
     await new Promise(r=>setTimeout(r,1500));
     try{
-      await push(ref(db,`scores/${totalTime}`),{
-        name:nick, wpm, acc:accNum, ts:Date.now()
-      });
+      await push(ref(db,`scores/${totalTime}`), payload);
       scoreSubmitted = true;
     }catch(e2){ console.warn('Score submit failed after retry',e2); }
   }
@@ -1406,7 +1394,7 @@ async function submitScore(wpm,acc,nickname){
 function resetGame(){
   clearInterval(timer);active=false;done=false;
   curWord=0;lastVal='';correctChars=0;totalTyped=0;errors=0;startTime=null;
-  scoreSubmitted=false; _pendingSubmit=null;
+  scoreSubmitted=false;
   inp.value='';
   $('time-display').textContent=totalTime;
   $('wpm-live').textContent='0';$('acc-live').textContent='—';$('err-live').textContent='0';
