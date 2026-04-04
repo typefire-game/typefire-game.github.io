@@ -990,11 +990,12 @@ let currentArticleQueue = [];
 
 function passageToWords(paragraph) {
   // paragraph already went through cleanText + isGoodParagraph filtering.
-  // Additional per-word filter: remove standalone numbers, single letters
-  // and any stray formula tokens that slipped through (e.g. "3", "H", "=").
-  return paragraph
+  // Merge orphaned punctuation (e.g. " . " or " , ") back onto the preceding word.
+  const normalized = paragraph
     .replace(/\s+/g, ' ')
     .trim()
+    .replace(/ ([.!?,;:])/g, '$1'); // attach lone punctuation to previous word
+  return normalized
     .split(' ')
     .filter(w => {
       if (!w.length) return false;
