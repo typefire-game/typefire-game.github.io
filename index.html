@@ -1367,6 +1367,7 @@ async function checkRank(wpm){
 async function submitOnLeave(){
   if(scoreSubmitted) return;
   const nick = $('nickname-input').value.trim();
+  console.log('[submit] submitOnLeave nick='+nick+' scored='+scoreSubmitted);
   if(!nick) return;
   await submitScore(lastResult.wpm, lastResult.acc, nick);
 }
@@ -1378,16 +1379,19 @@ async function submitScore(wpm,acc,nickname){
   const nick = nickname.trim().slice(0,16);
   const accNum = parseInt(acc)||0;
   const payload = { name:nick, wpm, acc:accNum, ts:Date.now() };
+  console.log('[submit] pushing', JSON.stringify(payload), 'to scores/'+totalTime);
   try{
     await push(ref(db,`scores/${totalTime}`), payload);
+    console.log('[submit] success');
   }catch(e){
-    // Retry once after 1.5s
+    console.warn('[submit] failed, retrying...', e.message);
     scoreSubmitted = false;
     await new Promise(r=>setTimeout(r,1500));
     try{
       await push(ref(db,`scores/${totalTime}`), payload);
       scoreSubmitted = true;
-    }catch(e2){ console.warn('Score submit failed after retry',e2); }
+      console.log('[submit] retry success');
+    }catch(e2){ console.error('[submit] retry failed', e2.message); }
   }
 }
 
@@ -1771,6 +1775,32 @@ document.getElementById('footer-contact').addEventListener('click',e=>{
 });
 
 // (viewport height management removed — using CSS 2-line clip)
+<!-- DEBUG PANEL — remove before production -->
+<div id="dbg" style="position:fixed;bottom:0;left:0;right:0;max-height:200px;overflow-y:auto;background:rgba(0,0,0,.85);color:#0f0;font-size:11px;font-family:monospace;padding:6px;z-index:9999;display:none;"></div>
+<script>
+(function(){
+  const el = document.getElementById('dbg');
+  function log(type, args){
+    el.style.display = 'block';
+    const line = document.createElement('div');
+    line.style.color = type==='error'?'#f66':type==='warn'?'#fa0':'#0f0';
+    line.textContent = '['+type+'] ' + Array.from(args).map(a=>{
+      try{ return typeof a === 'object' ? JSON.stringify(a) : String(a); }catch(e){ return String(a); }
+    }).join(' ');
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  }
+  const _e=console.error, _w=console.warn, _l=console.log;
+  console.error = function(){ _e.apply(console,arguments); log('error',arguments); };
+  console.warn  = function(){ _w.apply(console,arguments); log('warn', arguments); };
+  console.log   = function(){ _l.apply(console,arguments); log('log',  arguments); };
+  window.addEventListener('unhandledrejection', e=>{
+    log('error', ['UnhandledRejection: ' + (e.reason?.message || e.reason)]);
+  });
+  window.addEventListener('error', e=>{
+    log('error', [e.message + ' @ ' + e.filename + ':' + e.lineno]);
+  });
+})();
 </script>
 </body>
 </html>
