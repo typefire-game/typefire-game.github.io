@@ -104,7 +104,7 @@ header {
   position:relative;
 }
 /* each word is inline-block so it never breaks mid-word */
-.word-unit { display:inline-block; white-space:nowrap; max-width:100%; }
+.word-unit { display:inline-block; white-space:nowrap; }
 .char { display:inline; }
 .char.correct { color:var(--correct); }
 .char.wrong   { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
@@ -1283,7 +1283,6 @@ async function endGame(){
     if (nickField.value.trim().length >= 1) { _rankChecked = true; checkRank(wpm); }
   };
   nickField.addEventListener('input', doRankCheck);
-  // Also fire on focus-out in case of autofill
   nickField.addEventListener('change', doRankCheck);
 }
 
@@ -1319,6 +1318,7 @@ async function submitOnLeave(){
   if(scoreSubmitted) return;
   const nick = $('nickname-input').value.trim();
   if(!nick) return;
+  if(!lastResult.wpm || lastResult.wpm <= 0) return;
   await submitScore(lastResult.wpm, lastResult.acc, nick);
 }
 
@@ -1583,16 +1583,7 @@ document.querySelectorAll('.lb-tab').forEach(tab=>{
   });
 });
 
-// Leaderboard cache: avoid hammering Firebase on repeated tab switches
-const _lbCache = {};
-const _LB_TTL  = 30000; // 30 s
 async function loadLeaderboard(duration){
-  // Serve from cache if fresh
-  const now = Date.now();
-  if (_lbCache[duration] && now - _lbCache[duration].ts < _LB_TTL) {
-    $('lb-list').innerHTML = _lbCache[duration].html;
-    return;
-  }
   const list=$('lb-list');
   list.innerHTML='<div class="lb-loading">Loading...</div>';
   const DB_URL='https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
@@ -1608,7 +1599,7 @@ async function loadLeaderboard(duration){
     const scores=Object.values(data).filter(s=>s&&typeof s.wpm==='number');
     scores.sort((a,b)=>b.wpm-a.wpm);
     const top=scores.slice(0,10);
-    const renderedHtml = top.map((s,i)=>{
+    list.innerHTML = top.map((s,i)=>{
       const rankClass=i===0?'top1':i===1?'top2':i===2?'top3':'';
       const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
       return `
@@ -1622,8 +1613,6 @@ async function loadLeaderboard(duration){
           <div class="lb-acc">${s.acc?s.acc+'%':''}</div>
         </div>`;
     }).join('') + `<div class="ad-slot" style="margin-top:.8rem;padding:0;"><div class="ad-placeholder" style="min-height:100px;">Advertisement</div></div>`;
-    list.innerHTML = renderedHtml;
-    _lbCache[duration] = { html: renderedHtml, ts: Date.now() };
   }catch(e){
     console.warn('Leaderboard REST error:',e);
     try{
