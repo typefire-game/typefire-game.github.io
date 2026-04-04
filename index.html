@@ -1369,8 +1369,18 @@ function resetGame(){
   genWords();render();
 }
 
-$('start-btn').addEventListener('click',()=>{
+$('start-btn').addEventListener('click', async ()=>{
   $('start-screen').style.display='none';
+  // Wait for at least one article to be ready before starting
+  if (livePool.length === 0 && hardPool.length === 0) {
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (livePool.length > 0 || hardPool.length > 0) {
+          clearInterval(check); resolve();
+        }
+      }, 200);
+    });
+  }
   resetGame();
   setTimeout(()=>{inp.focus();},150);
 });
@@ -1413,7 +1423,7 @@ document.querySelectorAll('.mode-pick-btn').forEach(btn=>{
   });
 });
 
-$('mode-pick-go').addEventListener('click',()=>{
+$('mode-pick-go').addEventListener('click', async ()=>{
   totalTime=pickerSelectedTime;
   document.querySelectorAll('[data-time]').forEach(b=>
     b.classList.toggle('active', parseInt(b.dataset.time)===totalTime)
@@ -1423,6 +1433,15 @@ $('mode-pick-go').addEventListener('click',()=>{
   $('result-screen').classList.remove('show');
   $('start-screen').style.display='none';
   pickerCaller = null;
+  if (livePool.length === 0 && hardPool.length === 0) {
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (livePool.length > 0 || hardPool.length > 0) {
+          clearInterval(check); resolve();
+        }
+      }, 200);
+    });
+  }
   resetGame();
   setTimeout(()=>{inp.focus();},150);
 });
