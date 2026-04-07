@@ -364,13 +364,13 @@ header {
 </style>
 </head>
 <body>
-<!-- Pull-to-refresh indicator: arc arrow (↻) drawn with SVG, no external assets -->
+<!-- Pull-to-refresh indicator: Google-style refresh arc with arrowhead -->
 <div id="ptr-indicator">
   <svg viewBox="0 0 24 24">
-    <!-- Arc: 270° circle open at top-right -->
-    <path d="M12 4a8 8 0 1 0 7.4 5"/>
-    <!-- Arrowhead pointing clockwise at arc end -->
-    <polyline points="19.4 4.6 19.4 9 15 9"/>
+    <!-- ~300° arc, gap at top-right, clockwise -->
+    <path d="M12 3 A9 9 0 1 1 3 12"/>
+    <!-- Arrowhead at the arc tail (top-right), pointing clockwise/downward -->
+    <polyline points="12 3 16 3 12 7"/>
   </svg>
 </div>
 <div id="app">
