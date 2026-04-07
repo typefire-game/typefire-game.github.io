@@ -104,7 +104,6 @@ header {
   box-sizing:border-box;
   position:relative;
 }
-/* each word is inline-block so it never breaks mid-word */
 .word-unit { display:inline-block; white-space:nowrap; }
 .char { display:inline; }
 .char.correct { color:var(--correct); }
@@ -137,10 +136,10 @@ header {
 .ad-slot { padding:.5rem 1.2rem; flex-shrink:0; }
 .ad-placeholder { border:1px dashed var(--border); border-radius:10px; padding:2.2rem .8rem; text-align:center; font-size:.75rem; letter-spacing:.12em; text-transform:uppercase; color:var(--border); }
 
-/* FOOTER */
+/* FOOTER — shared across all screens */
 .site-footer {
-  flex-shrink:0; padding:.6rem 1.2rem .9rem;
-  display:flex; align-items:center; justify-content:center; gap:.5rem;
+  flex-shrink:0; padding:.6rem 1.5rem .9rem;
+  display:flex; align-items:center; justify-content:center; gap:.6rem;
   border-top:1.5px solid var(--border); margin-top:.2rem;
   flex-wrap:nowrap; overflow:hidden;
 }
@@ -172,7 +171,7 @@ header {
   font-family:var(--font);
 }
 .info-body {
-  padding:1.4rem 1.2rem 2rem; flex:1;
+  padding:1.4rem 1.2rem 1rem; flex:1;
   font-size:1rem; line-height:1.85; color:var(--ink);
   max-width:560px;
 }
@@ -209,8 +208,14 @@ header {
 }
 .start-lb-btn:hover, .start-lb-btn:active { border-color:var(--accent); color:var(--accent); }
 
+/* start-screen footer sits at bottom */
+#start-screen .site-footer {
+  position:absolute; bottom:0; left:0; right:0;
+  margin-top:0;
+}
+
 /* RESULT SCREEN */
-#result-screen { display:none; position:fixed; inset:0; background:var(--bg); flex-direction:column; align-items:center; justify-content:flex-start; z-index:10; padding:1.2rem 1.5rem 2rem; gap:.35rem; overflow-y:auto; max-width:680px; margin:0 auto; left:0; right:0; }
+#result-screen { display:none; position:fixed; inset:0; background:var(--bg); flex-direction:column; align-items:center; justify-content:flex-start; z-index:10; padding:1.2rem 1.5rem 0; gap:.35rem; overflow-y:auto; max-width:680px; margin:0 auto; left:0; right:0; }
 #result-screen.show { display:flex; }
 .result-label { font-size:.9rem; letter-spacing:.25em; text-transform:uppercase; color:var(--muted); }
 .result-wpm { font-family:'Bebas Neue',sans-serif; font-size:5.5rem; color:var(--accent); line-height:1; }
@@ -248,6 +253,11 @@ header {
 }
 .rank-badge.show { display:block; }
 
+/* result-screen footer */
+#result-screen .site-footer {
+  width:100%; max-width:320px; margin-top:.4rem; margin-bottom:.6rem;
+}
+
 /* LEADERBOARD OVERLAY */
 #lb-overlay {
   display:none; position:fixed; inset:0; background:var(--bg);
@@ -266,7 +276,7 @@ header {
 .lb-tabs { display:flex; gap:.4rem; padding:.6rem 1.2rem; flex-shrink:0; }
 .lb-tab { flex:1; border:1.5px solid var(--border); background:var(--surface); color:var(--muted); font-family:var(--font); font-size:.9rem; padding:.45rem 0; border-radius:6px; cursor:pointer; transition:all .15s; }
 .lb-tab.active { border-color:var(--accent); background:var(--accent); color:#fff; }
-.lb-list { flex:1; overflow-y:auto; padding:0 1.2rem 1.2rem; }
+.lb-list { flex:1; overflow-y:auto; padding:0 1.2rem .4rem; }
 .lb-row {
   display:flex; align-items:center; gap:.8rem;
   padding:.65rem .8rem; border-radius:10px;
@@ -287,6 +297,9 @@ header {
 .lb-acc { font-size:.85rem; color:var(--muted); min-width:2.5rem; text-align:right; }
 .lb-empty { text-align:center; color:var(--muted); font-size:1rem; padding:3rem 0; letter-spacing:.1em; }
 .lb-loading { text-align:center; color:var(--muted); font-size:.9rem; padding:2rem 0; letter-spacing:.12em; text-transform:uppercase; }
+
+/* lb footer sits at very bottom */
+#lb-overlay .site-footer { flex-shrink:0; }
 
 /* MODE PICKER MODAL */
 #mode-picker {
@@ -322,8 +335,6 @@ header {
   color:var(--muted); cursor:pointer; letter-spacing:.1em; text-transform:uppercase;
 }
 
-
-
 @media(min-width:600px){
   header{padding:1.4rem 2rem .7rem;}
   .modes,.stats-row,.words-wrap,.progress-wrap,.ad-slot{padding-left:2rem;padding-right:2rem;}
@@ -333,7 +344,7 @@ header {
 
 #app-spacer { display:none; }
 
-/* PULL TO REFRESH */
+/* PULL TO REFRESH — arc arrow */
 #ptr-indicator {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; justify-content:center;
@@ -344,7 +355,7 @@ header {
 #ptr-indicator svg {
   width:28px; height:28px;
   stroke:var(--accent); fill:none;
-  stroke-width:2.5; stroke-linecap:round;
+  stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;
   transition:transform .2s;
 }
 #ptr-indicator.pulling svg { animation:none; }
@@ -353,8 +364,14 @@ header {
 </style>
 </head>
 <body>
+<!-- Pull-to-refresh indicator: arc arrow (↻) drawn with SVG, no external assets -->
 <div id="ptr-indicator">
-  <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+  <svg viewBox="0 0 24 24">
+    <!-- Arc: 270° circle open at top-right -->
+    <path d="M12 4a8 8 0 1 0 7.4 5"/>
+    <!-- Arrowhead pointing clockwise at arc end -->
+    <polyline points="19.4 4.6 19.4 9 15 9"/>
+  </svg>
 </div>
 <div id="app">
 
@@ -372,6 +389,16 @@ header {
     <div style="width:100%;max-width:320px;margin-top:.4rem;">
       <div class="ad-placeholder" style="min-height:70px;">Advertisement</div>
     </div>
+    <!-- Footer on start screen -->
+    <footer class="site-footer" data-footer="start">
+      <a href="#" class="js-about">About</a>
+      <span class="footer-sep">·</span>
+      <a href="#" class="js-privacy">Privacy Policy</a>
+      <span class="footer-sep">·</span>
+      <a href="#" class="js-contact">Contact</a>
+      <span class="footer-sep">·</span>
+      <a href="#" id="pwa-install-btn-start" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">📲 Install</a>
+    </footer>
   </div>
 
   <!-- RESULT SCREEN -->
@@ -386,8 +413,7 @@ header {
       <div class="result-cell"><div class="v" id="r-chars">0</div><div class="l">Correct Chars</div></div>
       <div class="result-cell"><div class="v" id="r-time">0s</div><div class="l">Duration</div></div>
     </div>
-    <div class="ad-slot" style="width:100%;max-width:320px;margin-bottom:.4rem;">
-      <!-- AdSense: replace with your ad unit code -->
+    <div class="ad-slot" style="width:100%;max-width:320px;margin-bottom:.4rem;padding:0;">
       <div class="ad-placeholder" style="min-height:100px;">Advertisement</div>
     </div>
     <div class="nickname-row">
@@ -400,6 +426,16 @@ header {
       <button class="share-btn" id="share-btn">SHARE</button>
     </div>
     <button class="share-btn" id="result-lb-btn" style="width:100%;max-width:320px;margin-top:.3rem;text-align:center;">🏆 LEADERBOARD</button>
+    <!-- Footer on result screen -->
+    <footer class="site-footer" data-footer="result">
+      <a href="#" class="js-about">About</a>
+      <span class="footer-sep">·</span>
+      <a href="#" class="js-privacy">Privacy Policy</a>
+      <span class="footer-sep">·</span>
+      <a href="#" class="js-contact">Contact</a>
+      <span class="footer-sep">·</span>
+      <a href="#" id="pwa-install-btn-result" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">📲 Install</a>
+    </footer>
   </div>
 
   <!-- LEADERBOARD OVERLAY -->
@@ -416,6 +452,16 @@ header {
     <div class="lb-list" id="lb-list">
       <div class="lb-loading">Loading...</div>
     </div>
+    <!-- Footer on leaderboard -->
+    <footer class="site-footer" data-footer="lb">
+      <a href="#" class="js-about">About</a>
+      <span class="footer-sep">·</span>
+      <a href="#" class="js-privacy">Privacy Policy</a>
+      <span class="footer-sep">·</span>
+      <a href="#" class="js-contact">Contact</a>
+      <span class="footer-sep">·</span>
+      <a href="#" id="pwa-install-btn-lb" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">📲 Install</a>
+    </footer>
   </div>
 
   <!-- GAME UI -->
@@ -457,15 +503,13 @@ header {
       inputmode="text">
   </div>
 
-
-
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <a href="#" id="footer-about">About</a>
+  <!-- FOOTER (main game screen) -->
+  <footer class="site-footer" id="main-footer">
+    <a href="#" class="js-about">About</a>
     <span class="footer-sep">·</span>
-    <a href="#" id="footer-privacy">Privacy Policy</a>
+    <a href="#" class="js-privacy">Privacy Policy</a>
     <span class="footer-sep">·</span>
-    <a href="#" id="footer-contact">Contact</a>
+    <a href="#" class="js-contact">Contact</a>
     <span class="footer-sep">·</span>
     <a href="#" id="pwa-install-btn" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">📲 Install</a>
   </footer>
@@ -504,6 +548,14 @@ header {
       <li>Try the 60s mode to build stamina</li>
     </ul>
   </div>
+  <!-- Footer on about overlay -->
+  <footer class="site-footer" data-footer="about">
+    <a href="#" class="js-privacy">Privacy Policy</a>
+    <span class="footer-sep">·</span>
+    <a href="#" class="js-contact">Contact</a>
+    <span class="footer-sep">·</span>
+    <a href="#" id="pwa-install-btn-about" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">📲 Install</a>
+  </footer>
 </div>
 
 <!-- PRIVACY POLICY OVERLAY -->
@@ -548,6 +600,14 @@ header {
     <h2>Contact</h2>
     <p>If you have any questions about this Privacy Policy, please open an issue or discussion on our GitHub repository.</p>
   </div>
+  <!-- Footer on privacy overlay -->
+  <footer class="site-footer" data-footer="privacy">
+    <a href="#" class="js-about">About</a>
+    <span class="footer-sep">·</span>
+    <a href="#" class="js-contact">Contact</a>
+    <span class="footer-sep">·</span>
+    <a href="#" id="pwa-install-btn-privacy" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">📲 Install</a>
+  </footer>
 </div>
 
 <!-- MODE PICKER MODAL -->
@@ -567,11 +627,6 @@ header {
 <!-- Hidden canvas for share card generation -->
 <canvas id="share-canvas" width="800" height="420"></canvas>
 
-<!-- Pool data (updated daily by GitHub Actions — do not edit this line manually) -->
-<script>window._POOL_B64 = 'H4sIAHGk0GkC/41XyXLbRhD9lS5dIleRLFLRfklZm604tlWiHB2iHAbAkBgLmEFmIc18fV73ABSV2FW5iAI56OX169c9f+zdedc5q20M5BYUaxOodZXmh1AabUtNyi+Txk8qUrLKRlOaTkVd5QPRLExJhdfqOdbepWUd8Iam4FodTavZHh5XqkmqaMSOxR94SLF0/DtcqaW2lRpX3qy0Ja+DVr6sR1Rrr5rK2CWpaqUQTCBjCYdhuoQfiyCibqnUTUOFcY1bbkgF0t9U2zXZdrILxxZhuMCLC5NTHZzkxNZ4yXmzNFY1zYbkNL7qktd4RLgwAZeqYf+hdJ2e0IUuVQo646bxA6IFHjifEKmPynAqMXlLzuLnlQ6xxYERFU3S4/C8oc67r7qM/0asc40Rb7DFOQKnVvvSyBfJdq5LjfLyU9T8x1HjEMkiWQELz9v0OryoAWvF+RSaf5aCIDGDgkgMwERq4zyeVCmuJ/SgfWtsxvQBCUY8S+jEoW8d5CIuvGtJ0ezs5JiT9i50SAx+X2FdgWqM4Oz0+IxBWdcCrhgE89g4/DIJt69wZYwFHJJ8rJlhkTMsxLR1Qi1NRYrUaMGiVXZDDnY9VQbFWmlvMhfaBIuSfmU84iPUD4XMOfGZrVuE8FIPnKoQBAAowd6lFtzWJtYSvODytFeogEYYDDztTei9CdH5Dc1T1zkfCTwc8Hvlq0aKK4UYK+JYiZ2OKDX4RJ/BVaEBMlcupIL5wkmy5y1PuIhojjBicEuXbJSMA6cL43z2CzCEg3mESZzb+eoDLFeuHQmfbsEgNaHflbUaMdFFCvVPAXU9PELAnMaI5lkYzoUV17ZCowW68Q5aoP0I8Fda7LNwMOElcf4iVwp1eI0VB53TCXENn2j6HMy6j52PB7EipVVdp1UTBhQWumKZ2LL/P/YnEujs7OiEGoXerPnIvEvRmmdGru0Yhv+ARG+NpxuH9qHPC4icRD5/0bz7rYI4ChDR8IPygjg50NnZ8TSAbpv+6WSKQiwgOZZbG0rmIRnoAp853sFCgABxo3SpaOBSf+vQ7yb230rr5GKIJR/igOWXD1ke8O8nza3Q4DFkWIshgLOp6Ok7EFhwtd9BYQJK4OjpdEQXdwQJA/lNqFlPfpAt96p0PgtYD+zvAI2D3mLGPljfwRUJqFMeTIYGdfUGtUPn0JWDGFd04RV0e9J/gt0gN7dJyIqAjoQXNGUFqUPzeL0yej2wvtXcsSa0wp5t9EyTni4j0m2HDjR/i3Iyorph6QK+O9IFf1ArFtmOJ2Zg/j3todUQoVdVL9ZZHsTKWkEi+F9jn0kVmHZZUMS3abmTMEsnT3uM78F0ejSij8o/06NqcpdlhULU/Xx5xIxjraUHn4AOFws5YS4QZvgCVMlHP2oEYyCzmGq3LdSfqXXpgNESovKbs9DgEaLzVkqDU/obSwcXrEciMLe+P5IpZ/xVOxQM4spoeaZkZ6JL4dWYDrsy8Y5LZkUNWN1NL+JI0S0t25ER2sNSvt4/ZMyVdR5FI1H62x5YI+YUtSCMetYiCVBctgycxwsxwJUOIgJgoBxH0IbDrbhcvl8BUDODNSJwi2FIWL2RzhtGtBziOS1yt3SuQmtk90VwTRKlftabfHAQI9NPD9aIfgyIooGKw/4UYHw7TOQHU2mFgB9rII9G3gUfUtEwuuiBKpXShV7/lcAVwVZ8Lz2YxSoJyVBMZH6hbBJkWdHBuENpITZobnml1xEUwmLIlFwErAAD6zLb4Wft/PMIRN2JetSb5TwhJsf0yRW6YY3FNhg1zaGf75V3IMwH76ID7fDBQfRy1ugYGX5HDzJn34MWeL5GZhI3N3ulWzt05m6msheh6aSVeXF5aX7uVdg0S8uTXiZRBdE0rCdYQUoZSuJgQu8Yq9BvWXbBZGb6fkGGDbJFvszee7fBq3OH1OMm4wtIUsduZiAfwmCqOCYab6RewsIMTSILaAZYcfQxechb3jfmIpsKjdhzM/+fZ54T/kBgXtag2uStBFEG8MNnTvES1K+tkgN6GYnCt6xDqnwWticeX1w1Aj6V9AQmpB5mBZYIDFDR52yyZ2pW5sjy1oOXmRUghygXa9eDjJoxW6uwCiAQlCHnXtGdSDkD18+oF/m/zEym/eu7+f3lG8JC7WXmKmYc3LS70+P26vrtnG4Uy+FmJJuYrTIAPL6ZU9i/+s10RGVCdwcTN2M2sN0C+nBlj7Oqz+izX/J8yHRjHl0PfXDpxjkq/oXTudIr3bhO2Lf/+fry6g3V4DbH/LTX13TDC0Nq4QqHIUQV7ggVVsx5XtwCfV73CzpfQ/rBQVbAH70s14P0tWpnwJEqS9396+IFGYaRZZspvNUF4t/l7mIxDBdGc5ysqTFVG9GtWq4D2vZ3l9AZ/wKCRYt4Fkju+rArxvCZG6c38bIkizGAh6sPj5asaK7je9qwhyaLBabBksPDGuKGd63arh0vwrNImYyD6HOnJGxY8CYdiDUGWwdw/CtBLkXgBhdPe+/dGmHzlALzYVGXXi0i05iXBi1rCxqDa5dny1rmQn7FsMTzyMv+Gq1WouLxF5RUSUs+8pDgeJM12SLIOOK7k4wPWPjK8xmZSkPyQo/hL32elxCmH8jJFucaITTB0VsW66GygPnWYhvMOtXw9nLHeOA2gMZTcvUdXtj97l5v9WvukufPC4WLosJufzeh/V8V9AiknGGXg16fvZkgnWs0t+Ml4Xy4B212LjG0f3d1g3OXyfPddujkCeGatz97c06zCdzybYNvmDe68OLh4GceFdMzbG0GSs8NLcInK9xo2OweEdPBdHYI+3fSxoPO32FZRYUum1ScE9ezwrWdlWcDJGsIAIJZyWX71X7GeDemECWphvJAuoBDqZjYrMysGIHXosi6zIZ5223QFL+62hKqq/MmPGda3doSVJ9ffKKzk9PxbDybnY6PDo8PD8bTyffTmUo64GQvhIPkndNbujcBCx6UtaYHxQT+P06n48OT2fjw9PToYDz7kdNTON25mtx4rXGl629ojflmZDe8NCvTmL/70ff/XE/HBwfHR4fjw8nen/8APU3VnC8SAAA=';</script>
-
-<!-- Firebase -->
-
 <!-- PWA: inline manifest via data URI -->
 <script>
 (function(){
@@ -590,34 +645,27 @@ header {
     ]
   };
   const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
-  const url  = URL.createObjectURL(blob);
-  document.getElementById('pwa-manifest').href = url;
+  document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
   document.getElementById('pwa-apple-icon').href = icon;
 
-  // Service Worker: intentionally not registered.
-  // GitHub Pages has its own CDN; SW caching would prevent users from
-  // receiving updates without manual cache clearing. Manifest alone is
-  // sufficient for PWA installability.
-
-  // Unregister any previously registered SW so existing users get updates
+  // Unregister any previously registered SW
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(r => r.unregister());
-    });
+    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
   }
 
-  // PWA install prompt — show "Install App" button when browser supports it
+  // PWA install prompt
   let _deferredInstallPrompt = null;
+  const INSTALL_BTN_IDS = ['pwa-install-btn','pwa-install-btn-start','pwa-install-btn-result','pwa-install-btn-lb','pwa-install-btn-about','pwa-install-btn-privacy'];
+  function setInstallBtns(visible){
+    INSTALL_BTN_IDS.forEach(id=>{ const b=document.getElementById(id); if(b) b.style.display=visible?'inline-block':'none'; });
+  }
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     _deferredInstallPrompt = e;
-    // Show install button in footer if not already installed
-    const btn = document.getElementById('pwa-install-btn');
-    if (btn) btn.style.display = 'inline-block';
+    setInstallBtns(true);
   });
   window.addEventListener('appinstalled', () => {
-    const btn = document.getElementById('pwa-install-btn');
-    if (btn) btn.style.display = 'none';
+    setInstallBtns(false);
     _deferredInstallPrompt = null;
   });
   window._triggerInstall = function() {
@@ -647,145 +695,23 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // ══════════════════════════════════════════════════════
-// PASSAGE ENGINE  v3
-// Sources: Wikipedia 80% / Gutenberg 20%
-// 500 articles hardcoded as PASSAGE_POOL_DATA.
-// Runtime pool: drawn from PASSAGE_POOL_DATA (shuffled),
-//   topped up from live Wikipedia/Gutenberg fetches.
-// Used-one → replenish-one immediately.
-// Fallback: remaining hardcoded stock only (no AI API).
+// PASSAGE ENGINE  v4  — passages.json architecture
+// ══════════════════════════════════════════════════════
+// allPassages  : full 10000-item array loaded once
+// localPool    : 20 randomly picked passages ready to use
+// poolIndex    : next index in allPassages to draw from (after shuffle)
+//
+// On page load  → fetch passages.json, shuffle, fill localPool with 20
+// Per game      → pop 1 from localPool, refill with 1 more from allPassages
+// New game      → always picks a fresh passage (no cross-game continuity)
 // ══════════════════════════════════════════════════════
 
-// ─────────────────────────────────────────────────────
-// SHARED HELPERS
-// ─────────────────────────────────────────────────────
-function cleanText(text) {
-  return text
-    // Normalise curly quotes/apostrophes
-    .replace(/[""]/g, '"')
-    .replace(/['']/g, "'")
-    // Remove wiki/markup-specific tokens: anything containing \^_{}<>|
-    .replace(/\S*[\\^_{}<>|]\S*/g, ' ')
-    // Remove clearly non-prose characters:
-    // keep letters, digits, and all common prose punctuation ( ) , . ! ? ; : ' " - – — & %
-    .replace(/[^\w\s(),.!?;:'""\-–—&%]/g, ' ')
-    // Collapse runs of whitespace
-    .replace(/\s+/g, ' ')
-    .trim();
-}
+let allPassages = [];       // all 10000 passages (shuffled)
+let poolCursor  = 0;        // next draw position in allPassages
+const localPool = [];       // up to 20 pre-picked passages
+const LOCAL_POOL_SIZE = 20;
+let passagesReady = false;  // true once fetch completes
 
-// SAFE_STARTERS: words that legitimately begin a sentence with a capital
-const SAFE_STARTERS = new Set(['The','A','An','In','It','He','She','They','We','This','That',
-  'These','Those','There','When','While','Although','Since','If','As','At','By','On','For',
-  'With','From','After','Before','During','Despite','Because','However','Moreover',
-  'Furthermore','Therefore','Thus','Hence','Indeed','Nevertheless','Nonetheless','Upon',
-  'Once','Without','Within','Among','Between','Through','Under','Over','Into','Across',
-  'Against','Along','Around','Behind','Beyond','Except','Like','Near','Past','Toward',
-  'Until','Via','Such','Both','Each','All','Some','Many','Most','Few','No','Not','So',
-  'But','And','Or','Yet','Nor','Even']);
-
-// Strip Wikipedia section-heading prefix glued onto paragraph body.
-// Wikipedia's explaintext mode emits section headings as plain text on the
-// same "paragraph" as the first sentence of that section, e.g.:
-//   "Flash point A material's flash point is a metric of..."
-//   "Late medieval concepts of the soul The term 'Seelengrund'..."
-// Strategy: find the earliest position where a new sentence plausibly begins
-// (capital letter preceded by a space) and treat everything before it as heading.
-function stripHeadingPrefix(p) {
-  const MAX_HEADING = 120;
-  for (let i = 1; i < Math.min(p.length - 1, MAX_HEADING + 1); i++) {
-    if (p[i - 1] !== ' ') continue;
-    if (!/[A-Z]/.test(p[i])) continue;
-    const prefix = p.slice(0, i - 1);
-    // If prefix already contains sentence-ending punctuation → it's prose, stop
-    if (/[.!?]/.test(prefix)) return p;
-    // If prefix contains a comma → likely prose, not a heading
-    if (/,/.test(prefix)) return p;
-    const prefixWords = prefix.trim().split(/\s+/);
-    // Heading must be 1–10 words (expanded from 7 to catch longer sub-headings)
-    if (prefixWords.length < 1 || prefixWords.length > 10) continue;
-    // First word of the PREFIX must not be a safe sentence-starter
-    // (e.g. "In this period The..." — "In" is a SAFE_STARTER so it's real prose)
-    if (SAFE_STARTERS.has(prefixWords[0])) return p;
-    // Passed all checks: strip the heading prefix
-    return p.slice(i).trimStart();
-  }
-  return p;
-}
-
-// Additional check: if after cleanText the paragraph still begins with a quoted fragment
-// (e.g. starts with a curly or straight apostrophe/quote carried over from source),
-// strip the leading quote character so isGoodParagraph can reject it properly.
-function stripLeadingQuote(p) {
-  return p.replace(/^['"""'']+/, '').trimStart();
-}
-
-function isGoodParagraph(p) {
-  if (p.length < 200 || p.length > 1400) return false;
-  // Must start with a capital letter — reject anything starting with a quote, apostrophe, or non-letter
-  if (!/^[A-Z]/.test(p)) return false;
-  // Reject paragraphs that are a direct quotation (start with any quote character)
-  if (/^['"""'']/.test(p)) return false;
-  if (/^[A-Z0-9\s\-:]{6,}$/.test(p)) return false;
-  if (/^(CHAPTER|BOOK|PART|SECTION|Chapter|Book|Part|Article)\b/i.test(p)) return false;
-  if (!/[.!?]/.test(p)) return false;
-  if (/^([A-Z][^\s.]{0,30}\s){1,4}\1/.test(p)) return false;
-  const fse = p.search(/[.!?]/);
-  if (fse > 0 && fse < 80 && / - /.test(p.slice(0, fse))) return false;
-  // Reject Gutenberg license / boilerplate
-  if (/Project Gutenberg|gutenberg\.org|trademark license|electronic work[s]? (by|to|from)/i.test(p)) return false;
-  // Reject Socratic dialogue speaker labels
-  if (/^(SOCRATES|ION|STRANGER|MENO|GLAUCON|THRASYMACHUS|ADEIMANTUS|CRITO|PHAEDO|THEODORUS|THEAETETUS|TIMAEUS|CRITIAS):/i.test(p)) return false;
-
-  const tokens = p.split(/\s+/);
-  if (tokens.length < 30) return false;
-
-  // Reject name-list: 4+ consecutive Title-case words
-  let capRun = 0, maxCapRun = 0;
-  for (const t of tokens) {
-    if (/^[A-Z][a-z]+$/.test(t)) { capRun++; maxCapRun = Math.max(maxCapRun, capRun); }
-    else capRun = 0;
-  }
-  if (maxCapRun >= 4) return false;
-
-  // Reject formula/math remnants: single-letter tokens (H q V i j etc.)
-  const singleLetters = tokens.filter(t => /^[a-zA-Z]$/.test(t));
-  if (singleLetters.length / Math.max(tokens.length, 1) > 0.06) return false;
-
-  // Reject known math/formula keywords and symbols
-  const bad = tokens.filter(t =>
-    /[=\\^_{}|<>+*\/]/.test(t) ||
-    /^\d+(\.\d+)?$/.test(t) ||
-    /\b(displaystyle|textstyle|mathrm|operatorname|frac|sum|int|lim|sqrt|cdot|times|leq|geq|neq|approx|equiv|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|pi|rho|sigma|tau|upsilon|phi|chi|psi|omega|infty|partial|nabla|forall|exists|subset|supset|mathbb|mathcal|boldsymbol|vec|hat|bar|tilde|log|exp|sin|cos|tan|ln)\b/i.test(t)
-  );
-  if (bad.length / Math.max(tokens.length, 1) > 0.04) return false;
-
-  // Require high proportion of normal prose words (letters only, optionally with ' or -)
-  const wt = tokens.filter(t => /^[a-zA-Z][a-zA-Z'\-]*$/.test(t));
-  if (wt.length / Math.max(tokens.length, 1) < 0.78) return false;
-
-  // Average word length should be in normal prose range
-  const avg = wt.reduce((s, t) => s + t.length, 0) / Math.max(wt.length, 1);
-  if (avg < 3.5 || avg > 10) return false;
-
-  // Reject non-English: any word containing non-ASCII characters
-  // catches French (é à ç), German (ü ö ä), Sanskrit transliterations, etc.
-  const hasNonAscii = tokens.some(t => /[^\x00-\x7F]/.test(t));
-  if (hasNonAscii) return false;
-
-  // Reject dialogue/play format: ALLCAPS speaker tags like "STRANGER: ..." or "YOUNG SOCRATES: ..."
-  if (/^[A-Z]{2,}[A-Z\s]*:/.test(p)) return false;
-  const dialogueTurns = (p.match(/\b[A-Z]{3,}[A-Z\s]*:/g) || []).length;
-  if (dialogueTurns >= 2) return false;
-
-  return true;
-}
-
-// ─────────────────────────────────────────────────────
-// HARDCODED POOL  (inline, updated daily by GitHub Actions)
-// Uses DecompressionStream with top-level await — guaranteed ready
-// before any game code runs.
-// ─────────────────────────────────────────────────────
 function shuffleArray(a) {
   const b = [...a];
   for (let i = b.length - 1; i > 0; i--) {
@@ -794,415 +720,168 @@ function shuffleArray(a) {
   }
   return b;
 }
-let PASSAGE_POOL_DATA = [];
-const hardPool = await (async () => {
-  try {
-    const b64 = window._POOL_B64 || '';
-    if (!b64) return [];
-    const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-    const ds = new DecompressionStream('gzip');
-    const writer = ds.writable.getWriter();
-    writer.write(bin); writer.close();
-    const chunks = [];
-    const reader = ds.readable.getReader();
-    while (true) {
-      const {done, value} = await reader.read();
-      if (done) break;
-      chunks.push(value);
-    }
-    const total = chunks.reduce((s,c) => s + c.length, 0);
-    const buf = new Uint8Array(total);
-    let off = 0;
-    for (const c of chunks) { buf.set(c, off); off += c.length; }
-    PASSAGE_POOL_DATA = JSON.parse(new TextDecoder().decode(buf));
-    return shuffleArray(PASSAGE_POOL_DATA);
-  } catch(e) { console.warn('Pool decompress error', e); return []; }
-})();
 
-
-
-// ─────────────────────────────────────────────────────
-// WIKIPEDIA live fetch
-// ─────────────────────────────────────────────────────
-const WIKI_CATEGORIES = [
-  // Subject areas — math, science, philosophy only
-  'Mathematics','Physics','Chemistry','Biology','Astronomy',
-  'Neuroscience','Computer_science','Philosophy','Logic',
-  'Epistemology','Ethics','Metaphysics','Statistics',
-  'Thermodynamics','Evolution','Genetics',
-  'Geology','Cosmology',
-  'History_of_science','History_of_mathematics',
-  'Philosophy_of_mind','Philosophy_of_science',
-  'Cognitive_science','Biochemistry','Quantum_mechanics',
-  'Number_theory','Topology','Mathematical_analysis',
-  // Personal pages — mathematicians, scientists, philosophers
-  '20th-century_mathematicians','21st-century_mathematicians',
-  '19th-century_mathematicians','Ancient_Greek_mathematicians',
-  'German_mathematicians','French_mathematicians',
-  '20th-century_physicists','19th-century_physicists',
-  'Nobel_Prize_in_Physics_laureates','Nobel_Prize_in_Chemistry_laureates',
-  'Ancient_Greek_philosophers','German_philosophers','French_philosophers',
-  'British_philosophers','Analytic_philosophers','Continental_philosophers',
-];
-
-async function fetchWikiPassage() {
-  try {
-    const cat = WIKI_CATEGORIES[Math.floor(Math.random() * WIKI_CATEGORIES.length)];
-    const catRes = await fetch(
-      `https://en.wikipedia.org/w/api.php?action=query&list=categorymembers` +
-      `&cmtitle=Category:${encodeURIComponent(cat)}&cmlimit=50&cmtype=page&format=json&origin=*`);
-    if (!catRes.ok) throw new Error();
-    const members = (await catRes.json()).query?.categorymembers?.filter(m => m.ns === 0) || [];
-    if (!members.length) throw new Error();
-    for (let i = 0; i < 4; i++) {
-      const page = members[Math.floor(Math.random() * members.length)];
-      const extRes = await fetch(
-        `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(page.title)}` +
-        `&prop=extracts&explaintext=1&exsectionformat=plain&format=json&origin=*`);
-      if (!extRes.ok) continue;
-      const full = (Object.values((await extRes.json()).query?.pages || {})[0]?.extract || '').replace(/\r/g,'');
-      if (!full) continue;
-      // Strip section headings: lines with no sentence-ending punctuation and < 80 chars
-      const stripped = full
-        .split('\n')
-        .filter(line => {
-          const t = line.trim();
-          if (!t) return true; // keep blank lines (paragraph separators)
-          if (t.length < 80 && !/[.!?]/.test(t)) return false; // heading-like line
-          return true;
-        })
-        .join('\n');
-      const paras = stripped.split(/\n\n+/)
-        .map(p => stripHeadingPrefix(stripLeadingQuote(cleanText(p.replace(/\n/g,' ').replace(/\s+/g,' ').trim()))))
-        .filter(isGoodParagraph);
-      if (paras.length < 3) continue;
-      const s = Math.floor(Math.random() * paras.length);
-      return paras.slice(s).concat(paras.slice(0, s));
-    }
-  } catch(e) {}
-  return null;
+function drawOne() {
+  // Draw the next passage from allPassages (wrap around)
+  if (!allPassages.length) return null;
+  const p = allPassages[poolCursor % allPassages.length];
+  poolCursor++;
+  return p;
 }
 
-// ─────────────────────────────────────────────────────
-// GUTENBERG live fetch
-// ─────────────────────────────────────────────────────
-const GUTENBERG_IDS = [
-  1228,   // The Republic - Plato
-  2300,   // Discourse on Method - Descartes
-  5827,   // On the Origin of Species - Darwin
-  2940,   // Tractatus Logico-Philosophicus - Wittgenstein
-  14474,  // Principia Ethica - G.E. Moore
-  1404,   // Leviathan - Hobbes
-  7370,   // The World as Will and Representation - Schopenhauer
-  10615,  // The Problems of Philosophy - Russell
-  4683,   // Pragmatism - William James
-  5740,   // The Critique of Pure Reason - Kant
-  1738,   // An Enquiry Concerning Human Understanding - Hume
-  9662,   // Meditations on First Philosophy - Descartes
-  1643,   // The Principles of Mathematics - Russell
-  3296,   // Essays - Francis Bacon
-  8438,   // The Metaphysics of Morals - Kant
-  689,    // The Descent of Man - Darwin
-  15776,  // Mysticism and Logic - Russell
-  4280,   // The Ethics - Spinoza
-  1497,   // The Republic - Plato (alt)
-  36034,  // The Advancement of Learning - Francis Bacon
-  10827,  // On Liberty - John Stuart Mill
-  34901,  // A System of Logic - John Stuart Mill
-  5550,   // The Origin and Development of the Moral Ideas - Westermarck
-  21280,  // The Philosophy of History - Hegel
-];
+function refillPool() {
+  while (localPool.length < LOCAL_POOL_SIZE) {
+    const p = drawOne();
+    if (!p) break;
+    localPool.push(p);
+  }
+}
 
-async function fetchGutenbergPassage() {
+// Fetch passages.json once at load
+(async function loadPassages() {
   try {
-    const id = GUTENBERG_IDS[Math.floor(Math.random() * GUTENBERG_IDS.length)];
-    const res = await fetch(`https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`);
-    if (!res.ok) throw new Error();
-    let full = (await res.text()).replace(/\r/g,'');
-    // Strip Gutenberg header up to and including the START marker line
-    const startM = full.search(/\*{3}\s*START OF (THE|THIS) PROJECT GUTENBERG/i);
-    if (startM >= 0) full = full.slice(full.indexOf('\n', startM) + 1);
-    // Strip Gutenberg footer from END marker onward
-    const endM = full.search(/\*{3}\s*END OF (THE|THIS) PROJECT GUTENBERG|^End of (the |this )?Project Gutenberg/im);
-    if (endM > 0) full = full.slice(0, endM);
-    // Also trim last 2000 chars (often contains license summary even without marker)
-    if (full.length > 8000) full = full.slice(0, full.length - 2000);
-    const bs = Math.max(2000, full.indexOf('\n\n\n', 1000));
-    const be = full.length;
-    if (be <= bs + 2000) throw new Error();
-    const ws = bs + Math.floor(Math.random() * Math.max(1, be - 20000 - bs));
-    const we = Math.min(ws + 20000, be);
-    const b  = full.indexOf('\n\n', ws);
-    const sl = full.slice(b > 0 ? b : ws, we);
-    const paras = sl.split(/\n\n+/)
-      .map(p => stripHeadingPrefix(stripLeadingQuote(cleanText(p.replace(/\n/g,' ').replace(/\s+/g,' ').trim()))))
-      .filter(isGoodParagraph);
-    if (paras.length < 2) throw new Error();
-    const s = Math.floor(Math.random() * paras.length);
-    return paras.slice(s).concat(paras.slice(0, s));
-  } catch(e) {}
-  return null;
-}
-
-// ─────────────────────────────────────────────────────
-// RUNTIME POOL MANAGER
-// Starts filled with shuffled hardcoded data.
-// Every time one article is consumed, one live fetch is
-// fired immediately to replenish.
-// ─────────────────────────────────────────────────────
-// ─────────────────────────────────────────────────────
-// TWO-TIER POOL
-//   livePool  — freshly fetched articles (preferred)
-//   hardPool  — hardcoded 500-article backup
-// loadNextArticle() always prefers livePool first.
-// Each article consumed → one live fetch fired immediately.
-// On new-game start → one extra fetch fired so next game
-// is more likely to get a brand-new article.
-// ─────────────────────────────────────────────────────
-
-const livePool = [];  // filled by background fetches
-
-async function replenishOne() {
-  // Wikipedia 80%, Gutenberg 20%
-  const paras = Math.random() < 0.8
-    ? await fetchWikiPassage()
-    : await fetchGutenbergPassage();
-  if (paras && paras.length) livePool.push(paras);
-}
-
-// Pre-warm: 4 fetches fire immediately for fast first-game readiness.
-// Remaining slots filled lazily (1 per 800ms) to avoid API flooding
-// when many users load the page simultaneously.
-(async function prewarm() {
-  const TARGET = 20;
-  for (let i = 0; i < TARGET; i++) {
-    if (livePool.length >= TARGET) break; // already full (e.g. fast network)
-    replenishOne();
-    // First 4: fast burst. After that: slow drip to be a good API citizen.
-    const delay = i < 4 ? 80 : 800;
-    await new Promise(r => setTimeout(r, delay));
+    const res = await fetch('passages.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) throw new Error('empty');
+    allPassages = shuffleArray(data);
+    poolCursor = 0;
+    refillPool();
+    passagesReady = true;
+  } catch(e) {
+    console.error('Failed to load passages.json:', e);
+    // passagesReady stays false; GO button will show a message
   }
 })();
 
-// ─────────────────────────────────────────────────────
-// ARTICLE QUEUE  — paragraphs of the current article
-// ─────────────────────────────────────────────────────
-let currentArticleQueue = [];
+// Get one passage for the current game and immediately refill pool
+function getPassage() {
+  if (localPool.length === 0) refillPool();
+  const raw = localPool.shift() || '';
+  refillPool(); // top back up to 20
+  return raw;
+}
 
-function passageToWords(paragraph) {
-  // paragraph already went through cleanText + isGoodParagraph filtering.
-  // Merge orphaned punctuation (e.g. " . " or " , ") back onto the preceding word.
-  const normalized = paragraph
+// ─────────────────────────────────────────────────────
+// PASSAGE → WORDS
+// ─────────────────────────────────────────────────────
+function passageToWords(passage) {
+  const normalized = passage
     .replace(/\s+/g, ' ')
     .trim()
-    .replace(/ ([.!?,;:])/g, '$1'); // attach lone punctuation to previous word
+    .replace(/ ([.!?,;:])/g, '$1');
   return normalized
     .split(' ')
     .filter(w => {
       if (!w.length) return false;
-      // Must contain at least one letter
       if (!/[a-zA-Z]/.test(w)) return false;
-      // Skip single isolated letters (formula variables: H, q, x, …)
       if (/^[a-zA-Z]$/.test(w)) return false;
       return true;
     });
 }
 
-function loadNextArticle() {
-  // Prefer freshly-fetched live articles; fall back to hardcoded stock
-  let article;
-  if (livePool.length > 0) {
-    const idx = Math.floor(Math.random() * livePool.length);
-    article = livePool.splice(idx, 1)[0];
-  } else {
-    const idx = Math.floor(Math.random() * hardPool.length);
-    article = hardPool[idx]; // cycle, don't splice — hardPool never empties
+// ─────────────────────────────────────────────────────
+// GAME STATE
+// ─────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+let words = [], curWord = 0, timer = null;
+let timeLeft = 15, totalTime = 15;
+let correctChars = 0, totalTyped = 0, errors = 0;
+let active = false, done = false, startTime = null;
+let lastVal = '';
+let lastResult = {wpm:0, acc:'—', errors:0, chars:0};
+
+const inp = $('ghost-input');
+
+function genWords() {
+  const passage = getPassage();
+  words = passageToWords(passage);
+  // Safety: if somehow empty, try once more
+  if (!words.length) {
+    const p2 = getPassage();
+    words = passageToWords(p2);
   }
-  // Filter out paragraphs starting with a quote character or heading-like short text
-  const cleaned = (article || []).filter(p => {
-    const t = (typeof p === 'string' ? p : '').trimStart();
-    if (!t) return false;
-    if (/^['"""\u2018\u2019\u201c\u201d]/.test(t)) return false;
-    return isGoodParagraph(stripHeadingPrefix(t));
-  });
-  const validParas = cleaned.length >= 2 ? cleaned : (article || []).filter(p => typeof p === 'string' && p.trim());
-  if (!validParas.length) { replenishOne(); return; }
-  // Start from a random paragraph so we don't always begin at the article opening
-  const startIdx = validParas.length > 1 ? Math.floor(Math.random() * validParas.length) : 0;
-  currentArticleQueue = validParas.slice(startIdx).concat(validParas.slice(0, startIdx));
-  // Used one article → immediately fire a fetch to replenish livePool
-  replenishOne();
 }
 
-// Merge consecutive paragraphs until we have enough words for the longest game mode.
-// 60s @ ~100 WPM worst case ≈ 600 words; use 650 as a comfortable buffer.
-// Strategy: drain the CURRENT article first (no mid-game cross-article jumps).
-// Only pull from next article if the current one is truly exhausted.
-const MIN_GAME_WORDS = 650;
-
-function getPassageWords() {
-  if (currentArticleQueue.length === 0) loadNextArticle();
-
-  const combined = [];
-
-  // Phase 1: drain current article paragraphs
-  while (currentArticleQueue.length > 0 && combined.length < MIN_GAME_WORDS) {
-    let para = currentArticleQueue.shift();
-    // Skip quote-starting paragraphs within the same article
-    while (para && /^['"""\u2018\u2019\u201c\u201d]/.test((para || '').trimStart())) {
-      para = currentArticleQueue.length > 0 ? currentArticleQueue.shift() : null;
-    }
-    if (!para) break;
-    const w = passageToWords(para);
-    if (w.length > 0) combined.push(...w);
-  }
-
-  // Phase 2: if still short, pull from next article(s) — only when truly needed
-  let safetyBreak = 0;
-  while (combined.length < MIN_GAME_WORDS && safetyBreak++ < 5) {
-    loadNextArticle();
-    while (currentArticleQueue.length > 0 && combined.length < MIN_GAME_WORDS) {
-      let para = currentArticleQueue.shift();
-      while (para && /^['"""\u2018\u2019\u201c\u201d]/.test((para || '').trimStart())) {
-        para = currentArticleQueue.length > 0 ? currentArticleQueue.shift() : null;
-      }
-      if (!para) break;
-      const w = passageToWords(para);
-      if (w.length > 0) combined.push(...w);
-    }
-  }
-
-  return combined;
-}
-
-function resetArticleForNewGame() {
-  currentArticleQueue = [];
-  loadNextArticle();
-  // Fire extra fetches so livePool stays well-stocked (target: 20 live articles)
-  const needed = Math.max(0, 20 - livePool.length);
-  for (let i = 0; i < Math.min(needed + 2, 6); i++) replenishOne();
-}
-
-
-const $=id=>document.getElementById(id);
-let words=[],curWord=0,timer=null;
-let timeLeft=15,totalTime=15;
-let correctChars=0,totalTyped=0,errors=0;
-let active=false,done=false,startTime=null;
-let lastVal='';
-let lastResult={wpm:0,acc:'—',errors:0,chars:0};
-
-const inp=$('ghost-input');
-
-function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
-function genWords(){ resetArticleForNewGame(); words=getPassageWords(); }
-
-function render(){
-  const d=$('word-display');
-  // Each word is wrapped in a word-unit span (inline, nowrap) so it never breaks mid-word
-  d.innerHTML=words.map((w,wi)=>{
-    const chars=(w+' ').split('').map((c,ci)=>
-      `<span class="char" id="c${wi}_${ci}">${c===' '?'&nbsp;':c}</span>`
+function render() {
+  const d = $('word-display');
+  d.innerHTML = words.map((w, wi) => {
+    const chars = (w + ' ').split('').map((c, ci) =>
+      `<span class="char" id="c${wi}_${ci}">${c === ' ' ? '&nbsp;' : c}</span>`
     ).join('');
     return `<span class="word-unit">${chars}</span>`;
   }).join('');
-  d.style.marginTop='0';
+  d.style.marginTop = '0';
   setCursor();
-  // snap first word to top of clip after layout
-  requestAnimationFrame(()=>scrollToCurrent());
+  requestAnimationFrame(() => scrollToCurrent());
 }
 
-function el(wi,ci){return document.getElementById(`c${wi}_${ci}`);}
+function el(wi, ci) { return document.getElementById(`c${wi}_${ci}`); }
 
-function setCursor(){
-  document.querySelectorAll('.char.cursor').forEach(e=>e.classList.remove('cursor'));
-  const pos=Math.min(lastVal.length,(words[curWord]||'').length);
-  const e2=el(curWord,pos);
-  if(e2)e2.classList.add('cursor');
+function setCursor() {
+  document.querySelectorAll('.char.cursor').forEach(e => e.classList.remove('cursor'));
+  const pos = Math.min(lastVal.length, (words[curWord] || '').length);
+  const e2 = el(curWord, pos);
+  if (e2) e2.classList.add('cursor');
 }
 
-function colorWord(wi,t){
-  const word=words[wi]+' ';
-  for(let i=0;i<word.length;i++){
-    const e2=el(wi,i);
-    if(!e2)continue;
-    e2.classList.remove('correct','wrong');
-    if(i<t.length)e2.classList.add(t[i]===word[i]?'correct':'wrong');
+function colorWord(wi, t) {
+  const word = words[wi] + ' ';
+  for (let i = 0; i < word.length; i++) {
+    const e2 = el(wi, i);
+    if (!e2) continue;
+    e2.classList.remove('correct', 'wrong');
+    if (i < t.length) e2.classList.add(t[i] === word[i] ? 'correct' : 'wrong');
   }
 }
 
-function scrollToCurrent(){
-  // Use the first char span of curWord to get accurate offsetTop
+function scrollToCurrent() {
   const firstChar = el(curWord, 0);
-  if(!firstChar) return;
+  if (!firstChar) return;
   const d = $('word-display');
-  // word-display has position:relative, so firstChar.offsetParent === word-display
-  // offsetTop gives us the line's top relative to word-display
   const lineTop = firstChar.offsetTop;
   d.style.marginTop = `-${lineTop}px`;
 }
 
-function updateLive(){
-  const elapsed=startTime?(Date.now()-startTime)/60000:0;
-  const wpm=elapsed>0?Math.round((correctChars/5)/elapsed):0;
-  const acc=totalTyped>0?Math.round(correctChars/totalTyped*100):'—';
-  $('wpm-live').textContent=wpm;
-  $('acc-live').textContent=acc;
-  $('err-live').textContent=errors;
+function updateLive() {
+  const elapsed = startTime ? (Date.now() - startTime) / 60000 : 0;
+  const wpm = elapsed > 0 ? Math.round((correctChars / 5) / elapsed) : 0;
+  const acc = totalTyped > 0 ? Math.round(correctChars / totalTyped * 100) : '—';
+  $('wpm-live').textContent = wpm;
+  $('acc-live').textContent = acc;
+  $('err-live').textContent = errors;
 }
 
-function advance(typedVal){
-  const word=words[curWord]||'';
-  const len=Math.max(typedVal.length,word.length);
-  for(let i=0;i<len;i++){
-    if(i<typedVal.length&&typedVal[i]===word[i])correctChars++;
-    else if(i<typedVal.length)errors++;
+function advance(typedVal) {
+  const word = words[curWord] || '';
+  const len = Math.max(typedVal.length, word.length);
+  for (let i = 0; i < len; i++) {
+    if (i < typedVal.length && typedVal[i] === word[i]) correctChars++;
+    else if (i < typedVal.length) errors++;
   }
-  // count the space as a correct char (word separator)
   correctChars++;
-  totalTyped+=typedVal.length+1;
-  colorWord(curWord,typedVal+' ');
+  totalTyped += typedVal.length + 1;
+  colorWord(curWord, typedVal + ' ');
   curWord++;
-  lastVal='';
-  inp.value='';
-  if(curWord>words.length-20){
-    // Top up from the SAME article's remaining paragraphs only — never cross to a new article mid-game.
-    // If currentArticleQueue is exhausted, just let getPassageWords() handle it next game.
-    const extra = [];
-    while(currentArticleQueue.length > 0 && extra.length < 80) {
-      let para = currentArticleQueue.shift();
-      // skip quote-starting paragraphs
-      while(para && /^['"""\u2018\u2019\u201c\u201d]/.test((para||'').trimStart())) {
-        para = currentArticleQueue.length > 0 ? currentArticleQueue.shift() : null;
-      }
-      if(!para) break;
-      const w = passageToWords(para);
-      extra.push(...w);
-    }
-    // If the article is truly exhausted and we still need more words, load next article now
-    if(extra.length < 20) {
-      loadNextArticle();
-      while(currentArticleQueue.length > 0 && extra.length < 80) {
-        let para = currentArticleQueue.shift();
-        while(para && /^['"""\u2018\u2019\u201c\u201d]/.test((para||'').trimStart())) {
-          para = currentArticleQueue.length > 0 ? currentArticleQueue.shift() : null;
-        }
-        if(!para) break;
-        extra.push(...passageToWords(para));
-      }
-    }
-    const start=words.length;
+  lastVal = '';
+  inp.value = '';
+
+  // Top up words array if running low (same passage is already in `words`)
+  if (curWord > words.length - 20) {
+    // Pull next passage and append its words
+    const extra = passageToWords(getPassage());
+    const start = words.length;
     words.push(...extra);
-    const d=$('word-display');
-    extra.forEach((w,i)=>{
-      const wi=start+i;
-      const wrapSpan=document.createElement('span');
-      wrapSpan.className='word-unit';
-      (w+' ').split('').forEach((c,ci)=>{
-        const span=document.createElement('span');
-        span.className='char';
-        span.id=`c${wi}_${ci}`;
-        span.innerHTML=c===' '?'&nbsp;':c;
+    const d = $('word-display');
+    extra.forEach((w, i) => {
+      const wi = start + i;
+      const wrapSpan = document.createElement('span');
+      wrapSpan.className = 'word-unit';
+      (w + ' ').split('').forEach((c, ci) => {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.id = `c${wi}_${ci}`;
+        span.innerHTML = c === ' ' ? '&nbsp;' : c;
         wrapSpan.appendChild(span);
       });
       d.appendChild(wrapSpan);
@@ -1211,72 +890,74 @@ function advance(typedVal){
   scrollToCurrent();
 }
 
-inp.addEventListener('input',()=>{
-  if(done)return;
-  if(!active)startGame();
-  const raw=inp.value;
-  if(raw.includes(' ')){
-    const t=raw.replace(/ /g,'');
-    advance(t);setCursor();updateLive();return;
+inp.addEventListener('input', () => {
+  if (done) return;
+  if (!active) startGame();
+  const raw = inp.value;
+  if (raw.includes(' ')) {
+    const t = raw.replace(/ /g, '');
+    advance(t); setCursor(); updateLive(); return;
   }
-  lastVal=raw;colorWord(curWord,raw);setCursor();updateLive();
+  lastVal = raw; colorWord(curWord, raw); setCursor(); updateLive();
 });
 
-inp.addEventListener('keydown',e=>{
-  if(done)return;
-  if(!active)startGame();
-  if(e.key===' '||e.key==='Enter'){
+inp.addEventListener('keydown', e => {
+  if (done) return;
+  if (!active) startGame();
+  if (e.key === ' ' || e.key === 'Enter') {
     e.preventDefault();
-    const t=inp.value.trim();
-    advance(t);setCursor();updateLive();
+    const t = inp.value.trim();
+    advance(t); setCursor(); updateLive();
   }
 });
 
-$('words-wrap').addEventListener('click',()=>{ if(!done)inp.focus(); });
+$('words-wrap').addEventListener('click', () => { if (!done) inp.focus(); });
 
-function startGame(){
-  if(active)return;
-  active=true; startTime=Date.now();
-  timeLeft=totalTime;
-  $('time-display').textContent=timeLeft;
-  const fill=$('progress-fill');
-  fill.style.transition='none';fill.style.width='100%';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    fill.style.transition=`width ${totalTime}s linear`;
-    fill.style.width='0%';
+function startGame() {
+  if (active) return;
+  active = true; startTime = Date.now();
+  timeLeft = totalTime;
+  $('time-display').textContent = timeLeft;
+  const fill = $('progress-fill');
+  fill.style.transition = 'none'; fill.style.width = '100%';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fill.style.transition = `width ${totalTime}s linear`;
+    fill.style.width = '0%';
   }));
-  timer=setInterval(()=>{timeLeft--;$('time-display').textContent=timeLeft;if(timeLeft<=0)endGame();},1000);
+  timer = setInterval(() => {
+    timeLeft--;
+    $('time-display').textContent = timeLeft;
+    if (timeLeft <= 0) endGame();
+  }, 1000);
 }
 
-async function endGame(){
-  clearInterval(timer);active=false;done=true;
-  scoreSubmitted = false; // reset once per game, right here
+async function endGame() {
+  clearInterval(timer); active = false; done = true;
+  scoreSubmitted = false;
   inp.blur();
-  inp.disabled=true;
-  setTimeout(()=>{inp.disabled=false;},2000);
+  inp.disabled = true;
+  setTimeout(() => { inp.disabled = false; }, 2000);
 
-  const elapsed=(Date.now()-startTime)/60000;
-  const wpm=Math.round((correctChars/5)/elapsed);
-  const acc=totalTyped>0?Math.round(correctChars/totalTyped*100)+'%':'—';
-  lastResult={wpm,acc,errors,chars:correctChars};
+  const elapsed = (Date.now() - startTime) / 60000;
+  const wpm = Math.round((correctChars / 5) / elapsed);
+  const acc = totalTyped > 0 ? Math.round(correctChars / totalTyped * 100) + '%' : '—';
+  lastResult = {wpm, acc, errors, chars: correctChars};
 
-  $('result-wpm').textContent=wpm;
-  $('r-acc').textContent=acc;
-  $('r-err').textContent=errors;
-  $('r-chars').textContent=correctChars;
-  $('r-time').textContent=totalTime+'s';
+  $('result-wpm').textContent = wpm;
+  $('r-acc').textContent = acc;
+  $('r-err').textContent = errors;
+  $('r-chars').textContent = correctChars;
+  $('r-time').textContent = totalTime + 's';
 
-  // Show result screen but disable buttons briefly to prevent accidental taps
-  const screen=$('result-screen');
+  const screen = $('result-screen');
   screen.classList.add('show');
-  const btns=screen.querySelectorAll('button,.again-btn,.share-btn');
-  btns.forEach(b=>{b.disabled=true;b.style.opacity='.45';b.style.pointerEvents='none';});
-  setTimeout(()=>{
-    btns.forEach(b=>{b.disabled=false;b.style.opacity='';b.style.pointerEvents='';});
-  },1000);
+  const btns = screen.querySelectorAll('button');
+  btns.forEach(b => { b.disabled = true; b.style.opacity = '.45'; b.style.pointerEvents = 'none'; });
+  setTimeout(() => {
+    btns.forEach(b => { b.disabled = false; b.style.opacity = ''; b.style.pointerEvents = ''; });
+  }, 1000);
 
-  // Show rank badge: fires once when nickname has ≥1 char.
-  // Score submission is separate — happens when user leaves result screen.
+  // Rank badge — shown when user types a nickname
   const nickField = $('nickname-input');
   let _rankChecked = false;
   const doRankCheck = () => {
@@ -1289,363 +970,361 @@ async function endGame(){
 
 let scoreSubmitted = false;
 
-// checkRank: badge display only. Does not submit score.
-async function checkRank(wpm){
-  try{
-    const DB_URL='https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
-    // Fetch all scores without orderBy (avoids index requirement)
-    const res=await fetch(`${DB_URL}/scores/${totalTime}.json`,
-      {headers:{'Accept':'application/json'}});
-    if(!res.ok) throw new Error();
-    const data=await res.json();
-    const badge=$('rank-badge');
-    if(!data||typeof data!=='object'||!Object.keys(data).length){
-      badge.textContent='🏆 You could be #1!'; badge.classList.add('show');
-      return;
+async function checkRank(wpm) {
+  try {
+    const DB_URL = 'https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
+    const res = await fetch(`${DB_URL}/scores/${totalTime}.json`, {headers:{'Accept':'application/json'}});
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const badge = $('rank-badge');
+    if (!data || typeof data !== 'object' || !Object.keys(data).length) {
+      badge.textContent = '🏆 You could be #1!'; badge.classList.add('show'); return;
     }
-    const scores=Object.values(data).map(s=>s?.wpm).filter(n=>typeof n==='number');
-    scores.sort((a,b)=>b-a);
-    const rank=scores.filter(s=>s>wpm).length+1;
-    if(rank<=10){
-      badge.textContent=rank===1?'🏆 New #1!':rank<=3?`🥉 Top ${rank}!`:`#${rank} on leaderboard`;
+    const scores = Object.values(data).map(s => s?.wpm).filter(n => typeof n === 'number');
+    scores.sort((a, b) => b - a);
+    const rank = scores.filter(s => s > wpm).length + 1;
+    if (rank <= 100) {
+      badge.textContent = rank === 1 ? '🏆 New #1!' : rank <= 3 ? `🥉 Top ${rank}!` : `#${rank} on leaderboard`;
       badge.classList.add('show');
     }
-  }catch(e){ /* badge stays hidden — not critical */ }
+  } catch(e) {}
 }
 
-// submitOnLeave: called when user leaves result screen.
-// Always attempts to submit if nickname is filled — no rank gating.
-async function submitOnLeave(){
-  if(scoreSubmitted) return;
+async function submitOnLeave() {
+  if (scoreSubmitted) return;
   const nick = $('nickname-input').value.trim();
-  if(!nick) return;
-  if(!lastResult.wpm || lastResult.wpm <= 0) return;
+  if (!nick) return;
+  if (!lastResult.wpm || lastResult.wpm <= 0) return;
   await submitScore(lastResult.wpm, lastResult.acc, nick);
 }
 
-async function submitScore(wpm,acc,nickname){
-  if(!nickname.trim()) return;
-  if(scoreSubmitted) return;
+async function submitScore(wpm, acc, nickname) {
+  if (!nickname.trim()) return;
+  if (scoreSubmitted) return;
+
+  // Only write to Firebase if score could be top 100
+  try {
+    const DB_URL = 'https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
+    const res = await fetch(`${DB_URL}/scores/${totalTime}.json`, {headers:{'Accept':'application/json'}});
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data === 'object') {
+        const scores = Object.values(data).map(s => s?.wpm).filter(n => typeof n === 'number');
+        scores.sort((a, b) => b - a);
+        if (scores.length >= 100 && wpm <= scores[99]) return; // not top 100
+      }
+    }
+  } catch(e) { /* on error, allow write */ }
+
   scoreSubmitted = true;
-  const nick = nickname.trim().slice(0,16);
-  const accNum = parseInt(acc)||0;
-  const payload = { name:nick, wpm, acc:accNum, ts:Date.now() };
-  try{
-    await push(ref(db,`scores/${totalTime}`), payload);
-  }catch(e){
+  const nick = nickname.trim().slice(0, 16);
+  const accNum = parseInt(acc) || 0;
+  const payload = { name: nick, wpm, acc: accNum, ts: Date.now() };
+  try {
+    await push(ref(db, `scores/${totalTime}`), payload);
+  } catch(e) {
     scoreSubmitted = false;
-    await new Promise(r=>setTimeout(r,1500));
-    try{
-      await push(ref(db,`scores/${totalTime}`), payload);
+    await new Promise(r => setTimeout(r, 1500));
+    try {
+      await push(ref(db, `scores/${totalTime}`), payload);
       scoreSubmitted = true;
-    }catch(e2){ console.warn('Score submit failed after retry',e2); }
+    } catch(e2) { console.warn('Score submit failed after retry', e2); }
   }
 }
 
-function resetGame(){
-  clearInterval(timer);active=false;done=false;
-  curWord=0;lastVal='';correctChars=0;totalTyped=0;errors=0;startTime=null;
-  scoreSubmitted=false;
-  inp.value='';
-  $('time-display').textContent=totalTime;
-  $('wpm-live').textContent='0';$('acc-live').textContent='—';$('err-live').textContent='0';
-  const fill=$('progress-fill');fill.style.transition='none';fill.style.width='100%';
+function resetGame() {
+  clearInterval(timer); active = false; done = false;
+  curWord = 0; lastVal = ''; correctChars = 0; totalTyped = 0; errors = 0; startTime = null;
+  scoreSubmitted = false;
+  inp.value = '';
+  $('time-display').textContent = totalTime;
+  $('wpm-live').textContent = '0';
+  $('acc-live').textContent = '—';
+  $('err-live').textContent = '0';
+  const fill = $('progress-fill');
+  fill.style.transition = 'none'; fill.style.width = '100%';
   $('result-screen').classList.remove('show');
   $('rank-badge').classList.remove('show');
   genWords(); render();
 }
 
-$('start-btn').addEventListener('click', async ()=>{
-  $('start-screen').style.display='none';
+$('start-btn').addEventListener('click', async () => {
+  // If passages aren't ready yet, wait briefly then check again
+  if (!passagesReady) {
+    const btn = $('start-btn');
+    const orig = btn.textContent;
+    btn.textContent = '...';
+    btn.disabled = true;
+    for (let i = 0; i < 20; i++) {
+      await new Promise(r => setTimeout(r, 200));
+      if (passagesReady) break;
+    }
+    btn.textContent = orig;
+    btn.disabled = false;
+    if (!passagesReady) {
+      btn.textContent = 'ERROR';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+      return;
+    }
+  }
+  $('start-screen').style.display = 'none';
   resetGame();
-  setTimeout(()=>{ inp.focus(); }, 150);
+  setTimeout(() => { inp.focus(); }, 150);
 });
 
-$('again-btn').addEventListener('click',async()=>{
+$('again-btn').addEventListener('click', async () => {
   await submitOnLeave();
   openModePicker('result');
 });
 
 // ── MODE PICKER ──
 let pickerSelectedTime = totalTime;
-let pickerCaller = null; // track who opened the picker
+let pickerCaller = null;
 
-function openModePicker(caller){
+function openModePicker(caller) {
   pickerCaller = caller || null;
   pickerSelectedTime = totalTime;
-  document.querySelectorAll('.mode-pick-btn').forEach(b=>{
-    b.classList.toggle('active', parseInt(b.dataset.time)===pickerSelectedTime);
+  document.querySelectorAll('.mode-pick-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.time) === pickerSelectedTime);
   });
   $('mode-picker').classList.add('show');
 }
 
-function closeModePicker(){
+function closeModePicker() {
   $('mode-picker').classList.remove('show');
-  // caller='lb': leaderboard stays open
-  // caller='result': result screen stays open
-  // otherwise: close lb-overlay
-  if(pickerCaller !== 'lb' && pickerCaller !== 'result'){
+  if (pickerCaller !== 'lb' && pickerCaller !== 'result') {
     $('lb-overlay').classList.remove('show');
   }
   pickerCaller = null;
 }
 
-document.querySelectorAll('.mode-pick-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    pickerSelectedTime=parseInt(btn.dataset.time);
-    document.querySelectorAll('.mode-pick-btn').forEach(b=>
-      b.classList.toggle('active', parseInt(b.dataset.time)===pickerSelectedTime)
+document.querySelectorAll('.mode-pick-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    pickerSelectedTime = parseInt(btn.dataset.time);
+    document.querySelectorAll('.mode-pick-btn').forEach(b =>
+      b.classList.toggle('active', parseInt(b.dataset.time) === pickerSelectedTime)
     );
   });
 });
 
-$('mode-pick-go').addEventListener('click', async ()=>{
-  totalTime=pickerSelectedTime;
-  document.querySelectorAll('[data-time]').forEach(b=>
-    b.classList.toggle('active', parseInt(b.dataset.time)===totalTime)
+$('mode-pick-go').addEventListener('click', async () => {
+  totalTime = pickerSelectedTime;
+  document.querySelectorAll('[data-time]').forEach(b =>
+    b.classList.toggle('active', parseInt(b.dataset.time) === totalTime)
   );
   $('mode-picker').classList.remove('show');
   $('lb-overlay').classList.remove('show');
   $('result-screen').classList.remove('show');
-  $('start-screen').style.display='none';
+  $('start-screen').style.display = 'none';
   pickerCaller = null;
   resetGame();
-  setTimeout(()=>{ inp.focus(); }, 150);
+  setTimeout(() => { inp.focus(); }, 150);
 });
 
 $('mode-pick-cancel').addEventListener('click', closeModePicker);
-$('mode-picker').addEventListener('click', e=>{ if(e.target===$('mode-picker')) closeModePicker(); });
+$('mode-picker').addEventListener('click', e => { if (e.target === $('mode-picker')) closeModePicker(); });
 
-
-
-
-
-document.querySelectorAll('.mode-btn, .start-mode-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const t=parseInt(btn.dataset.time);totalTime=t;
-    document.querySelectorAll('.mode-btn, .start-mode-btn').forEach(b=>
-      b.classList.toggle('active',parseInt(b.dataset.time)===t)
+document.querySelectorAll('.mode-btn, .start-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = parseInt(btn.dataset.time); totalTime = t;
+    document.querySelectorAll('.mode-btn, .start-mode-btn').forEach(b =>
+      b.classList.toggle('active', parseInt(b.dataset.time) === t)
     );
   });
 });
 
-document.addEventListener('keydown',e=>{
-  if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&!done)inp.focus();
-});
-
-// ── SHARE CARD ──
-function drawShareCard(wpm,acc,errors,duration){
-  return new Promise(resolve=>{
-    const canvas=$('share-canvas');
-    const ctx=canvas.getContext('2d');
-    const W=800,H=420;
-    ctx.clearRect(0,0,W,H);
-
-    // background
-    ctx.fillStyle='#f5f2eb';
-    ctx.fillRect(0,0,W,H);
-
-    // left accent bar
-    ctx.fillStyle='#ff4500';
-    ctx.fillRect(0,0,8,H);
-
-    // bottom accent line
-    ctx.fillStyle='#ff4500';
-    ctx.fillRect(0,H-6,W,6);
-
-    // TYPEFIRE logo
-    ctx.font='bold 52px "Bebas Neue", sans-serif';
-    ctx.letterSpacing='4px';
-    ctx.fillStyle='#1a1a1a';
-    ctx.fillText('TYPE',48,74);
-    const tw=ctx.measureText('TYPE').width;
-    ctx.fillStyle='#ff4500';
-    ctx.fillText('FIRE',48+tw,74);
-
-    // WPM big number
-    ctx.font='bold 180px "Bebas Neue", sans-serif';
-    ctx.fillStyle='#ff4500';
-    ctx.letterSpacing='-4px';
-    ctx.fillText(wpm,44,290);
-    const wpmW=ctx.measureText(wpm).width;
-
-    // WPM label
-    ctx.font='500 18px "DM Mono", monospace';
-    ctx.fillStyle='#bbbbbb';
-    ctx.letterSpacing='4px';
-    ctx.fillText('WPM',50,320);
-
-    // stats
-    const stats=[
-      {label:'ACCURACY',value:acc},
-      {label:'ERRORS',value:String(errors)},
-      {label:'DURATION',value:duration+'s'},
-    ];
-    const sx=420,sy=140,gap=90;
-    stats.forEach((s,i)=>{
-      const y=sy+i*gap;
-      ctx.font='bold 48px "Bebas Neue", sans-serif';
-      ctx.fillStyle='#1a1a1a';
-      ctx.letterSpacing='1px';
-      ctx.fillText(s.value,sx,y);
-      ctx.font='500 13px "DM Mono", monospace';
-      ctx.fillStyle='#bbbbbb';
-      ctx.letterSpacing='3px';
-      ctx.fillText(s.label,sx,y+20);
-    });
-
-    // tagline
-    ctx.font='500 14px "DM Mono", monospace';
-    ctx.fillStyle='#bbbbbb';
-    ctx.letterSpacing='2px';
-    ctx.fillText('typefire.app',W-160,H-24);
-
-    resolve(canvas);
-  });
-}
-
-$('result-lb-btn').addEventListener('click',async()=>{
-  await submitOnLeave();
-  lbTime = totalTime;
-  document.querySelectorAll('.lb-tab').forEach(t=>{
-    t.classList.toggle('active', parseInt(t.dataset.time)===lbTime);
-  });
-  $('lb-overlay').classList.add('show');
-  // Wait briefly so Firebase write is visible before reading
-  await new Promise(r=>setTimeout(r,800));
-  loadLeaderboard(lbTime);
-});
-
-$('share-btn').addEventListener('click',async()=>{
-  // Submit score when sharing (user may not press leaderboard at all)
-  submitOnLeave(); // fire-and-forget, don't block share UX
-
-  const canvas=await drawShareCard(
-    lastResult.wpm, lastResult.acc,
-    lastResult.errors, totalTime
-  );
-
-  canvas.toBlob(async blob=>{
-    const file=new File([blob],'typefire-result.png',{type:'image/png'});
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      try{
-        await navigator.share({
-          files:[file],
-          title:`TYPEFIRE — ${lastResult.wpm} WPM`,
-          text:`I just typed ${lastResult.wpm} WPM on TYPEFIRE! Can you beat me?`
-        });
-      }catch(e){
-        // AbortError = user cancelled, do nothing
-        // Other errors fall through to download
-        if(e.name==='AbortError')return;
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        a.download='typefire-result.png';
-        a.click();
-      }
-      return;
-    }
-    // fallback: download (no Web Share API)
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='typefire-result.png';
-    a.click();
-  },'image/png');
+document.addEventListener('keydown', e => {
+  if (!e.ctrlKey && !e.metaKey && !e.altKey && !done) inp.focus();
 });
 
 // ── LEADERBOARD ──
-let lbTime=15;
+let lbTime = 15;
 
-$('start-lb-btn').addEventListener('click',()=>{
-  $('start-screen').style.display='none';
-  lbTime=totalTime;
-  document.querySelectorAll('.lb-tab').forEach(t=>{
-    t.classList.toggle('active',parseInt(t.dataset.time)===lbTime);
+$('start-lb-btn').addEventListener('click', () => {
+  $('start-screen').style.display = 'none';
+  lbTime = totalTime;
+  document.querySelectorAll('.lb-tab').forEach(t => {
+    t.classList.toggle('active', parseInt(t.dataset.time) === lbTime);
   });
   $('lb-overlay').classList.add('show');
   loadLeaderboard(lbTime);
 });
 
-$('lb-open-btn').addEventListener('click',()=>{
+$('lb-open-btn').addEventListener('click', () => {
   $('lb-overlay').classList.add('show');
   loadLeaderboard(lbTime);
 });
-$('lb-close').addEventListener('click',()=>{
-  // Keep lb-overlay open in background; mode picker overlays on top
+$('lb-close').addEventListener('click', () => {
   openModePicker('lb');
 });
 
-document.querySelectorAll('.lb-tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.lb-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    lbTime=parseInt(tab.dataset.time);
+    lbTime = parseInt(tab.dataset.time);
     loadLeaderboard(lbTime);
   });
 });
 
-async function loadLeaderboard(duration){
-  const list=$('lb-list');
-  list.innerHTML='<div class="lb-loading">Loading...</div>';
-  const DB_URL='https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
-  try{
-    const res=await fetch(`${DB_URL}/scores/${duration}.json`,
-      {headers:{'Accept':'application/json'}});
-    if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    const data=await res.json();
-    if(!data||typeof data!=='object'||Object.keys(data).length===0){
-      list.innerHTML='<div class="lb-empty">No scores yet.<br>Be the first!</div>';
+async function loadLeaderboard(duration) {
+  const list = $('lb-list');
+  list.innerHTML = '<div class="lb-loading">Loading...</div>';
+  const DB_URL = 'https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
+  try {
+    const res = await fetch(`${DB_URL}/scores/${duration}.json`, {headers:{'Accept':'application/json'}});
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data || typeof data !== 'object' || !Object.keys(data).length) {
+      list.innerHTML = '<div class="lb-empty">No scores yet.<br>Be the first!</div>';
       return;
     }
-    const scores=Object.values(data).filter(s=>s&&typeof s.wpm==='number');
-    scores.sort((a,b)=>b.wpm-a.wpm);
-    const top=scores.slice(0,10);
-    list.innerHTML = top.map((s,i)=>{
-      const rankClass=i===0?'top1':i===1?'top2':i===2?'top3':'';
-      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    const scores = Object.values(data).filter(s => s && typeof s.wpm === 'number');
+    scores.sort((a, b) => b.wpm - a.wpm);
+    const top = scores.slice(0, 10);
+    list.innerHTML = top.map((s, i) => {
+      const rankClass = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
       return `
         <div class="lb-row ${rankClass}">
-          <div class="lb-rank">${medal||i+1}</div>
-          <div class="lb-name">${escHtml(s.name||'Anonymous')}</div>
+          <div class="lb-rank">${medal || i + 1}</div>
+          <div class="lb-name">${escHtml(s.name || 'Anonymous')}</div>
           <div>
             <div class="lb-wpm">${s.wpm}</div>
             <div class="lb-wpm-label">WPM</div>
           </div>
-          <div class="lb-acc">${s.acc?s.acc+'%':''}</div>
+          <div class="lb-acc">${s.acc ? s.acc + '%' : ''}</div>
         </div>`;
     }).join('') + `<div class="ad-slot" style="margin-top:.8rem;padding:0;"><div class="ad-placeholder" style="min-height:100px;">Advertisement</div></div>`;
-  }catch(e){
-    console.warn('Leaderboard REST error:',e);
-    try{
-      const snap=await get(query(ref(db,`scores/${duration}`),orderByChild('wpm'),limitToLast(20)));
-      if(!snap.exists()){list.innerHTML='<div class="lb-empty">No scores yet.<br>Be the first!</div>';return;}
-      const scores=[];snap.forEach(c=>scores.push(c.val()));
-      scores.sort((a,b)=>b.wpm-a.wpm);
-      const top=scores.slice(0,10);
-      list.innerHTML=top.map((s,i)=>{
-        const rankClass=i===0?'top1':i===1?'top2':i===2?'top3':'';
-        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-        return `<div class="lb-row ${rankClass}"><div class="lb-rank">${medal||i+1}</div><div class="lb-name">${escHtml(s.name||'Anonymous')}</div><div><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div><div class="lb-acc">${s.acc?s.acc+'%':''}</div></div>`;
+  } catch(e) {
+    console.warn('Leaderboard REST error:', e);
+    try {
+      const snap = await get(query(ref(db, `scores/${duration}`), orderByChild('wpm'), limitToLast(20)));
+      if (!snap.exists()) { list.innerHTML = '<div class="lb-empty">No scores yet.<br>Be the first!</div>'; return; }
+      const scores = [];
+      snap.forEach(c => scores.push(c.val()));
+      scores.sort((a, b) => b.wpm - a.wpm);
+      list.innerHTML = scores.slice(0, 10).map((s, i) => {
+        const rankClass = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+        return `<div class="lb-row ${rankClass}"><div class="lb-rank">${medal || i + 1}</div><div class="lb-name">${escHtml(s.name || 'Anonymous')}</div><div><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div><div class="lb-acc">${s.acc ? s.acc + '%' : ''}</div></div>`;
       }).join('');
-    }catch(e2){
-      list.innerHTML='<div class="lb-empty">Could not load scores.<br><span style="font-size:.65rem;opacity:.6">Check your connection.</span></div>';
+    } catch(e2) {
+      list.innerHTML = '<div class="lb-empty">Could not load scores.<br><span style="font-size:.65rem;opacity:.6">Check your connection.</span></div>';
     }
   }
 }
 
-function escHtml(s){
+function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// If hardPool is empty or tiny, wait for livePool to have at least 1 article
-if (hardPool.length < 3 && livePool.length === 0) {
-  await new Promise(resolve => {
-    const check = setInterval(() => {
-      if (livePool.length > 0) { clearInterval(check); resolve(); }
-    }, 200);
+// ── RESULT LEADERBOARD + SHARE ──
+$('result-lb-btn').addEventListener('click', async () => {
+  await submitOnLeave();
+  lbTime = totalTime;
+  document.querySelectorAll('.lb-tab').forEach(t => {
+    t.classList.toggle('active', parseInt(t.dataset.time) === lbTime);
+  });
+  $('lb-overlay').classList.add('show');
+  await new Promise(r => setTimeout(r, 800));
+  loadLeaderboard(lbTime);
+});
+
+$('share-btn').addEventListener('click', async () => {
+  submitOnLeave();
+  const canvas = await drawShareCard(lastResult.wpm, lastResult.acc, lastResult.errors, totalTime);
+  canvas.toBlob(async blob => {
+    const file = new File([blob], 'typefire-result.png', {type:'image/png'});
+    if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: `TYPEFIRE — ${lastResult.wpm} WPM`,
+          text: `I just typed ${lastResult.wpm} WPM on TYPEFIRE! Can you beat me?`
+        });
+      } catch(e) {
+        if (e.name === 'AbortError') return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = 'typefire-result.png'; a.click();
+      }
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'typefire-result.png'; a.click();
+  }, 'image/png');
+});
+
+// ── SHARE CARD ──
+function drawShareCard(wpm, acc, errors, duration) {
+  return new Promise(resolve => {
+    const canvas = $('share-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = 800, H = 420;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#f5f2eb'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#ff4500'; ctx.fillRect(0, 0, 8, H);
+    ctx.fillStyle = '#ff4500'; ctx.fillRect(0, H - 6, W, 6);
+    ctx.font = 'bold 52px "Bebas Neue", sans-serif';
+    ctx.letterSpacing = '4px';
+    ctx.fillStyle = '#1a1a1a'; ctx.fillText('TYPE', 48, 74);
+    const tw = ctx.measureText('TYPE').width;
+    ctx.fillStyle = '#ff4500'; ctx.fillText('FIRE', 48 + tw, 74);
+    ctx.font = 'bold 180px "Bebas Neue", sans-serif';
+    ctx.fillStyle = '#ff4500'; ctx.letterSpacing = '-4px';
+    ctx.fillText(wpm, 44, 290);
+    ctx.font = '500 18px "DM Mono", monospace';
+    ctx.fillStyle = '#bbbbbb'; ctx.letterSpacing = '4px';
+    ctx.fillText('WPM', 50, 320);
+    const stats = [
+      {label:'ACCURACY', value:acc},
+      {label:'ERRORS',   value:String(errors)},
+      {label:'DURATION', value:duration + 's'},
+    ];
+    const sx = 420, sy = 140, gap = 90;
+    stats.forEach((s, i) => {
+      const y = sy + i * gap;
+      ctx.font = 'bold 48px "Bebas Neue", sans-serif';
+      ctx.fillStyle = '#1a1a1a'; ctx.letterSpacing = '1px';
+      ctx.fillText(s.value, sx, y);
+      ctx.font = '500 13px "DM Mono", monospace';
+      ctx.fillStyle = '#bbbbbb'; ctx.letterSpacing = '3px';
+      ctx.fillText(s.label, sx, y + 20);
+    });
+    ctx.font = '500 14px "DM Mono", monospace';
+    ctx.fillStyle = '#bbbbbb'; ctx.letterSpacing = '2px';
+    ctx.fillText('typefire.app', W - 160, H - 24);
+    resolve(canvas);
   });
 }
-genWords().then(()=>render());
+
+// ── FOOTER LINK HANDLERS (shared across all footers) ──
+function openOverlay(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+document.addEventListener('click', e => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  if (a.classList.contains('js-about')) { e.preventDefault(); openOverlay('about-overlay'); }
+  if (a.classList.contains('js-privacy')) { e.preventDefault(); openOverlay('privacy-overlay'); }
+  if (a.classList.contains('js-contact')) {
+    e.preventDefault();
+    openOverlay('privacy-overlay');
+    setTimeout(() => {
+      const overlay = $('privacy-overlay');
+      overlay.querySelectorAll('h2').forEach(h => {
+        if (h.textContent === 'Contact') h.scrollIntoView({behavior:'smooth'});
+      });
+    }, 100);
+  }
+});
+
+document.querySelectorAll('.info-close').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById(btn.dataset.close).classList.remove('show');
+  });
+});
 
 // ── PULL TO REFRESH / PULL TO GO HOME ──
 (function(){
@@ -1653,82 +1332,58 @@ genWords().then(()=>render());
   let startY = 0, pulling = false, triggered = false;
   const THRESHOLD = 80;
 
+  // Works on any element, including overlays
   document.addEventListener('touchstart', e => {
-    if(window.scrollY === 0) {
-      startY = e.touches[0].clientY;
-      pulling = true;
-      triggered = false;
-    }
-  }, {passive:true});
+    // Allow PTR even when overlays are open — check scrollable content isn't scrolled down
+    const el = e.target.closest('.lb-list, .info-body');
+    if (el && el.scrollTop > 0) return; // element is scrolled — don't intercept
+    startY = e.touches[0].clientY;
+    pulling = true;
+    triggered = false;
+  }, {passive: true});
 
   document.addEventListener('touchmove', e => {
-    if(!pulling) return;
+    if (!pulling) return;
     const dist = e.touches[0].clientY - startY;
-    if(dist <= 0){ pulling = false; return; }
+    if (dist <= 0) { pulling = false; return; }
     const h = Math.min(dist * 0.5, 60);
     indicator.style.height = h + 'px';
     indicator.classList.toggle('pulling', dist < THRESHOLD);
-    if(dist >= THRESHOLD && !triggered) triggered = true;
-  }, {passive:true});
+    if (dist >= THRESHOLD && !triggered) triggered = true;
+  }, {passive: true});
 
   document.addEventListener('touchend', () => {
-    if(!pulling) return;
+    if (!pulling) return;
     pulling = false;
-    if(triggered){
+    if (triggered) {
       indicator.classList.remove('pulling');
       indicator.classList.add('refreshing');
       indicator.style.height = '48px';
       const anyOverlay = document.querySelector('.info-overlay.show, #lb-overlay.show, #result-screen.show');
-      if(anyOverlay){
-        // Close all overlays and go back to start screen
+      if (anyOverlay) {
         setTimeout(() => {
-          document.querySelectorAll('.info-overlay.show').forEach(el=>el.classList.remove('show'));
-          document.getElementById('lb-overlay').classList.remove('show');
-          document.getElementById('result-screen').classList.remove('show');
-          document.getElementById('mode-picker').classList.remove('show');
-          document.getElementById('start-screen').style.display='';
+          document.querySelectorAll('.info-overlay.show').forEach(el => el.classList.remove('show'));
+          $('lb-overlay').classList.remove('show');
+          $('result-screen').classList.remove('show');
+          $('mode-picker').classList.remove('show');
+          $('start-screen').style.display = '';
           indicator.style.height = '0';
-          indicator.classList.remove('pulling','refreshing');
+          indicator.classList.remove('pulling', 'refreshing');
         }, 400);
       } else {
         setTimeout(() => location.reload(), 800);
       }
     } else {
       indicator.style.height = '0';
-      indicator.classList.remove('pulling','refreshing');
+      indicator.classList.remove('pulling', 'refreshing');
     }
   });
 })();
 
-// ── ABOUT / PRIVACY OVERLAYS ──
-document.querySelectorAll('.info-close').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const id=btn.dataset.close;
-    document.getElementById(id).classList.remove('show');
-  });
-});
+// ── INIT ──
+genWords();
+render();
 
-function openOverlay(id){
-  document.getElementById(id).classList.add('show');
-}
-
-document.getElementById('footer-about').addEventListener('click',e=>{
-  e.preventDefault(); openOverlay('about-overlay');
-});
-document.getElementById('footer-privacy').addEventListener('click',e=>{
-  e.preventDefault(); openOverlay('privacy-overlay');
-});
-document.getElementById('footer-contact').addEventListener('click',e=>{
-  e.preventDefault(); openOverlay('privacy-overlay');
-  // scroll to contact section
-  setTimeout(()=>{
-    const overlay=document.getElementById('privacy-overlay');
-    const links=overlay.querySelectorAll('h2');
-    links.forEach(h=>{ if(h.textContent==='Contact') h.scrollIntoView({behavior:'smooth'}); });
-  },100);
-});
-
-// (viewport height management removed — using CSS 2-line clip)
 </script>
 </body>
 </html>
