@@ -539,20 +539,36 @@ header {
     if(e.touches.length>1) e.preventDefault(); // two-finger = pinch
   },{passive:false});
 
-  // History-based back navigation
-  // Push a state for each overlay so Android back button works
-  window._pushState=function(name){
-    history.pushState({overlay:name},'');
-  };
-  window.addEventListener('popstate', e=>{
-    const overlay=(e.state&&e.state.overlay)||null;
-    // Close whatever is currently open and return to previous
-    const lb=document.getElementById('lb-overlay');
-    const rs=document.getElementById('result-screen');
+  // Back-button navigation
+  // Keep ONE sentinel entry above the page so popstate always fires.
+  // We never push more; instead we inspect the current UI state and act.
+  // On home: do nothing (re-push sentinel to stay interceptable).
+  function getTopOverlay(){
+    if(document.getElementById('mode-picker').classList.contains('show')) return 'picker';
+    if(document.getElementById('lb-overlay').classList.contains('show')) return 'lb';
+    if(document.getElementById('result-screen').classList.contains('show')) return 'result';
+    if(document.getElementById('start-screen').style.display==='none') return 'game';
+    return 'home';
+  }
+  history.replaceState({tf:true},'');
+  history.pushState({tf:true},'');  // sentinel
+
+  window.addEventListener('popstate', ()=>{
+    const top=getTopOverlay();
     const ss=document.getElementById('start-screen');
-    if(lb&&lb.classList.contains('show')){ lb.classList.remove('show'); }
-    else if(rs&&rs.classList.contains('show')){ rs.classList.remove('show'); ss.style.display=''; }
-    else { ss.style.display=''; }
+    if(top==='picker'){
+      document.getElementById('mode-picker').classList.remove('show');
+    } else if(top==='lb'){
+      document.getElementById('lb-overlay').classList.remove('show');
+      ss.style.display='';
+    } else if(top==='result'){
+      document.getElementById('result-screen').classList.remove('show');
+      ss.style.display='';
+    } else if(top==='game'){
+      ss.style.display='';
+    }
+    // Always re-push sentinel so next back is also intercepted
+    history.pushState({tf:true},'');
   });
 })();
 </script>
@@ -723,7 +739,6 @@ async function endGame(){
   $('result-wpm').textContent=wpm;$('r-acc').textContent=acc;
   $('r-err').textContent=errors;$('r-chars').textContent=correctChars;$('r-time').textContent=totalTime+'s';
   $('result-screen').classList.add('show');
-  history.pushState({overlay:'result'},'');
   const btns=$('result-screen').querySelectorAll('button');
   btns.forEach(b=>{b.disabled=true;b.style.opacity='.4';b.style.pointerEvents='none';});
   setTimeout(()=>{btns.forEach(b=>{b.disabled=false;b.style.opacity='';b.style.pointerEvents='';});},1000);
@@ -783,7 +798,6 @@ function goHome(){
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
   // Clear history states so back button exits app correctly
-  history.replaceState({overlay:'home'},'');
 }
 
 function resetGame(){
@@ -805,12 +819,11 @@ $('start-btn').addEventListener('click',async()=>{
   if(!passagesReady){
     const btn=$('start-btn'),orig=btn.textContent;
     btn.textContent='...';btn.disabled=true;
-    for(let i=0;i<20;i++){await new Promise(r=>setTimeout(r,200));if(passagesReady)break;}
+    for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,200));if(passagesReady)break;}
     btn.textContent=orig;btn.disabled=false;
-    if(!passagesReady){btn.textContent='ERROR';setTimeout(()=>{btn.textContent=orig;},2000);return;}
+    if(!passagesReady){btn.textContent='GO';btn.disabled=false;return;}  // still loading, user can retry
   }
   $('start-screen').style.display='none';
-  history.pushState({overlay:'game'},'');
   resetGame();setTimeout(()=>inp.focus(),150);
 });
 
@@ -857,12 +870,10 @@ $('start-lb-btn').addEventListener('click',()=>{
   $('start-screen').style.display='none';lbTime=totalTime;
   document.querySelectorAll('.lb-tab').forEach(t=>t.classList.toggle('active',parseInt(t.dataset.time)===lbTime));
   $('lb-overlay').classList.add('show');
-  history.pushState({overlay:'lb'},'');
   loadLeaderboard(lbTime);
 });
 $('lb-open-btn').addEventListener('click',()=>{
   $('lb-overlay').classList.add('show');
-  history.pushState({overlay:'lb'},'');
   loadLeaderboard(lbTime);
 });
 $('lb-close').addEventListener('click',()=>openModePicker('lb'));
@@ -914,7 +925,6 @@ $('result-lb-btn').addEventListener('click',async()=>{
   await submitOnLeave();lbTime=totalTime;
   document.querySelectorAll('.lb-tab').forEach(t=>t.classList.toggle('active',parseInt(t.dataset.time)===lbTime));
   $('lb-overlay').classList.add('show');
-  history.pushState({overlay:'lb'},'');
   await new Promise(r=>setTimeout(r,800));loadLeaderboard(lbTime);
 });
 
@@ -961,7 +971,6 @@ function drawShareCard(wpm,acc,errors,duration){
 }
 
 // Init
-history.replaceState({overlay:'home'},'');
 genWords();render();
 </script>
 </body>
