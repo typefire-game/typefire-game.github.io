@@ -512,6 +512,11 @@ header {
 
 <!-- PWA -->
 <script>
+  // Start fetching passages.json immediately — before Firebase module loads
+  window._passagesPromise = fetch('passages.json')
+    .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .catch(e => { console.error('passages.json fetch failed:', e); return null; });
+
 (function(){
   if('serviceWorker' in navigator)
     navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
@@ -605,10 +610,9 @@ function refillPool(){ while(localPool.length<LOCAL_POOL_SIZE){const p=drawOne()
 
 (async function loadPassages(){
   try{
-    const res=await fetch('passages.json');
-    if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    const data=await res.json();
-    if(!Array.isArray(data)||!data.length)throw new Error('empty');
+    // Re-use the fetch that was started as early as possible (before module eval)
+    const data = await window._passagesPromise;
+    if(!Array.isArray(data)||!data.length)throw new Error('empty or null');
     allPassages=shuffleArray(data);poolCursor=0;refillPool();passagesReady=true;
   }catch(e){console.error('Failed to load passages.json:',e);}
 })();
@@ -819,7 +823,7 @@ $('start-btn').addEventListener('click',async()=>{
   if(!passagesReady){
     const btn=$('start-btn'),orig=btn.textContent;
     btn.textContent='...';btn.disabled=true;
-    for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,200));if(passagesReady)break;}
+    for(let i=0;i<50;i++){await new Promise(r=>setTimeout(r,100));if(passagesReady)break;}
     btn.textContent=orig;btn.disabled=false;
     if(!passagesReady){btn.textContent='GO';btn.disabled=false;return;}  // still loading, user can retry
   }
