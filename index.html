@@ -84,17 +84,18 @@ body {
 /* ── HEADER ── */
 header {
   padding:.75rem 1.2rem .4rem;
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between; gap:.5rem;
   flex-shrink:0;
 }
-.logo { font-size:1.45rem; font-weight:800; letter-spacing:.04em; line-height:1; }
+.logo { font-size:1.45rem; font-weight:800; letter-spacing:.04em; line-height:1; min-width:0; flex-shrink:1; white-space:nowrap; }
 .logo em { color:var(--accent); font-style:normal; }
-.header-right { display:flex; align-items:center; gap:.6rem; }
+.header-right { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
 .header-time { font-size:1.8rem; font-weight:700; color:var(--accent); line-height:1; }
 .lb-btn {
   background:none; border:1.5px solid var(--border); border-radius:6px;
   padding:.3rem .65rem; cursor:pointer; font-size:.8rem; font-weight:600;
   color:var(--muted); font-family:var(--font); transition:all .15s; line-height:1;
+  white-space:nowrap;
 }
 .lb-btn:hover { border-color:var(--accent); color:var(--accent); }
 
@@ -179,7 +180,7 @@ header {
   background:none; border:1.5px solid var(--border); border-radius:6px;
   padding:.3rem .7rem; cursor:pointer; font-size:.8rem; font-weight:600;
   color:var(--muted); font-family:var(--font); transition:all .15s; line-height:1;
-  text-decoration:none; display:inline-block;
+  text-decoration:none; display:inline-block; flex-shrink:0; white-space:nowrap;
 }
 .home-btn:hover { border-color:var(--accent); color:var(--accent); }
 
@@ -187,7 +188,7 @@ header {
 #start-screen {
   position:fixed; inset:0; background:var(--bg);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:10; gap:1.1rem; padding:1.5rem 1.5rem 4.5rem;
+  z-index:10; gap:1.1rem; padding:1.5rem 1.5rem 0;
   max-width:680px; margin:0 auto; left:0; right:0;
 }
 .start-logo { font-size:3.5rem; font-weight:900; letter-spacing:.04em; line-height:1; text-align:center; }
@@ -214,7 +215,7 @@ header {
 }
 .start-lb-btn:hover { border-color:var(--accent); color:var(--accent); }
 #start-screen .site-footer {
-  position:absolute; bottom:0; left:0; right:0; margin-top:0; border-top:1px solid var(--border);
+  width:100%; margin-top:auto; border-top:1px solid var(--border);
 }
 
 /* ── RESULT SCREEN ── */
@@ -274,7 +275,7 @@ header {
   display:flex; align-items:center; justify-content:space-between; gap:.75rem;
   flex-shrink:0; border-bottom:1px solid var(--border);
 }
-.lb-title { font-size:1.6rem; font-weight:900; letter-spacing:.04em; min-width:0; flex-shrink:1; }
+.lb-title { font-size:1.25rem; font-weight:900; letter-spacing:.04em; min-width:0; flex-shrink:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .lb-title em { color:var(--accent); font-style:normal; }
 .lb-header-btns { display:flex; gap:.5rem; align-items:center; flex-shrink:0; }
 .lb-close {

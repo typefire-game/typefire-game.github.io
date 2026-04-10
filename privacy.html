@@ -21,16 +21,16 @@ html,body{background:var(--bg);color:var(--ink);font-family:var(--font);min-heig
 .page{max-width:680px;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;}
 header{
   padding:1rem 1.2rem .6rem;
-  display:flex;align-items:center;justify-content:space-between;
+  display:flex;align-items:center;justify-content:space-between;gap:.75rem;
   border-bottom:1px solid var(--border);
 }
-.logo{font-size:1.5rem;font-weight:900;letter-spacing:.04em;color:var(--ink);text-decoration:none;}
+.logo{font-size:1.5rem;font-weight:900;letter-spacing:.04em;color:var(--ink);text-decoration:none;min-width:0;flex-shrink:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .logo em{color:var(--accent);font-style:normal;}
 .home-btn{
   background:none;border:1.5px solid var(--border);border-radius:6px;
   padding:.35rem .75rem;cursor:pointer;font-size:.85rem;font-weight:600;
   color:var(--muted);font-family:var(--font);text-decoration:none;
-  transition:all .15s;line-height:1;display:inline-block;
+  transition:all .15s;line-height:1;display:inline-block;flex-shrink:0;white-space:nowrap;
 }
 .home-btn:hover{border-color:var(--accent);color:var(--accent);}
 main{flex:1;padding:2rem 1.2rem;max-width:560px;}
