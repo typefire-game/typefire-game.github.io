@@ -28,7 +28,7 @@
   --accent-cta:#72b06b;   /* brighter green for CTA buttons */
   --wrong:     #b09050;   /* brighter amber for errors */
   --wrong-bg:  #38342e;
-  --correct:   #5e8f58;
+  --correct:   #dae5d8;
   --font:      'Inter', sans-serif;
   --word-size: 1.3rem;
   --word-lh:   2.6;
@@ -136,8 +136,8 @@ header {
 .char.wrong   { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
 .char.cursor  { position:relative; }
 .char.cursor::before {
-  content:''; position:absolute; left:-1.5px; top:16%; height:68%;
-  width:3px; background:var(--accent); border-radius:2px;
+  content:''; position:absolute; left:-2px; top:16%; height:68%;
+  width:5px; background:var(--accent); border-radius:2px;
   animation:blink .9s step-end infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -192,7 +192,7 @@ header {
 }
 .start-logo { font-size:3.5rem; font-weight:900; letter-spacing:.04em; line-height:1; text-align:center; }
 .start-logo em { color:var(--accent); font-style:normal; }
-.start-desc { font-size:1.1rem; font-weight:400; color:var(--muted); text-align:center; line-height:1.65; }
+.start-desc { font-size:1.35rem; font-weight:400; color:var(--muted); text-align:center; line-height:1.6; }
 .start-modes { display:flex; gap:.5rem; }
 .start-mode-btn {
   border:1.5px solid var(--border); background:var(--surface); color:var(--muted);
@@ -346,6 +346,8 @@ header {
   .modes,.stats-row,.words-wrap,.progress-wrap,.ad-slot { padding-left:2rem; padding-right:2rem; }
   :root { --word-size:1.45rem; }
   .lb-header,.lb-tabs,.lb-list { padding-left:2rem; padding-right:2rem; }
+  .start-desc { font-size:1.6rem; white-space:nowrap; }
+  .desc-br { display:none; }
 }
 </style>
 </head>
@@ -362,7 +364,7 @@ header {
   <!-- START SCREEN -->
   <div id="start-screen">
     <div class="start-logo">TYPE<em>FIRE</em></div>
-    <p class="start-desc">Type the words<br>as fast as you can.</p>
+    <p class="start-desc">Type the words<br class="desc-br"> as fast as you can.</p>
     <div class="start-modes">
       <button class="start-mode-btn active" data-time="15">15s</button>
       <button class="start-mode-btn" data-time="30">30s</button>
@@ -412,6 +414,8 @@ header {
     </div>
     <button class="share-btn" id="result-lb-btn" style="width:100%;max-width:320px;margin-top:.25rem;text-align:center;">🏆 Leaderboard</button>
     <footer class="site-footer">
+      <a href="index.html" onclick="event.preventDefault();goHome();">Home</a>
+      <span class="footer-sep">·</span>
       <a href="about.html">About</a>
       <span class="footer-sep">·</span>
       <a href="privacy.html">Privacy Policy</a>
@@ -424,7 +428,7 @@ header {
   <div id="lb-overlay">
     <div class="lb-header">
       <div class="lb-title">LEADER<em>BOARD</em></div>
-      <div class="lb-header-btns">
+      <div class="lb-header-btns" style="margin-left:1.5rem;">
         <button class="home-btn js-go-home">Home</button>
         <button class="lb-close" id="lb-close">PLAY</button>
       </div>
