@@ -271,12 +271,12 @@ header {
 #lb-overlay.show { display:flex; }
 .lb-header {
   padding:.8rem 1.2rem .5rem;
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between; gap:.75rem;
   flex-shrink:0; border-bottom:1px solid var(--border);
 }
-.lb-title { font-size:1.6rem; font-weight:900; letter-spacing:.04em; }
+.lb-title { font-size:1.6rem; font-weight:900; letter-spacing:.04em; min-width:0; flex-shrink:1; }
 .lb-title em { color:var(--accent); font-style:normal; }
-.lb-header-btns { display:flex; gap:.5rem; align-items:center; }
+.lb-header-btns { display:flex; gap:.5rem; align-items:center; flex-shrink:0; }
 .lb-close {
   background:var(--accent-cta); border:none; border-radius:8px;
   padding:.4rem 1rem; cursor:pointer; font-size:.85rem; font-weight:700;
@@ -414,7 +414,7 @@ header {
     </div>
     <button class="share-btn" id="result-lb-btn" style="width:100%;max-width:320px;margin-top:.25rem;text-align:center;">🏆 Leaderboard</button>
     <footer class="site-footer">
-      <a href="index.html" onclick="event.preventDefault();goHome();">Home</a>
+      <a href="#" class="js-go-home">Home</a>
       <span class="footer-sep">·</span>
       <a href="about.html">About</a>
       <span class="footer-sep">·</span>
@@ -428,7 +428,7 @@ header {
   <div id="lb-overlay">
     <div class="lb-header">
       <div class="lb-title">LEADER<em>BOARD</em></div>
-      <div class="lb-header-btns" style="margin-left:1.5rem;">
+      <div class="lb-header-btns">
         <button class="home-btn js-go-home">Home</button>
         <button class="lb-close" id="lb-close">PLAY</button>
       </div>
