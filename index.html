@@ -266,6 +266,7 @@ img, video { max-width:100%; height:auto; }
 }
 .nickname-input:focus { border-color:var(--accent); }
 .nickname-input::placeholder { color:var(--muted); }
+.nickname-input::-webkit-search-cancel-button { display:none; }
 .result-btns { display:flex; gap:.5rem; width:100%; max-width:20rem; }
 .again-btn {
   flex:1; background:var(--accent-cta); color:var(--bg); border:none; border-radius:12px;
@@ -430,10 +431,9 @@ img, video { max-width:100%; height:auto; }
       <div class="ad-placeholder" style="min-height:5.625rem;">Advertisement</div>
     </div>
     <div class="nickname-row">
-      <input class="nickname-input" id="nickname-input" type="text" maxlength="16"
-        placeholder="Nickname for leaderboard"
-        autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"
-        autocomplete="username">
+      <input class="nickname-input" id="nickname-input" type="search"
+        placeholder="Nickname for leaderboard" maxlength="16"
+        autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
     </div>
     <div class="result-btns">
       <button class="again-btn" id="again-btn">TRY AGAIN</button>
