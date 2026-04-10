@@ -177,10 +177,11 @@ header {
 
 /* ── HOME BUTTON ── */
 .home-btn {
-  background:none; border:1.5px solid var(--border); border-radius:6px;
-  padding:.3rem .7rem; cursor:pointer; font-size:.8rem; font-weight:600;
+  background:none; border:1.5px solid var(--border); border-radius:8px;
+  padding:.4rem 1rem; cursor:pointer; font-size:.85rem; font-weight:700;
   color:var(--muted); font-family:var(--font); transition:all .15s; line-height:1;
   text-decoration:none; display:inline-block; flex-shrink:0; white-space:nowrap;
+  letter-spacing:.06em;
 }
 .home-btn:hover { border-color:var(--accent); color:var(--accent); }
 
@@ -271,13 +272,15 @@ header {
 }
 #lb-overlay.show { display:flex; }
 .lb-header {
-  padding:.8rem 1.2rem .5rem;
-  display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+  padding:.75rem 1.2rem .5rem;
+  display:flex; align-items:center; gap:.5rem;
   flex-shrink:0; border-bottom:1px solid var(--border);
+  container-type:inline-size;
 }
-.lb-title { font-size:1.25rem; font-weight:900; letter-spacing:.04em; min-width:0; flex-shrink:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lb-title {
+  flex:1; min-width:0; font-size:max(1.2rem, 6cqi); font-weight:900; line-height:1;
+}
 .lb-title em { color:var(--accent); font-style:normal; }
-.lb-header-btns { display:flex; gap:.5rem; align-items:center; flex-shrink:0; }
 .lb-close {
   background:var(--accent-cta); border:none; border-radius:8px;
   padding:.4rem 1rem; cursor:pointer; font-size:.85rem; font-weight:700;
@@ -429,10 +432,8 @@ header {
   <div id="lb-overlay">
     <div class="lb-header">
       <div class="lb-title">LEADER<em>BOARD</em></div>
-      <div class="lb-header-btns">
-        <button class="home-btn js-go-home">Home</button>
-        <button class="lb-close" id="lb-close">PLAY</button>
-      </div>
+      <button class="home-btn js-go-home">Home</button>
+      <button class="lb-close" id="lb-close">PLAY</button>
     </div>
     <div class="lb-tabs">
       <button class="lb-tab active" data-time="15">15s</button>
