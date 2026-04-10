@@ -11,8 +11,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TYPEFIRE">
-<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" href="favicon.ico" sizes="any">
+<meta property="og:title" content="TYPEFIRE — Typing Speed Test">
+<meta property="og:description" content="Minimalist typing speed test. Pick 15, 30, or 60 seconds and see how fast you can type.">
+<meta property="og:image" content="https://typefire-game.github.io/og-image.png">
+<meta property="og:url" content="https://typefire-game.github.io">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://typefire-game.github.io/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -202,7 +210,7 @@ img, video { max-width:100%; height:auto; }
 }
 .start-logo { font-size:3.5rem; font-weight:900; letter-spacing:.04em; line-height:1; text-align:center; }
 .start-logo em { color:var(--accent); font-style:normal; }
-.start-desc { font-size:1.35rem; font-weight:400; color:var(--muted); text-align:center; line-height:1.6; }
+.start-desc { font-size:1.5rem; font-weight:400; color:var(--muted); text-align:center; line-height:1.6; }
 .start-modes { display:flex; gap:.5rem; }
 .start-mode-btn {
   border:1.5px solid var(--border); background:var(--surface); color:var(--muted);
@@ -316,9 +324,10 @@ img, video { max-width:100%; height:auto; }
 .lb-row.top2 .lb-rank { color:#888; }
 .lb-row.top3 .lb-rank { color:#7a5a38; }
 .lb-name { flex:1; font-size:1.05rem; font-weight:500; }
-.lb-wpm { font-size:1.55rem; font-weight:700; color:var(--accent); }
+.lb-wpm-col { display:flex; flex-direction:column; align-items:flex-end; width:3.5rem; flex-shrink:0; }
+.lb-wpm { font-size:1.55rem; font-weight:700; color:var(--accent); line-height:1; }
 .lb-wpm-label { font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
-.lb-acc { font-size:.9rem; font-weight:500; color:var(--muted); min-width:2.5rem; text-align:right; }
+.lb-acc { font-size:.9rem; font-weight:500; color:var(--muted); width:2.75rem; text-align:right; flex-shrink:0; }
 .lb-empty { text-align:center; color:var(--muted); font-size:.95rem; padding:3rem 0; letter-spacing:.06em; }
 .lb-loading { text-align:center; color:var(--muted); font-size:.8rem; padding:2rem 0; letter-spacing:.1em; text-transform:uppercase; font-weight:600; }
 #lb-overlay .site-footer { flex-shrink:0; }
@@ -359,7 +368,7 @@ img, video { max-width:100%; height:auto; }
   .modes,.stats-row,.words-wrap,.progress-wrap,.ad-slot { padding-left:2rem; padding-right:2rem; }
   :root { --word-size:1.65rem; }
   .lb-header,.lb-tabs,.lb-list { padding-left:2rem; padding-right:2rem; }
-  .start-desc { font-size:1.6rem; white-space:nowrap; }
+  .start-desc { font-size:1.75rem; white-space:nowrap; }
   .desc-br { display:none; }
 }
 </style>
@@ -458,6 +467,8 @@ img, video { max-width:100%; height:auto; }
       <div class="lb-loading">Loading...</div>
     </div>
     <footer class="site-footer">
+      <a href="#" class="js-go-home">Home</a>
+      <span class="footer-sep">·</span>
       <a href="about.html">About</a>
       <span class="footer-sep">·</span>
       <a href="privacy.html">Privacy Policy</a>
@@ -506,6 +517,8 @@ img, video { max-width:100%; height:auto; }
   </div>
 
   <footer class="site-footer" id="main-footer">
+    <a href="#" class="js-go-home">Home</a>
+    <span class="footer-sep">·</span>
     <a href="about.html">About</a>
     <span class="footer-sep">·</span>
     <a href="privacy.html">Privacy Policy</a>
@@ -925,7 +938,7 @@ async function loadLeaderboard(duration){
       return `<div class="lb-row ${rc}">
         <div class="lb-rank">${medal||i+1}</div>
         <div class="lb-name">${escHtml(s.name||'Anonymous')}</div>
-        <div><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div>
+        <div class="lb-wpm-col"><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div>
         <div class="lb-acc">${s.acc?s.acc+'%':''}</div>
       </div>`;
     }).join('')+`<div style="margin-top:.8rem;"><div class="ad-placeholder" style="min-height:5rem;">Advertisement</div></div>`;
@@ -938,7 +951,7 @@ async function loadLeaderboard(duration){
       list.innerHTML=scores.slice(0,10).map((s,i)=>{
         const rc=i===0?'top1':i===1?'top2':i===2?'top3':'';
         const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-        return `<div class="lb-row ${rc}"><div class="lb-rank">${medal||i+1}</div><div class="lb-name">${escHtml(s.name||'Anonymous')}</div><div><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div><div class="lb-acc">${s.acc?s.acc+'%':''}</div></div>`;
+        return `<div class="lb-row ${rc}"><div class="lb-rank">${medal||i+1}</div><div class="lb-name">${escHtml(s.name||'Anonymous')}</div><div class="lb-wpm-col"><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div><div class="lb-acc">${s.acc?s.acc+'%':''}</div></div>`;
       }).join('');
     }catch(e2){list.innerHTML='<div class="lb-empty">Could not load scores.</div>';}
   }
@@ -958,7 +971,7 @@ $('share-btn').addEventListener('click',async()=>{
   canvas.toBlob(async blob=>{
     const file=new File([blob],'typefire-result.png',{type:'image/png'});
     if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:`TYPEFIRE — ${lastResult.wpm} WPM`,text:`I typed ${lastResult.wpm} WPM on TYPEFIRE!`});}
+      try{await navigator.share({files:[file],title:`TYPEFIRE — ${lastResult.wpm} WPM`,text:`I typed ${lastResult.wpm} WPM with ${lastResult.acc} accuracy on TYPEFIRE! Can you beat me?\ntypefire-game.github.io`});}
       catch(e){if(e.name==='AbortError')return;dl(blob);}
       return;
     }
