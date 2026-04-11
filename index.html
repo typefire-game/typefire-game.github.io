@@ -140,25 +140,30 @@ header {
 .char.wrong   { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
 .char.cursor  { position:relative; }
 .char.cursor::before {
-  content:''; position:absolute; left:-0.06em; top:-0.1em; height:1.2em;
-  width:0.1em; min-width:2px; background:var(--accent); border-radius:0.25rem;
+  content:''; position:absolute; left:-0.09em; top:-0.1em;
+  height:1.2em; width:0.12em;
+  background:var(--accent); border-radius:0.25rem;
   animation:blink 1s infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-/* Ghost input — no type=text triggers, use div contenteditable instead */
+/* Ghost input — invisible, keyboard-only input receiver */
 #ghost-input {
   position:absolute; inset:0; width:100%; height:100%;
   opacity:0; font-size:16px; border:none; outline:none;
   background:transparent; color:transparent; caret-color:transparent;
   cursor:text; resize:none;
+  pointer-events:none;          /* clicks handled by words-wrap, not input */
   -webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;
-  user-select:none;
   /* Suppress autofill UI */
   autocomplete:off;
 }
-.words-wrap { -webkit-tap-highlight-color:transparent; }
+.words-wrap {
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
 
 /* ── AD ── */
 .ad-slot { padding:.4rem 1.2rem; flex-shrink:0; }
@@ -971,9 +976,9 @@ $('share-btn').addEventListener('click',async()=>{
   submitOnLeave();
   const canvas=await drawShareCard(lastResult.wpm,lastResult.acc,lastResult.errors,totalTime);
   canvas.toBlob(async blob=>{
-    const file=new File([blob],'typefire-result.png',{type:'image/png'});
+    const file=new File([blob],`TYPEFIRE-${lastResult.wpm}WPM.png`,{type:'image/png'});
     if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:`TYPEFIRE — ${lastResult.wpm} WPM`,text:`TYPEFIRE — ${lastResult.wpm} WPM\nI typed ${lastResult.wpm} WPM with ${lastResult.acc} accuracy on TYPEFIRE! Can you beat me?\ntypefire-game.github.io`});}
+      try{await navigator.share({files:[file],title:`TYPEFIRE — ${lastResult.wpm} WPM`,text:`I typed ${lastResult.wpm} WPM with ${lastResult.acc} accuracy on TYPEFIRE! Can you beat me?\ntypefire-game.github.io`});}
       catch(e){if(e.name==='AbortError')return;dl(blob);}
       return;
     }
@@ -985,7 +990,7 @@ function dl(blob){const a=document.createElement('a');a.href=URL.createObjectURL
 function drawShareCard(wpm,acc,errors,duration){
   return new Promise(resolve=>{
     const canvas=$('share-canvas'),W=800,H=420;
-    const dpr=Math.min(window.devicePixelRatio||2,3);
+    const dpr=Math.max(window.devicePixelRatio||2,3.125);  // ≥300 dpi
     canvas.width=W*dpr; canvas.height=H*dpr;
     canvas.style.width=W+'px'; canvas.style.height=H+'px';
     const ctx=canvas.getContext('2d');
