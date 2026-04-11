@@ -582,6 +582,13 @@ img, video { max-width:100%; height:auto; }
     if(e.touches.length>1) e.preventDefault(); // two-finger = pinch
   },{passive:false});
 
+  // Pre-process passages as soon as fetch completes, before module script loads
+  window._passagesPromise.then(data=>{
+    if(!Array.isArray(data)||!data.length)return;
+    // Make data available globally so module script can pick it up
+    window._passagesData=data;
+  }).catch(()=>{});
+
   // Repaint fix: prevent black screen after returning from another app/tab
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
@@ -661,11 +668,23 @@ function refillPool(){ while(localPool.length<LOCAL_POOL_SIZE){const p=drawOne()
 
 (async function loadPassages(){
   try{
-    // Re-use the fetch that was started as early as possible (before module eval)
-    const data = await window._passagesPromise;
+    // Use pre-processed data if already available, otherwise await the fetch
+    const data = window._passagesData || await window._passagesPromise;
     if(!Array.isArray(data)||!data.length)throw new Error('empty or null');
     allPassages=shuffleArray(data);poolCursor=0;refillPool();passagesReady=true;
-  }catch(e){console.error('Failed to load passages.json:',e);}
+  }catch(e){
+    console.error('Failed to load passages.json:',e);
+    // Retry once after 3s in case of transient network error
+    setTimeout(async()=>{
+      try{
+        const r=await fetch('passages.json');
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        const data=await r.json();
+        if(!Array.isArray(data)||!data.length)throw new Error('empty');
+        allPassages=shuffleArray(data);poolCursor=0;refillPool();passagesReady=true;
+      }catch(e2){console.error('passages.json retry failed:',e2);}
+    },3000);
+  }
 })();
 
 function getPassage(){
@@ -898,9 +917,21 @@ $('start-btn').addEventListener('click',async()=>{
   if(!passagesReady){
     const btn=$('start-btn'),orig=btn.textContent;
     btn.textContent='...';btn.disabled=true;
-    for(let i=0;i<50;i++){await new Promise(r=>setTimeout(r,100));if(passagesReady)break;}
+    // Wait up to 30s — passages.json is ~10MB, mobile networks can be slow
+    for(let i=0;i<300;i++){
+      await new Promise(r=>setTimeout(r,100));
+      if(passagesReady)break;
+    }
     btn.textContent=orig;btn.disabled=false;
-    if(!passagesReady){btn.textContent='GO';btn.disabled=false;return;}  // still loading, user can retry
+    if(!passagesReady){
+      // Still not ready after 30s — likely a network error
+      btn.textContent='GO';btn.disabled=false;
+      // Retry the fetch in case it failed
+      window._passagesPromise=fetch('passages.json')
+        .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+        .catch(e=>{console.error('passages.json retry failed:',e);return null;});
+      return;
+    }
   }
   $('start-screen').style.display='none';
   resetGame();setTimeout(()=>inp.focus(),150);
