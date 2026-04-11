@@ -140,8 +140,11 @@ header {
 .char.wrong   { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
 .char.cursor  { position:relative; }
 .char.cursor::before {
-  content:''; position:absolute; left:-0.09em; top:-0.1em;
-  height:1.2em; width:0.12em;
+  content:''; position:absolute;
+  left:calc(var(--word-size) * -0.06);
+  top:calc(var(--word-size) * -0.1);
+  height:calc(var(--word-size) * 1.2);
+  width:calc(var(--word-size) * 0.1);
   background:var(--accent); border-radius:0.25rem;
   animation:blink 1s infinite;
 }
