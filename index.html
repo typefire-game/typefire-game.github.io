@@ -139,14 +139,16 @@ header {
 .char.correct { color:var(--correct); }
 .char.wrong   { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
 .char.cursor  { position:relative; }
-.char.cursor::before {
-  content:''; position:absolute;
-  left:-0.09rem; top:-0.15rem;
-  height:calc(var(--word-size) * 1.2);
+/* Standalone caret element, positioned via JS getBoundingClientRect */
+#caret {
+  position:fixed; pointer-events:none; z-index:5;
   width:calc(var(--word-size) * 0.1);
+  height:calc(var(--word-size) * 1.2);
   background:var(--accent); border-radius:0.25rem;
   animation:blink 1s infinite;
+  display:none;
 }
+#caret.visible { display:block; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
 /* Ghost input — invisible, keyboard-only input receiver */
@@ -513,6 +515,8 @@ img, video { max-width:100%; height:auto; }
       spellcheck="false" inputmode="text" aria-hidden="true">
   </div>
 
+  <div id="caret"></div>
+
   <div class="ad-slot">
     <div class="ad-placeholder" style="min-height:5rem;">Advertisement</div>
   </div>
@@ -582,7 +586,12 @@ img, video { max-width:100%; height:auto; }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       document.body.style.opacity = '0.99';
-      requestAnimationFrame(() => { document.body.style.opacity = ''; });
+      requestAnimationFrame(() => {
+        document.body.style.opacity = '';
+        // Re-sync caret position after repaint
+        const cursorEl = document.querySelector('.char.cursor');
+        if (cursorEl && typeof positionCaret === 'function') positionCaret(cursorEl);
+      });
     }
   });
 
@@ -696,10 +705,27 @@ function render(){
 
 const el=(wi,ci)=>document.getElementById(`c${wi}_${ci}`);
 
+const caretEl=document.getElementById('caret');
 function setCursor(){
   document.querySelectorAll('.char.cursor').forEach(e=>e.classList.remove('cursor'));
   const e2=el(curWord,Math.min(lastVal.length,(words[curWord]||'').length));
-  if(e2)e2.classList.add('cursor');
+  if(e2){
+    e2.classList.add('cursor');
+    positionCaret(e2);
+  } else {
+    caretEl.classList.remove('visible');
+  }
+}
+function positionCaret(charEl){
+  const r=charEl.getBoundingClientRect();
+  // --word-size is in rem; convert to px using root font-size
+  const rootPx=parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+  const wordSizeRem=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--word-size'))||1.5;
+  const wordSizePx=wordSizeRem*rootPx;
+  const h=wordSizePx*1.2;
+  caretEl.style.left=(r.left-wordSizePx*0.06)+'px';
+  caretEl.style.top=(r.top+(r.height-h)/2)+'px';
+  caretEl.classList.add('visible');
 }
 
 function colorWord(wi,t){
@@ -714,6 +740,11 @@ function colorWord(wi,t){
 function scrollToCurrent(){
   const fc=el(curWord,0);if(!fc)return;
   $('word-display').style.marginTop=`-${fc.offsetTop}px`;
+  // Reposition caret after line scroll
+  requestAnimationFrame(()=>{
+    const ce=el(curWord,Math.min(lastVal.length,(words[curWord]||'').length));
+    if(ce)positionCaret(ce);
+  });
 }
 
 function updateLive(){
@@ -784,6 +815,7 @@ async function endGame(){
   lastResult={wpm,acc,errors,chars:correctChars};
   $('result-wpm').textContent=wpm;$('r-acc').textContent=acc;
   $('r-err').textContent=errors;$('r-chars').textContent=correctChars;$('r-time').textContent=totalTime+'s';
+  caretEl.classList.remove('visible');
   $('result-screen').classList.add('show');
   const btns=$('result-screen').querySelectorAll('button');
   btns.forEach(b=>{b.disabled=true;b.style.opacity='.4';b.style.pointerEvents='none';});
