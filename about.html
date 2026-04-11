@@ -47,8 +47,10 @@ footer{
   display:flex;align-items:center;justify-content:center;gap:.6rem;
   border-top:1px solid var(--border);
 }
-footer a{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .15s;padding:.6rem .45rem;}
+footer a{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .15s;padding:.6rem .45rem;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;}
 footer a:hover{color:var(--accent);}
+footer a:visited{color:var(--muted);}
+footer a:active{color:var(--muted);background:none;}
 .sep{color:var(--border);font-size:.72rem;}
 @media(min-width:37.5rem){header,main,footer{padding-left:2rem;padding-right:2rem;}}
 </style>
@@ -68,7 +70,7 @@ footer a:hover{color:var(--accent);}
     <h2>How it works</h2>
     <p>Choose a duration — 15, 30, or 60 seconds — then start typing. Passages are drawn from a curated library of science, mathematics, and philosophy texts, so every session feels fresh and intellectually engaging.</p>
     <h2>Passages</h2>
-    <p>All typing passages are sourced from English Wikipedia articles on topics in mathematics, physics, chemistry, biology, philosophy, logic, and related fields. Passages are filtered to ensure they are well-formed English prose — no formulas, no dialogue, no lists.</p>
+    <p>All typing passages are sourced from English Wikipedia articles on topics in mathematics, physics, chemistry, biology, philosophy, logic, and related fields. Passages are filtered to ensure they are well-formed English prose — no formulas, no dialogues, no lists.</p>
 
     <h2>Leaderboard</h2>
     <p>After each round, enter a nickname to submit your score to the global leaderboard. Compete with players around the world and see where you stand.</p>
@@ -81,7 +83,7 @@ footer a:hover{color:var(--accent);}
       <li>Focus on accuracy first — speed follows naturally</li>
       <li>Keep your eyes on the word display, not your fingers</li>
       <li>Try the 15s mode for a quick warm-up anytime</li>
-      <li>Practice daily, even a single 30-second session builds the habit</li>
+      <li>Practice daily, even a single 30s session builds the habit</li>
       <li>Try the 60s mode to push your stamina and consistency</li>
     </ul>
 

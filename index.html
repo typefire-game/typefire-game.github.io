@@ -111,20 +111,11 @@ header {
 }
 .lb-btn:hover { border-color:var(--accent); color:var(--accent); }
 
-/* ── MODES ── */
-.modes { display:flex; gap:.4rem; padding:0 1.2rem .5rem; flex-shrink:0; }
-.mode-btn {
-  flex:1; border:1.5px solid var(--border); background:var(--surface);
-  color:var(--muted); font-family:var(--font); font-size:.9rem; font-weight:500;
-  padding:.5rem 0; border-radius:6px; cursor:pointer; transition:all .15s;
-}
-.mode-btn.active { border-color:var(--accent-cta); background:var(--accent-cta); color:var(--bg); font-weight:700; }
-
 /* ── STATS ── */
 .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.4rem; padding:0 1.2rem .45rem; flex-shrink:0; }
 .stat-box { background:var(--surface); border:1.5px solid var(--border); border-radius:8px; padding:.45rem .65rem; }
-.stat-box .val { font-size:1.6rem; font-weight:700; line-height:1; color:var(--ink); }
-.stat-box .lbl { font-size:.6rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-top:.1rem; }
+.stat-box .val { font-size:2rem; font-weight:700; line-height:1; color:var(--ink); }
+.stat-box .lbl { font-size:.7rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-top:.15rem; }
 
 /* ── PROGRESS ── */
 .progress-wrap { padding:0 1.2rem .4rem; flex-shrink:0; }
@@ -135,7 +126,7 @@ header {
 .words-wrap { flex-shrink:0; padding:1.2rem 1.2rem .7rem; position:relative; cursor:text; }
 .words-clip {
   overflow:hidden;
-  height:calc(var(--word-size) * var(--word-lh) * 2);
+  height:calc(var(--word-size) * var(--word-lh) * 3);
   position:relative; width:100%; box-sizing:border-box;
 }
 #word-display {
@@ -150,7 +141,7 @@ header {
 .char.cursor  { position:relative; }
 .char.cursor::before {
   content:''; position:absolute; left:-0.06em; top:-0.1em; height:1.2em;
-  width:0.1em; background:var(--accent); border-radius:0.25rem;
+  width:0.1em; min-width:2px; background:var(--accent); border-radius:0.25rem;
   animation:blink 1s infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -161,9 +152,13 @@ header {
   opacity:0; font-size:16px; border:none; outline:none;
   background:transparent; color:transparent; caret-color:transparent;
   cursor:text; resize:none;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;
+  user-select:none;
   /* Suppress autofill UI */
   autocomplete:off;
 }
+.words-wrap { -webkit-tap-highlight-color:transparent; }
 
 /* ── AD ── */
 .ad-slot { padding:.4rem 1.2rem; flex-shrink:0; }
@@ -184,8 +179,13 @@ header {
   font-size:.8rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
   color:var(--muted); text-decoration:none; transition:color .15s; white-space:nowrap;
   padding:.6rem .45rem;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
+  user-select:none;
 }
 .site-footer a:hover { color:var(--accent); }
+.site-footer a:visited { color:var(--muted); }
+.site-footer a:active { color:var(--muted); background:none; }
 .footer-sep { color:var(--border); font-size:.8rem; flex-shrink:0; }
 
 /* ── GLOBAL MEDIA ── */
@@ -366,7 +366,7 @@ img, video { max-width:100%; height:auto; }
 
 @media(min-width:37.5rem){
   header { padding:1.2rem 2rem .6rem; }
-  .modes,.stats-row,.words-wrap,.progress-wrap,.ad-slot { padding-left:2rem; padding-right:2rem; }
+  .stats-row,.words-wrap,.progress-wrap,.ad-slot { padding-left:2rem; padding-right:2rem; }
   :root { --word-size:1.65rem; }
   .lb-header,.lb-tabs,.lb-list { padding-left:2rem; padding-right:2rem; }
   .start-desc { font-size:1.75rem; white-space:nowrap; }
@@ -399,7 +399,7 @@ img, video { max-width:100%; height:auto; }
       <button class="start-mode-btn" data-time="60">60s</button>
     </div>
     <button class="start-btn" id="start-btn">GO</button>
-    <button class="start-lb-btn" id="start-lb-btn">🏆 Leaderboard</button>
+    <button class="start-lb-btn" id="start-lb-btn">🏆 LEADERBOARD</button>
     <div style="width:100%;max-width:17.5rem;">
       <div class="ad-placeholder" style="min-height:3.75rem;">Advertisement</div>
     </div>
@@ -439,7 +439,7 @@ img, video { max-width:100%; height:auto; }
       <button class="again-btn" id="again-btn">TRY AGAIN</button>
       <button class="share-btn" id="share-btn">SHARE</button>
     </div>
-    <button class="share-btn" id="result-lb-btn" style="width:100%;max-width:20rem;margin-top:.25rem;text-align:center;">🏆 Leaderboard</button>
+    <button class="share-btn" id="result-lb-btn" style="width:100%;max-width:20rem;margin-top:.25rem;text-align:center;">🏆 LEADERBOARD</button>
     <footer class="site-footer">
       <a href="#" class="js-go-home">Home</a>
       <span class="footer-sep">·</span>
@@ -481,16 +481,10 @@ img, video { max-width:100%; height:auto; }
   <header>
     <div class="logo">TYPE<em>FIRE</em></div>
     <div class="header-right">
-      <button class="lb-btn" id="lb-open-btn">🏆 Leaderboard</button>
+      <button class="lb-btn" id="lb-open-btn">🏆 LEADERBOARD</button>
       <div class="header-time" id="time-display">15</div>
     </div>
   </header>
-
-  <div class="modes">
-    <button class="mode-btn active" data-time="15">15s</button>
-    <button class="mode-btn" data-time="30">30s</button>
-    <button class="mode-btn" data-time="60">60s</button>
-  </div>
 
   <div class="stats-row">
     <div class="stat-box"><div class="val" id="wpm-live">0</div><div class="lbl">WPM</div></div>
@@ -576,6 +570,14 @@ img, video { max-width:100%; height:auto; }
   document.addEventListener('touchmove', e=>{
     if(e.touches.length>1) e.preventDefault(); // two-finger = pinch
   },{passive:false});
+
+  // Repaint fix: prevent black screen after returning from another app/tab
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      document.body.style.opacity = '0.99';
+      requestAnimationFrame(() => { document.body.style.opacity = ''; });
+    }
+  });
 
   // Back-button navigation
   // Keep ONE sentinel entry above the page so popstate always fires.
@@ -794,7 +796,7 @@ async function checkRank(wpm){
     if(!data||!Object.keys(data).length){badge.textContent='🏆 You could be #1!';badge.classList.add('show');return;}
     const scores=Object.values(data).map(s=>s?.wpm).filter(n=>typeof n==='number').sort((a,b)=>b-a);
     const rank=scores.filter(s=>s>wpm).length+1;
-    if(rank<=100){badge.textContent=rank===1?'🏆 New #1!':rank<=3?`🥉 Top ${rank}!`:`#${rank} on leaderboard`;badge.classList.add('show');}
+    if(rank<=100){badge.textContent=rank===1?'🏆 New #1!':rank<=3?`🥉 Top ${rank}!`:`#${rank} on LEADERBOARD`;badge.classList.add('show');}
   }catch(e){}
 }
 
@@ -894,10 +896,10 @@ $('mode-pick-go').addEventListener('click',async()=>{
 $('mode-pick-cancel').addEventListener('click',closeModePicker);
 $('mode-picker').addEventListener('click',e=>{if(e.target===$('mode-picker'))closeModePicker();});
 
-document.querySelectorAll('.mode-btn,.start-mode-btn').forEach(btn=>{
+document.querySelectorAll('.start-mode-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const t=parseInt(btn.dataset.time);totalTime=t;
-    document.querySelectorAll('.mode-btn,.start-mode-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.time)===t));
+    document.querySelectorAll('.start-mode-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.time)===t));
   });
 });
 
@@ -971,7 +973,7 @@ $('share-btn').addEventListener('click',async()=>{
   canvas.toBlob(async blob=>{
     const file=new File([blob],'typefire-result.png',{type:'image/png'});
     if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:`TYPEFIRE — ${lastResult.wpm} WPM`,text:`I typed ${lastResult.wpm} WPM with ${lastResult.acc} accuracy on TYPEFIRE! Can you beat me?\ntypefire-game.github.io`});}
+      try{await navigator.share({files:[file],title:`TYPEFIRE — ${lastResult.wpm} WPM`,text:`TYPEFIRE — ${lastResult.wpm} WPM\nI typed ${lastResult.wpm} WPM with ${lastResult.acc} accuracy on TYPEFIRE! Can you beat me?\ntypefire-game.github.io`});}
       catch(e){if(e.name==='AbortError')return;dl(blob);}
       return;
     }
@@ -982,7 +984,12 @@ function dl(blob){const a=document.createElement('a');a.href=URL.createObjectURL
 
 function drawShareCard(wpm,acc,errors,duration){
   return new Promise(resolve=>{
-    const canvas=$('share-canvas'),ctx=canvas.getContext('2d'),W=800,H=420;
+    const canvas=$('share-canvas'),W=800,H=420;
+    const dpr=Math.min(window.devicePixelRatio||2,3);
+    canvas.width=W*dpr; canvas.height=H*dpr;
+    canvas.style.width=W+'px'; canvas.style.height=H+'px';
+    const ctx=canvas.getContext('2d');
+    ctx.scale(dpr,dpr);
     ctx.clearRect(0,0,W,H);
     ctx.fillStyle='#272a26';ctx.fillRect(0,0,W,H);
     ctx.fillStyle='#5e8f58';ctx.fillRect(0,0,8,H);

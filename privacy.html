@@ -37,7 +37,7 @@ header{
 .home-btn:hover{border-color:var(--accent);color:var(--accent);}
 main{flex:1;padding:2rem 1.2rem;max-width:35rem;}
 h1{font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:.4rem;letter-spacing:.02em;}
-.updated{font-size:.8rem;color:var(--muted);font-weight:500;margin-bottom:1.5rem;}
+.updated{font-size:1rem;color:var(--muted);font-weight:500;margin-bottom:1.5rem;}
 h2{font-size:1.1rem;font-weight:800;color:var(--accent);margin:1.6rem 0 .4rem;letter-spacing:.04em;text-transform:uppercase;}
 p{margin-bottom:.8rem;line-height:1.85;opacity:.85;}
 ul{padding-left:1.2rem;margin-bottom:.8rem;}
@@ -49,8 +49,10 @@ footer{
   display:flex;align-items:center;justify-content:center;gap:.6rem;
   border-top:1px solid var(--border);
 }
-footer a{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .15s;padding:.6rem .45rem;}
+footer a{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .15s;padding:.6rem .45rem;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;}
 footer a:hover{color:var(--accent);}
+footer a:visited{color:var(--muted);}
+footer a:active{color:var(--muted);background:none;}
 .sep{color:var(--border);font-size:.72rem;}
 @media(min-width:37.5rem){header,main,footer{padding-left:2rem;padding-right:2rem;}}
 </style>
