@@ -142,12 +142,10 @@ header {
 .char.cursor::before {
   content:''; position:absolute;
   left:-0.09rem; top:-0.15rem;
-  height:1.8rem; width:3px;
+  height:calc(var(--word-size) * 1.2);
+  width:calc(var(--word-size) * 0.1);
   background:var(--accent); border-radius:0.25rem;
   animation:blink 1s infinite;
-}
-@media(min-width:37.5rem){
-  .char.cursor::before { height:1.98rem; }
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
