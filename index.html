@@ -918,7 +918,24 @@ function resetGame(){
   $('wpm-live').textContent='0';$('acc-live').textContent='—';$('err-live').textContent='0';
   const fill=$('progress-fill');fill.style.transition='none';fill.style.width='100%';
   $('result-screen').classList.remove('show');$('rank-badge').classList.remove('show');
-  genWords();render();
+  if(passagesReady()){
+    genWords();render();
+  } else {
+    // Passages not yet ready — blank word area, show "loading..." after 2s
+    $('word-display').innerHTML='';
+    caretEl.classList.remove('visible');
+    const loadingTimer=setTimeout(()=>{
+      if(!passagesReady())$('word-display').innerHTML='<span style="color:var(--muted);font-size:1rem;letter-spacing:.15em;">LOADING…</span>';
+    },2000);
+    const poll=setInterval(()=>{
+      if(passagesReady()){
+        clearInterval(poll);
+        clearTimeout(loadingTimer);
+        genWords();render();
+        requestAnimationFrame(()=>inp.focus());
+      }
+    },100);
+  }
   requestAnimationFrame(()=>inp.focus());
 }
 
@@ -927,28 +944,10 @@ document.addEventListener('click',e=>{
   if(e.target.closest('.js-go-home')){e.preventDefault();goHome();}
 });
 
-$('start-btn').addEventListener('click',async()=>{
-  if(!passagesReady()){
-    const btn=$('start-btn'),orig=btn.textContent;
-    btn.textContent='...';btn.disabled=true;
-    // Wait up to 30s — passages.json is ~10MB, mobile networks can be slow
-    for(let i=0;i<300;i++){
-      await new Promise(r=>setTimeout(r,100));
-      if(passagesReady())break;
-    }
-    btn.textContent=orig;btn.disabled=false;
-    if(!passagesReady()){
-      // Still not ready after 30s — likely a network error
-      btn.textContent='GO';btn.disabled=false;
-      // Retry the fetch in case it failed
-      window._passagesPromise=fetch('passages.json')
-        .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
-        .catch(e=>{console.error('passages.json retry failed:',e);return null;});
-      return;
-    }
-  }
+$('start-btn').addEventListener('click',()=>{
   $('start-screen').style.display='none';
-  resetGame();setTimeout(()=>inp.focus(),150);
+  resetGame();
+  setTimeout(()=>inp.focus(),150);
 });
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
