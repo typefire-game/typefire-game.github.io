@@ -782,8 +782,13 @@ function scrollToCurrent(){
 
 function updateLive(){
   const elapsed=startTime?(Date.now()-startTime)/60000:0;
-  const wpm=elapsed>0?Math.round((correctChars/5)/elapsed):0;
-  const acc=totalTyped>0?Math.round(correctChars/totalTyped*100):'—';
+  // Include current partially-typed word in live stats
+  const currentCorrect=lastVal.split('').filter((c,i)=>c===(words[curWord]||'')[i]).length;
+  const currentTyped=lastVal.length;
+  const liveCorrect=correctChars+currentCorrect;
+  const liveTyped=totalTyped+currentTyped;
+  const wpm=elapsed>0?Math.round((liveCorrect/5)/elapsed):0;
+  const acc=liveTyped>0?Math.round(liveCorrect/liveTyped*100):'—';
   $('wpm-live').textContent=wpm;$('acc-live').textContent=acc;$('err-live').textContent=errors;
 }
 
@@ -843,9 +848,13 @@ async function endGame(){
   inp.blur();inp.disabled=true;
   setTimeout(()=>{inp.disabled=false;},2000);
   const elapsed=(Date.now()-startTime)/60000;
-  const wpm=Math.round((correctChars/5)/elapsed);
-  const acc=totalTyped>0?Math.round(correctChars/totalTyped*100)+'%':'—';
-  lastResult={wpm,acc,errors,chars:correctChars};
+  // Include last partially-typed word in final score
+  const lastCorrect=lastVal.split('').filter((c,i)=>c===(words[curWord]||'')[i]).length;
+  const finalCorrect=correctChars+lastCorrect;
+  const finalTyped=totalTyped+lastVal.length;
+  const wpm=Math.round((finalCorrect/5)/elapsed);
+  const acc=finalTyped>0?Math.round(finalCorrect/finalTyped*100)+'%':'—';
+  lastResult={wpm,acc,errors,chars:finalCorrect};
   $('result-wpm').textContent=wpm;$('r-acc').textContent=acc;
   $('r-err').textContent=errors;$('r-chars').textContent=correctChars;$('r-time').textContent=totalTime+'s';
   caretEl.classList.remove('visible');
