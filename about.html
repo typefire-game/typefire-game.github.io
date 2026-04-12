@@ -95,7 +95,19 @@ footer a:active{color:var(--muted);background:none;}
     <a href="index.html">Home</a>
     <span class="sep">·</span>
     <a href="privacy.html">Privacy Policy</a>
+    <span class="sep">·</span>
+    <a href="#" id="pwa-install-btn-about" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
   </footer>
+  <script>
+  (function(){
+    const INSTALL_IDS=['pwa-install-btn-about'];
+    function setInstall(v){INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';});}
+    let _dip=null;
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dip=e;setInstall(true);});
+    window.addEventListener('appinstalled',()=>{setInstall(false);_dip=null;});
+    window._triggerInstall=()=>{if(_dip){_dip.prompt();_dip.userChoice.then(()=>{_dip=null;});}};
+  })();
+  </script>
 </div>
 </body>
 </html>

@@ -173,7 +173,8 @@ header {
 .ad-slot { padding:.4rem 1.2rem; flex-shrink:0; }
 .ad-placeholder {
   border:1px dashed var(--border); border-radius:8px;
-  padding:1.8rem .8rem; text-align:center;
+  padding:.8rem; text-align:center;
+  display:flex; align-items:center; justify-content:center;
   font-size:.7rem; font-weight:600; letter-spacing:.12em;
   text-transform:uppercase; color:var(--border);
 }
@@ -290,6 +291,10 @@ img, video { max-width:100%; height:auto; }
 }
 .share-btn:active { transform:scale(.97); }
 #result-screen .site-footer { width:100%; max-width:20rem; margin-top:.3rem; margin-bottom:.5rem; border-top:none; padding:.3rem 0 .5rem; }
+#result-screen .again-btn { padding:1rem 0; font-size:1.3rem; }
+#result-screen .share-btn { padding:1rem 1.1rem; }
+.result-footer-link { pointer-events:none; }
+.result-footer-link.active { pointer-events:auto; }
 
 /* ── LEADERBOARD ── */
 #lb-overlay {
@@ -402,16 +407,16 @@ img, video { max-width:100%; height:auto; }
     <div class="start-logo">TYPE<em>FIRE</em></div>
     <p class="start-desc">Type the words<br class="desc-br"> as fast as you can.</p>
     <div style="flex:2;"></div>
+    <div style="width:100%;max-width:17.5rem;">
+      <div class="ad-placeholder" style="min-height:3.75rem;">Advertisement</div>
+    </div>
+    <button class="start-lb-btn" id="start-lb-btn">🏆 LEADERBOARD</button>
     <div class="start-modes">
       <button class="start-mode-btn active" data-time="15">15s</button>
       <button class="start-mode-btn" data-time="30">30s</button>
       <button class="start-mode-btn" data-time="60">60s</button>
     </div>
     <button class="start-btn" id="start-btn">GO</button>
-    <button class="start-lb-btn" id="start-lb-btn">🏆 LEADERBOARD</button>
-    <div style="width:100%;max-width:17.5rem;">
-      <div class="ad-placeholder" style="min-height:3.75rem;">Advertisement</div>
-    </div>
     <footer class="site-footer">
       <a href="about.html">About</a>
       <span class="footer-sep">·</span>
@@ -445,18 +450,14 @@ img, video { max-width:100%; height:auto; }
         autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
     </div>
     <div class="result-btns">
-      <button class="again-btn" id="again-btn">TRY AGAIN</button>
       <button class="share-btn" id="share-btn">SHARE</button>
+      <button class="share-btn" id="result-lb-btn" style="flex:1;text-align:center;">🏆 LEADERBOARD</button>
     </div>
-    <button class="share-btn" id="result-lb-btn" style="width:100%;max-width:20rem;margin-top:.25rem;text-align:center;">🏆 LEADERBOARD</button>
-    <footer class="site-footer">
-      <a href="#" class="js-go-home">Home</a>
+    <button class="again-btn" id="again-btn" style="width:100%;max-width:20rem;margin-top:.25rem;">TRY AGAIN</button>
+    <footer class="site-footer" id="result-footer">
+      <a href="#" class="js-go-home result-footer-link">Home</a>
       <span class="footer-sep">·</span>
-      <a href="about.html">About</a>
-      <span class="footer-sep">·</span>
-      <a href="privacy.html">Privacy Policy</a>
-      <span class="footer-sep">·</span>
-      <a href="#" id="pwa-install-btn-result" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
+      <a href="#" id="pwa-install-btn-result" style="display:none;color:var(--accent);" class="result-footer-link" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
     </footer>
   </div>
 
@@ -861,7 +862,12 @@ async function endGame(){
   $('result-screen').classList.add('show');
   const btns=$('result-screen').querySelectorAll('button');
   btns.forEach(b=>{b.disabled=true;b.style.opacity='.4';b.style.pointerEvents='none';});
-  setTimeout(()=>{btns.forEach(b=>{b.disabled=false;b.style.opacity='';b.style.pointerEvents='';});},1000);
+  // Also block footer links for 1s to prevent accidental tap
+  document.querySelectorAll('.result-footer-link').forEach(a=>a.classList.remove('active'));
+  setTimeout(()=>{
+    btns.forEach(b=>{b.disabled=false;b.style.opacity='';b.style.pointerEvents='';});
+    document.querySelectorAll('.result-footer-link').forEach(a=>a.classList.add('active'));
+  },1000);
   const nf=$('nickname-input');let _rc=false;
   const doRank=()=>{if(_rc)return;if(nf.value.trim().length>=1){_rc=true;checkRank(wpm);}};
   nf.addEventListener('input',doRank);nf.addEventListener('change',doRank);
