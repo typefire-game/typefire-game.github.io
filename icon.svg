@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background -->
-  <rect width="512" height="512" rx="80" fill="#272a26"/>
+  <!-- Background: full square, no rounded corners (OS handles shape) -->
+  <rect width="512" height="512" rx="0" fill="#272a26"/>
   <!-- Bottom accent bar -->
   <rect x="0" y="450" width="512" height="62" rx="0" fill="#5e8f58"/>
   <!-- T lettermark -->
   <text
-    x="256" y="370"
+    x="256" y="385"
     font-family="Inter, Arial Black, sans-serif"
-    font-size="300"
+    font-size="310"
     font-weight="900"
     fill="#dae5d8"
     text-anchor="middle"
