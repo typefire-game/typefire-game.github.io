@@ -351,7 +351,8 @@ img, video { max-width:100%; height:auto; }
 #mode-picker {
   display:none; position:fixed; inset:0; z-index:50;
   align-items:flex-end; justify-content:center;
-  background:rgba(20,22,20,.75); padding:1.5rem;
+  background:rgba(20,22,20,.75);
+  padding: 1.5rem 1.5rem 18dvh;
 }
 #mode-picker.show { display:flex; }
 .mode-picker-box {
@@ -866,6 +867,7 @@ async function endGame(){
   $('r-err').textContent=errors;$('r-chars').textContent=correctChars;$('r-time').textContent=totalTime+'s';
   caretEl.classList.remove('visible');
   $('result-screen').classList.add('show');
+
   const btns=$('result-screen').querySelectorAll('button');
   btns.forEach(b=>{b.disabled=true;b.style.opacity='.4';b.style.pointerEvents='none';});
   // Also block footer links for 1s to prevent accidental tap
@@ -980,37 +982,10 @@ function openModePicker(caller){
   document.querySelectorAll('.mode-pick-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.time)===pickerSelectedTime));
   const picker=$('mode-picker');
   picker.classList.add('show');
-  // Align picker box bottom to again-btn bottom only when result screen is visible
-  requestAnimationFrame(()=>{
-    const box=picker.querySelector('.mode-picker-box');
-    if(!box)return;
-    const resultVisible=$('result-screen').classList.contains('show');
-    if(resultVisible){
-      const againBtn=$('again-btn');
-      if(againBtn){
-        const btnRect=againBtn.getBoundingClientRect();
-        if(btnRect.bottom>0){
-          const gap=window.innerHeight-btnRect.bottom;
-          box.style.marginBottom=Math.max(gap,16)+'px';
-          return;
-        }
-      }
-    }
-    // Fallback: center vertically
-    box.style.marginBottom='auto';
-    picker.style.alignItems='center';
-  });
-  // Reset alignment when picker closes
-  picker._resetAlign=()=>{
-    const box=picker.querySelector('.mode-picker-box');
-    if(box)box.style.marginBottom='';
-    picker.style.alignItems='';
-  };
+
 }
 function closeModePicker(){
-  const p=$('mode-picker');
-  p.classList.remove('show');
-  if(p._resetAlign){p._resetAlign();}
+  $('mode-picker').classList.remove('show');
   if(pickerCaller!=='lb'&&pickerCaller!=='result')$('lb-overlay').classList.remove('show');
   pickerCaller=null;
 }
