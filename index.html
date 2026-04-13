@@ -350,8 +350,8 @@ img, video { max-width:100%; height:auto; }
 /* ── MODE PICKER ── */
 #mode-picker {
   display:none; position:fixed; inset:0; z-index:50;
-  align-items:center; justify-content:center;
-  background:rgba(20,22,20,.75); padding:2rem;
+  align-items:flex-end; justify-content:center;
+  background:rgba(20,22,20,.75); padding:1.5rem;
 }
 #mode-picker.show { display:flex; }
 .mode-picker-box {
@@ -385,6 +385,12 @@ img, video { max-width:100%; height:auto; }
   .lb-header,.lb-tabs,.lb-list { padding-left:2rem; padding-right:2rem; }
   .start-desc { font-size:1.75rem; white-space:nowrap; }
   .desc-br { display:none; }
+}
+/* PWA standalone: less chrome → shift start screen buttons group up */
+@media(display-mode:standalone){
+  #start-screen { gap:.7rem; }
+  #start-screen > div[style*="flex:2"] { flex:0.8 !important; }
+  #result-screen .again-btn { padding:.8rem 0; font-size:1.2rem; }
 }
 </style>
 </head>
@@ -453,7 +459,7 @@ img, video { max-width:100%; height:auto; }
       <button class="share-btn" id="share-btn">SHARE</button>
       <button class="share-btn" id="result-lb-btn" style="flex:1;text-align:center;">🏆 LEADERBOARD</button>
     </div>
-    <button class="again-btn" id="again-btn" style="width:100%;max-width:20rem;margin-top:.25rem;">TRY AGAIN</button>
+    <button class="again-btn" id="again-btn" style="width:100%;max-width:20rem;margin-top:.25rem;">PLAY AGAIN</button>
     <footer class="site-footer" id="result-footer">
       <a href="#" class="js-go-home result-footer-link">Home</a>
       <span class="footer-sep">·</span>
@@ -841,7 +847,7 @@ function startGame(){
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     fill.style.transition=`width ${totalTime}s linear`;fill.style.width='0%';
   }));
-  timer=setInterval(()=>{timeLeft--;$('time-display').textContent=timeLeft;if(timeLeft<=0)endGame();},1000);
+  timer=setInterval(()=>{timeLeft--;$('time-display').textContent=timeLeft;updateLive();if(timeLeft<=0)endGame();},1000);
 }
 
 async function endGame(){
@@ -972,7 +978,21 @@ let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
   pickerCaller=caller||null;pickerSelectedTime=totalTime;
   document.querySelectorAll('.mode-pick-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.time)===pickerSelectedTime));
-  $('mode-picker').classList.add('show');
+  // Align picker bottom to PLAY AGAIN / result screen bottom
+  const picker=$('mode-picker');
+  picker.classList.add('show');
+  // Calculate bottom offset: align box bottom to again-btn bottom (or screen bottom if not visible)
+  requestAnimationFrame(()=>{
+    const againBtn=$('again-btn');
+    const box=picker.querySelector('.mode-picker-box');
+    if(againBtn&&box){
+      const btnRect=againBtn.getBoundingClientRect();
+      const gap=window.innerHeight-btnRect.bottom;
+      box.style.marginBottom=Math.max(gap,16)+'px';
+    } else {
+      box.style.marginBottom='1.5rem';
+    }
+  });
 }
 function closeModePicker(){
   $('mode-picker').classList.remove('show');
