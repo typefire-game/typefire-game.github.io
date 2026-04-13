@@ -978,24 +978,39 @@ let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
   pickerCaller=caller||null;pickerSelectedTime=totalTime;
   document.querySelectorAll('.mode-pick-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.time)===pickerSelectedTime));
-  // Align picker bottom to PLAY AGAIN / result screen bottom
   const picker=$('mode-picker');
   picker.classList.add('show');
-  // Calculate bottom offset: align box bottom to again-btn bottom (or screen bottom if not visible)
+  // Align picker box bottom to again-btn bottom only when result screen is visible
   requestAnimationFrame(()=>{
-    const againBtn=$('again-btn');
     const box=picker.querySelector('.mode-picker-box');
-    if(againBtn&&box){
-      const btnRect=againBtn.getBoundingClientRect();
-      const gap=window.innerHeight-btnRect.bottom;
-      box.style.marginBottom=Math.max(gap,16)+'px';
-    } else {
-      box.style.marginBottom='1.5rem';
+    if(!box)return;
+    const resultVisible=$('result-screen').classList.contains('show');
+    if(resultVisible){
+      const againBtn=$('again-btn');
+      if(againBtn){
+        const btnRect=againBtn.getBoundingClientRect();
+        if(btnRect.bottom>0){
+          const gap=window.innerHeight-btnRect.bottom;
+          box.style.marginBottom=Math.max(gap,16)+'px';
+          return;
+        }
+      }
     }
+    // Fallback: center vertically
+    box.style.marginBottom='auto';
+    picker.style.alignItems='center';
   });
+  // Reset alignment when picker closes
+  picker._resetAlign=()=>{
+    const box=picker.querySelector('.mode-picker-box');
+    if(box)box.style.marginBottom='';
+    picker.style.alignItems='';
+  };
 }
 function closeModePicker(){
-  $('mode-picker').classList.remove('show');
+  const p=$('mode-picker');
+  p.classList.remove('show');
+  if(p._resetAlign){p._resetAlign();}
   if(pickerCaller!=='lb'&&pickerCaller!=='result')$('lb-overlay').classList.remove('show');
   pickerCaller=null;
 }
