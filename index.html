@@ -291,8 +291,12 @@ img, video { max-width:100%; height:auto; }
 }
 .share-btn:active { transform:scale(.97); }
 #result-screen .site-footer { width:100%; max-width:20rem; margin-top:.3rem; margin-bottom:.5rem; border-top:none; padding:.3rem 0 .5rem; }
-#result-screen .again-btn { padding:.75rem 0; font-size:1.2rem; }
-#result-screen .share-btn { padding:.75rem 1.1rem; }
+#result-screen .again-btn { padding:.75rem 0; font-size:1.2rem; flex-shrink:0; }
+#result-screen .share-btn { padding:.75rem 1.1rem; flex-shrink:0; }
+#result-screen .result-grid { flex-shrink:0; }
+#result-screen .nickname-row { flex-shrink:0; }
+#result-screen .result-btns { flex-shrink:0; }
+#result-screen .rank-badge { flex-shrink:0; }
 .result-footer-link { pointer-events:none; }
 .result-footer-link.active { pointer-events:auto; }
 
