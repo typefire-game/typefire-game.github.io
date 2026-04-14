@@ -270,9 +270,12 @@ img, video { max-width:100%; height:auto; }
 #result-screen {
   display:none; position:fixed; inset:0; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:10; padding:0 1.5rem env(safe-area-inset-bottom); gap:.3rem; overflow-y:auto;
+  z-index:10; padding:0 1.5rem env(safe-area-inset-bottom); gap:.3rem;
+  overflow-y:auto; overflow-x:hidden;
+  scrollbar-width:none; /* Firefox */
   max-width:42.5rem; margin:0 auto; left:0; right:0;
 }
+#result-screen::-webkit-scrollbar { display:none; } /* Chrome/Safari */
 #result-screen.show { display:flex; }
 #result-top-bar { width:100%; max-width:20rem; display:flex; justify-content:flex-start; padding:.7rem 0 .2rem; }
 .result-label { font-size:.95rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
@@ -629,6 +632,8 @@ img, video { max-width:100%; height:auto; }
   document.addEventListener('gesturechange', e=>e.preventDefault());
   document.addEventListener('touchmove', e=>{
     if(e.touches.length>1) e.preventDefault(); // two-finger = pinch
+    // Block ALL scroll during game (touch-action:none alone isn't enough on all Android browsers)
+    if(document.documentElement.style.touchAction==='none') e.preventDefault();
   },{passive:false});
 
   // Blur focused button/link after touch to prevent :focus/:hover residue color change
@@ -927,6 +932,7 @@ async function endGame(){
   $('r-err').textContent=errors;$('r-chars').textContent=correctChars;$('r-time').textContent=totalTime+'s';
   caretEl.classList.remove('visible');
   document.documentElement.style.touchAction='pan-y'; // restore scroll on result screen
+  document.body.style.overflow='';
   $('result-screen').classList.add('show');
 
   const btns=$('result-screen').querySelectorAll('button');
@@ -940,6 +946,8 @@ async function endGame(){
   const nf=$('nickname-input');let _rc=false;
   const doRank=()=>{if(_rc)return;if(nf.value.trim().length>=1){_rc=true;checkRank(wpm);}};
   nf.addEventListener('input',doRank);nf.addEventListener('change',doRank);
+  // Also check rank immediately (without waiting for nickname)
+  checkRank(wpm);
 }
 
 let scoreSubmitted=false;
@@ -952,7 +960,11 @@ async function checkRank(wpm){
     if(!data||!Object.keys(data).length){badge.textContent='🏆 You could be #1!';badge.classList.add('show');return;}
     const scores=Object.values(data).map(s=>s?.wpm).filter(n=>typeof n==='number').sort((a,b)=>b-a);
     const rank=scores.filter(s=>s>wpm).length+1;
-    if(rank<=100){badge.textContent=rank===1?'🏆 New #1!':rank<=3?`🥉 Top ${rank}!`:`#${rank} on LEADERBOARD`;badge.classList.add('show');}
+    if(rank===1)badge.textContent='🏆 New #1!';
+    else if(rank===2)badge.textContent='🥈 #2 on LEADERBOARD';
+    else if(rank===3)badge.textContent='🥉 #3 on LEADERBOARD';
+    else if(rank<=10)badge.textContent=`#${rank} on LEADERBOARD`;
+    if(rank<=10)badge.classList.add('show');
   }catch(e){}
 }
 
@@ -993,6 +1005,7 @@ function goHome(){
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
   document.documentElement.style.touchAction='pan-y'; // restore scroll on home
+  document.body.style.overflow='';
   // Clear history states so back button exits app correctly
 }
 
@@ -1002,6 +1015,7 @@ function resetGame(){
   inp.value='';$('time-display').textContent=totalTime;
   $('wpm-live').textContent='0';$('acc-live').textContent='0';$('err-live').textContent='0';
   document.documentElement.style.touchAction='none'; // disable all scroll during game
+  document.body.style.overflow='hidden';
   const fill=$('progress-fill');fill.style.transition='none';fill.style.width='100%';
   $('result-screen').classList.remove('show');$('rank-badge').classList.remove('show');
   if(passagesReady()){
