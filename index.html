@@ -43,6 +43,13 @@
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+/* Prevent text selection globally (except input fields) */
+body, button, a, div, span, p, header, footer { user-select:none; -webkit-user-select:none; }
+/* Prevent button/link color change on tap/long-press */
+button { -webkit-tap-highlight-color:transparent; }
+button:active, button:focus { background-color:inherit; outline:none; }
+a { -webkit-tap-highlight-color:transparent; }
+a:active { background:none !important; }
 
 html {
   /* block horizontal overscroll/bounce; keep vertical for native PTR */
@@ -83,7 +90,9 @@ body {
   border-radius:6px; padding:.35rem .9rem; font-family:var(--font);
   font-size:.8rem; font-weight:700; cursor:pointer; flex-shrink:0;
   letter-spacing:.04em;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
+.cookie-bar button:active { background:var(--accent-cta); color:var(--bg); }
 
 /* ── APP WRAPPER ── */
 #app {
@@ -107,9 +116,10 @@ header {
   background:none; border:1.5px solid var(--border); border-radius:6px;
   padding:.3rem .65rem; cursor:pointer; font-size:.8rem; font-weight:600;
   color:var(--muted); font-family:var(--font); transition:all .15s; line-height:1;
-  white-space:nowrap;
+  white-space:nowrap; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .lb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.lb-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 
 /* ── STATS ── */
 .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.4rem; padding:0 1.2rem .45rem; flex-shrink:0; }
@@ -208,8 +218,10 @@ img, video { max-width:100%; height:auto; }
   color:var(--muted); font-family:var(--font); transition:all .15s; line-height:1;
   text-decoration:none; display:inline-block; flex-shrink:0; white-space:nowrap;
   letter-spacing:.06em;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .home-btn:hover { border-color:var(--accent); color:var(--accent); }
+.home-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 
 /* ── START SCREEN ── */
 #start-screen {
@@ -226,21 +238,26 @@ img, video { max-width:100%; height:auto; }
   border:1.5px solid var(--border); background:var(--surface); color:var(--muted);
   font-family:var(--font); font-size:1.05rem; font-weight:500;
   padding:.55rem 1.3rem; border-radius:8px; cursor:pointer; transition:all .15s;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .start-mode-btn.active { border-color:var(--accent-cta); color:var(--accent-cta); background:var(--wrong-bg); }
+.start-mode-btn:active:not(.active) { background:var(--surface); color:var(--muted); }
 .start-btn {
   background:var(--accent-cta); color:var(--bg); border:none; border-radius:12px;
   padding:.9rem 3rem; font-family:var(--font); font-size:1.4rem; font-weight:800;
   letter-spacing:.1em; cursor:pointer; width:100%; max-width:17.5rem; transition:transform .1s;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
-.start-btn:active { transform:scale(.97); }
+.start-btn:active { transform:scale(.97); background:var(--accent-cta); color:var(--bg); }
 .start-lb-btn {
   background:none; border:1.5px solid var(--border); border-radius:12px;
   padding:.65rem 2rem; font-family:var(--font); font-size:1rem; font-weight:600;
   color:var(--muted); cursor:pointer; letter-spacing:.06em;
   text-transform:uppercase; transition:all .15s; width:100%; max-width:17.5rem;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .start-lb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.start-lb-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 #start-screen .site-footer {
   width:100%; margin-top:auto; border-top:1px solid var(--border);
   padding-bottom:max(.7rem, env(safe-area-inset-bottom));
@@ -279,19 +296,22 @@ img, video { max-width:100%; height:auto; }
 .nickname-input::-webkit-search-cancel-button { display:none; }
 .result-btns { display:flex; gap:.5rem; width:100%; max-width:20rem; }
 .again-btn {
-  flex:1; background:var(--accent-cta); color:var(--bg); border:none; border-radius:12px;
-  padding:.7rem 0; font-family:var(--font); font-size:1.2rem; font-weight:800;
-  letter-spacing:.1em; cursor:pointer; transition:transform .1s;
+  flex:unset; background:var(--accent-cta); color:var(--bg); border:none; border-radius:12px;
+  padding:.9rem 3rem; font-family:var(--font); font-size:1.4rem; font-weight:800;
+  letter-spacing:.1em; cursor:pointer; width:100%; max-width:20rem;
+  flex-shrink:0; transition:transform .1s;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
-.again-btn:active { transform:scale(.97); }
+.again-btn:active { transform:scale(.97); background:var(--accent-cta); color:var(--bg); }
 .share-btn {
   background:var(--surface); color:var(--ink); border:1.5px solid var(--border);
   border-radius:12px; padding:.7rem 1.1rem; font-family:var(--font);
   font-size:.95rem; font-weight:700; letter-spacing:.06em; cursor:pointer; transition:all .15s;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
-.share-btn:active { transform:scale(.97); }
+.share-btn:active { transform:scale(.97); background:var(--surface); color:var(--ink); }
 #result-screen .site-footer { width:100%; max-width:20rem; margin-top:.3rem; margin-bottom:.5rem; border-top:none; padding:.3rem 0 .5rem; }
-#result-screen .again-btn { padding:.75rem 0; font-size:1.2rem; flex-shrink:0; }
+#result-screen .again-btn { padding:.9rem 3rem; font-size:1.4rem; flex-shrink:0; margin-top:.25rem; }
 #result-screen .share-btn { padding:.75rem 1.1rem; flex-shrink:0; }
 #result-screen .result-grid { flex-shrink:0; }
 #result-screen .nickname-row { flex-shrink:0; }
@@ -321,14 +341,18 @@ img, video { max-width:100%; height:auto; }
   background:var(--accent-cta); border:none; border-radius:8px;
   padding:.4rem 1rem; cursor:pointer; font-size:.85rem; font-weight:700;
   color:var(--bg); font-family:var(--font); letter-spacing:.06em;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
+.lb-close:active { background:var(--accent-cta); color:var(--bg); }
 .lb-tabs { display:flex; gap:.4rem; padding:.5rem 1.2rem; flex-shrink:0; }
 .lb-tab {
   flex:1; border:1.5px solid var(--border); background:var(--surface);
   color:var(--muted); font-family:var(--font); font-size:1rem; font-weight:500;
   padding:.4rem 0; border-radius:6px; cursor:pointer; transition:all .15s;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .lb-tab.active { border-color:var(--accent-cta); background:var(--accent-cta); color:var(--bg); font-weight:700; }
+.lb-tab:active:not(.active) { background:var(--surface); color:var(--muted); }
 .lb-list { flex:1; overflow-y:auto; padding:0 1.2rem .4rem; }
 .lb-row {
   display:flex; align-items:center; gap:.75rem;
@@ -370,18 +394,23 @@ img, video { max-width:100%; height:auto; }
   flex:1; border:1.5px solid var(--border); background:var(--bg);
   color:var(--muted); font-family:var(--font); font-size:.95rem; font-weight:500;
   padding:.55rem 0; border-radius:8px; cursor:pointer; transition:all .15s;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .mode-pick-btn.active { border-color:var(--accent-cta); color:var(--accent-cta); background:var(--wrong-bg); }
+.mode-pick-btn:active:not(.active) { background:var(--bg); color:var(--muted); }
 .mode-pick-go {
   background:var(--accent-cta); color:var(--bg); border:none; border-radius:12px;
   padding:.8rem 0; font-family:var(--font); font-size:1.2rem; font-weight:800;
   letter-spacing:.1em; cursor:pointer; width:100%; transition:transform .1s;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
-.mode-pick-go:active { transform:scale(.97); }
+.mode-pick-go:active { transform:scale(.97); background:var(--accent-cta); color:var(--bg); }
 .mode-pick-cancel {
   background:none; border:none; font-family:var(--font); font-size:.8rem;
   font-weight:600; color:var(--muted); cursor:pointer; letter-spacing:.06em; text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
+.mode-pick-cancel:active { color:var(--muted); background:none; }
 
 @media(min-width:37.5rem){
   header { padding:1.2rem 2rem .6rem; }
@@ -393,9 +422,10 @@ img, video { max-width:100%; height:auto; }
 }
 /* PWA standalone: less chrome → shift start screen buttons group up */
 @media(display-mode:standalone){
-  #start-screen { gap:.7rem; }
-  #start-screen > div[style*="flex:2"] { flex:0.8 !important; }
-  #result-screen .again-btn { padding:.8rem 0; font-size:1.2rem; }
+  #start-screen { gap:.55rem; padding-top:1rem; }
+  #start-screen > div[style*="flex:1"] { flex:0.3 !important; }
+  #start-screen > div[style*="flex:2"] { flex:0.5 !important; }
+  #result-screen .again-btn { padding:.9rem 3rem; font-size:1.4rem; }
 }
 </style>
 </head>
@@ -464,7 +494,7 @@ img, video { max-width:100%; height:auto; }
       <button class="share-btn" id="result-lb-btn" style="flex:1;text-align:center;">🏆 LEADERBOARD</button>
       <button class="share-btn" id="share-btn">SHARE</button>
     </div>
-    <button class="again-btn" id="again-btn" style="width:100%;max-width:20rem;margin-top:.25rem;">PLAY AGAIN</button>
+    <button class="again-btn" id="again-btn">PLAY AGAIN</button>
     <footer class="site-footer" id="result-footer">
       <a href="#" class="js-go-home result-footer-link">Home</a>
       <span class="footer-sep">·</span>
@@ -509,7 +539,7 @@ img, video { max-width:100%; height:auto; }
 
   <div class="stats-row">
     <div class="stat-box"><div class="val" id="wpm-live">0</div><div class="lbl">WPM</div></div>
-    <div class="stat-box"><div class="val" id="acc-live">—</div><div class="lbl">Acc %</div></div>
+    <div class="stat-box"><div class="val" id="acc-live">0</div><div class="lbl">Acc %</div></div>
     <div class="stat-box"><div class="val" id="err-live">0</div><div class="lbl">Errors</div></div>
   </div>
 
@@ -563,9 +593,13 @@ img, video { max-width:100%; height:auto; }
 <!-- PWA -->
 <script>
   // Start fetching passages.json immediately — before Firebase module loads
-  window._passagesPromise = fetch('passages.json')
-    .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .catch(e => { console.error('passages.json fetch failed:', e); return null; });
+  (function(){
+    const ctrl=new AbortController();
+    setTimeout(()=>ctrl.abort(),15000); // abort if no response in 15s
+    window._passagesPromise = fetch('passages.json',{signal:ctrl.signal})
+      .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .catch(e => { console.error('passages.json fetch failed:', e); return null; });
+  })();
 
 (function(){
   if('serviceWorker' in navigator)
@@ -630,25 +664,38 @@ img, video { max-width:100%; height:auto; }
     return true;
   }
 
-  function _attemptFetch(){
-    return fetch('passages.json')
-      .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+  function _attemptFetch(attempt){
+    attempt=attempt||1;
+    const ctrl=new AbortController();
+    // Timeout: 12s first attempt, 8s after
+    const ms=attempt===1?12000:8000;
+    const tid=setTimeout(()=>ctrl.abort(),ms);
+    return fetch('passages.json',{signal:ctrl.signal})
+      .then(r=>{clearTimeout(tid);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
       .then(data=>{
         if(!_loadPassagesFromData(data))throw new Error('empty');
       })
       .catch(e=>{
-        console.error('passages.json load failed:',e);
-        // Retry after 4s
-        setTimeout(_attemptFetch, 4000);
+        clearTimeout(tid);
+        console.error('passages.json load failed (attempt '+attempt+'):',e);
+        // Retry after 2s (faster retry — CDN may be warmed up now)
+        setTimeout(()=>_attemptFetch(attempt+1), 2000);
       });
   }
 
+  // _passagesPromise was already started at top of page (before this IIFE)
+  // Give it a 12s window; if it fails or returns bad data, fall through to _attemptFetch
+  const _pTimeout=setTimeout(()=>{
+    if(!window._passagesReady) _attemptFetch();
+  },13000);
+
   window._passagesPromise.then(data=>{
+    clearTimeout(_pTimeout);
     if(!_loadPassagesFromData(data)){
-      // fetch succeeded but data was bad — retry
-      setTimeout(_attemptFetch, 2000);
+      // fetch succeeded but data was bad — retry immediately
+      _attemptFetch();
     }
-  }).catch(()=>{ _attemptFetch(); });
+  }).catch(()=>{ clearTimeout(_pTimeout); _attemptFetch(); });
 
   // Repaint fix: prevent black screen after returning from another app/tab
   document.addEventListener('visibilitychange', () => {
@@ -870,6 +917,7 @@ async function endGame(){
   $('result-wpm').textContent=wpm;$('r-acc').textContent=acc;
   $('r-err').textContent=errors;$('r-chars').textContent=correctChars;$('r-time').textContent=totalTime+'s';
   caretEl.classList.remove('visible');
+  document.documentElement.style.touchAction='pan-y'; // restore scroll on result screen
   $('result-screen').classList.add('show');
 
   const btns=$('result-screen').querySelectorAll('button');
@@ -935,6 +983,7 @@ function goHome(){
   $('result-screen').classList.remove('show');
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
+  document.documentElement.style.touchAction='pan-y'; // restore scroll on home
   // Clear history states so back button exits app correctly
 }
 
@@ -942,7 +991,8 @@ function resetGame(){
   clearInterval(timer);active=false;done=false;
   curWord=0;lastVal='';correctChars=0;totalTyped=0;errors=0;startTime=null;scoreSubmitted=false;
   inp.value='';$('time-display').textContent=totalTime;
-  $('wpm-live').textContent='0';$('acc-live').textContent='—';$('err-live').textContent='0';
+  $('wpm-live').textContent='0';$('acc-live').textContent='0';$('err-live').textContent='0';
+  document.documentElement.style.touchAction='none'; // disable all scroll during game
   const fill=$('progress-fill');fill.style.transition='none';fill.style.width='100%';
   $('result-screen').classList.remove('show');$('rank-badge').classList.remove('show');
   if(passagesReady()){
@@ -1129,6 +1179,31 @@ function drawShareCard(wpm,acc,errors,duration){
 
 // Init
 genWords();render();
+
+// ── PWA KEYBOARD ADJUST — prevent nickname input from being hidden by soft keyboard ──
+// Uses visualViewport API (supported on all modern browsers incl. PWA mode)
+if(window.visualViewport){
+  const rs=$('result-screen');
+  let _kbAdjust=0;
+  function onVVResize(){
+    if(!rs.classList.contains('show'))return;
+    const vvH=window.visualViewport.height;
+    const winH=window.innerHeight;
+    // keyboard height = window height minus visual viewport height
+    const kbH=Math.max(0,winH-vvH);
+    if(kbH!==_kbAdjust){
+      _kbAdjust=kbH;
+      rs.style.paddingBottom=kbH>0?kbH+'px':'env(safe-area-inset-bottom)';
+      // Scroll to nickname input so it's visible
+      if(kbH>0){
+        const ni=$('nickname-input');
+        if(ni)requestAnimationFrame(()=>ni.scrollIntoView({block:'nearest',behavior:'smooth'}));
+      }
+    }
+  }
+  window.visualViewport.addEventListener('resize',onVVResize);
+  window.visualViewport.addEventListener('scroll',onVVResize);
+}
 </script>
 </body>
 </html>
