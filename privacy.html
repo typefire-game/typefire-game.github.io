@@ -38,6 +38,7 @@ header{
   user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
 }
 .home-btn:hover{border-color:var(--accent);color:var(--accent);}
+.home-btn:focus,.home-btn:focus-visible{border-color:var(--border);color:var(--muted);outline:none;}
 .home-btn:active{border-color:var(--border);color:var(--muted);background:none;}
 main{flex:1;padding:2rem 1.2rem;max-width:35rem;}
 h1{font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:.4rem;letter-spacing:.02em;}
@@ -55,6 +56,7 @@ footer{
 }
 footer a{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .15s;padding:.6rem .45rem;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;}
 footer a:hover{color:var(--accent);}
+footer a:focus,footer a:focus-visible{color:var(--muted);outline:none;}
 footer a:visited{color:var(--muted);}
 footer a:active{color:var(--muted);background:none;}
 .sep{color:var(--border);font-size:.72rem;}
@@ -122,6 +124,7 @@ footer a:active{color:var(--muted);background:none;}
     window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dip=e;setInstall(true);});
     window.addEventListener('appinstalled',()=>{setInstall(false);_dip=null;});
     window._triggerInstall=()=>{if(_dip){_dip.prompt();_dip.userChoice.then(()=>{_dip=null;});}};
+    document.addEventListener('touchend',e=>{const t=e.target&&e.target.closest('button,a');if(t)setTimeout(()=>t.blur(),300);},{passive:true});
   })();
   </script>
 </div>

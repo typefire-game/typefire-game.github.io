@@ -45,11 +45,10 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 /* Prevent text selection globally (except input fields) */
 body, button, a, div, span, p, header, footer { user-select:none; -webkit-user-select:none; }
-/* Prevent button/link color change on tap/long-press */
-button { -webkit-tap-highlight-color:transparent; }
-button:active, button:focus { background-color:inherit; outline:none; }
+/* Prevent tap highlight on all interactive elements */
+button { -webkit-tap-highlight-color:transparent; outline:none; }
 a { -webkit-tap-highlight-color:transparent; }
-a:active { background:none !important; }
+a:active { background:none; }
 
 html {
   /* block horizontal overscroll/bounce; keep vertical for native PTR */
@@ -119,6 +118,7 @@ header {
   white-space:nowrap; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .lb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.lb-btn:focus, .lb-btn:focus-visible { border-color:var(--border); color:var(--muted); outline:none; }
 .lb-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 
 /* ── STATS ── */
@@ -204,6 +204,7 @@ header {
   user-select:none;
 }
 .site-footer a:hover { color:var(--accent); }
+.site-footer a:focus, .site-footer a:focus-visible { color:var(--muted); outline:none; }
 .site-footer a:visited { color:var(--muted); }
 .site-footer a:active { color:var(--muted); background:none; }
 .footer-sep { color:var(--border); font-size:.8rem; flex-shrink:0; }
@@ -221,6 +222,7 @@ img, video { max-width:100%; height:auto; }
   -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .home-btn:hover { border-color:var(--accent); color:var(--accent); }
+.home-btn:focus, .home-btn:focus-visible { border-color:var(--border); color:var(--muted); outline:none; }
 .home-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 
 /* ── START SCREEN ── */
@@ -257,6 +259,7 @@ img, video { max-width:100%; height:auto; }
   -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
 .start-lb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.start-lb-btn:focus, .start-lb-btn:focus-visible { border-color:var(--border); color:var(--muted); outline:none; background:none; }
 .start-lb-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 #start-screen .site-footer {
   width:100%; margin-top:auto; border-top:1px solid var(--border);
@@ -627,6 +630,12 @@ img, video { max-width:100%; height:auto; }
   document.addEventListener('touchmove', e=>{
     if(e.touches.length>1) e.preventDefault(); // two-finger = pinch
   },{passive:false});
+
+  // Blur focused button/link after touch to prevent :focus/:hover residue color change
+  document.addEventListener('touchend', e=>{
+    const t=e.target&&e.target.closest('button,a');
+    if(t) setTimeout(()=>t.blur(), 300);
+  }, {passive:true});
 
   // Passage engine — runs independently of Firebase module
   // This means passagesReady is never blocked by Firebase CDN availability
