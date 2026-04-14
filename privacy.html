@@ -37,8 +37,8 @@ header{
   letter-spacing:.06em;
   user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
 }
-.home-btn:hover{border-color:var(--accent);color:var(--accent);}
 .home-btn:focus,.home-btn:focus-visible{border-color:var(--border);color:var(--muted);outline:none;}
+@media(hover:hover){.home-btn:hover{border-color:var(--accent);color:var(--accent);}}
 .home-btn:active{border-color:var(--border);color:var(--muted);background:none;}
 main{flex:1;padding:2rem 1.2rem;max-width:35rem;}
 h1{font-size:2rem;font-weight:900;color:var(--accent);margin-bottom:.4rem;letter-spacing:.02em;}
@@ -55,8 +55,8 @@ footer{
   border-top:1px solid var(--border);
 }
 footer a{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .15s;padding:.6rem .45rem;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;}
-footer a:hover{color:var(--accent);}
 footer a:focus,footer a:focus-visible{color:var(--muted);outline:none;}
+@media(hover:hover){footer a:hover{color:var(--accent);}}
 footer a:visited{color:var(--muted);}
 footer a:active{color:var(--muted);background:none;}
 .sep{color:var(--border);font-size:.72rem;}

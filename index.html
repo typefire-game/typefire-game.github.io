@@ -117,8 +117,8 @@ header {
   color:var(--muted); font-family:var(--font); transition:all .15s; line-height:1;
   white-space:nowrap; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
-.lb-btn:hover { border-color:var(--accent); color:var(--accent); }
 .lb-btn:focus, .lb-btn:focus-visible { border-color:var(--border); color:var(--muted); outline:none; }
+@media(hover:hover){ .lb-btn:hover { border-color:var(--accent); color:var(--accent); } }
 .lb-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 
 /* ── STATS ── */
@@ -203,8 +203,8 @@ header {
   -webkit-touch-callout:none;
   user-select:none;
 }
-.site-footer a:hover { color:var(--accent); }
 .site-footer a:focus, .site-footer a:focus-visible { color:var(--muted); outline:none; }
+@media(hover:hover){ .site-footer a:hover { color:var(--accent); } }
 .site-footer a:visited { color:var(--muted); }
 .site-footer a:active { color:var(--muted); background:none; }
 .footer-sep { color:var(--border); font-size:.8rem; flex-shrink:0; }
@@ -221,8 +221,8 @@ img, video { max-width:100%; height:auto; }
   letter-spacing:.06em;
   -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
-.home-btn:hover { border-color:var(--accent); color:var(--accent); }
 .home-btn:focus, .home-btn:focus-visible { border-color:var(--border); color:var(--muted); outline:none; }
+@media(hover:hover){ .home-btn:hover { border-color:var(--accent); color:var(--accent); } }
 .home-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 
 /* ── START SCREEN ── */
@@ -258,8 +258,8 @@ img, video { max-width:100%; height:auto; }
   text-transform:uppercase; transition:all .15s; width:100%; max-width:17.5rem;
   -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none;
 }
-.start-lb-btn:hover { border-color:var(--accent); color:var(--accent); }
 .start-lb-btn:focus, .start-lb-btn:focus-visible { border-color:var(--border); color:var(--muted); outline:none; background:none; }
+@media(hover:hover){ .start-lb-btn:hover { border-color:var(--accent); color:var(--accent); } }
 .start-lb-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 #start-screen .site-footer {
   width:100%; margin-top:auto; border-top:1px solid var(--border);
