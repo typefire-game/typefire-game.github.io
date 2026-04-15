@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Leaderboard — TYPEFIRE</title>
+<meta name="description" content="TYPEFIRE global leaderboard. See the top typing speeds for 15s, 30s, and 60s.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#272a26">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TYPEFIRE">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#272a26; --surface:#343832; --border:#3e433c;
+  --ink:#dae5d8; --muted:#7a8a78; --accent:#5e8f58;
+  --accent-cta:#72b06b; --wrong-bg:#38342e;
+  --font:'Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{
+  background:var(--bg);color:var(--ink);font-family:var(--font);
+  height:100dvh;max-height:100dvh;overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body,button,a,div,span,p,header,footer{user-select:none;-webkit-user-select:none;}
+button{outline:none;}
+a{-webkit-tap-highlight-color:transparent;}
+
+.page{
+  max-width:42.5rem;margin:0 auto;
+  display:flex;flex-direction:column;
+  height:100dvh;overflow:hidden;
+}
+
+/* ── HEADER ── */
+header{
+  padding:.75rem 1.2rem .5rem;
+  display:flex;align-items:center;gap:.5rem;
+  flex-shrink:0;border-bottom:1px solid var(--border);
+}
+.logo{
+  font-size:1.5rem;font-weight:900;letter-spacing:.04em;
+  color:var(--ink);text-decoration:none;flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+}
+.logo em{color:var(--accent);font-style:normal;}
+.home-btn{
+  background:none;border:1.5px solid var(--border);border-radius:8px;
+  padding:.4rem 1rem;cursor:pointer;font-size:.85rem;font-weight:700;
+  color:var(--muted);font-family:var(--font);text-decoration:none;
+  line-height:1;display:inline-block;flex-shrink:0;white-space:nowrap;
+  letter-spacing:.06em;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+}
+.home-btn:focus,.home-btn:focus-visible{border-color:var(--border);color:var(--muted);outline:none;}
+@media(hover:hover){.home-btn:hover{border-color:var(--accent);color:var(--accent);}}
+.home-btn:active{border-color:var(--border);color:var(--muted);background:none;}
+.play-btn{
+  background:var(--accent-cta);border:none;border-radius:8px;
+  padding:.4rem 1rem;cursor:pointer;font-size:.85rem;font-weight:700;
+  color:var(--bg);font-family:var(--font);letter-spacing:.06em;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
+  text-decoration:none;display:inline-block;flex-shrink:0;white-space:nowrap;
+}
+.play-btn:active{background:var(--accent-cta);color:var(--bg);}
+
+/* ── TABS ── */
+.lb-tabs{display:flex;gap:.4rem;padding:.5rem 1.2rem;flex-shrink:0;}
+.lb-tab{
+  flex:1;border:1.5px solid var(--border);background:var(--surface);
+  color:var(--muted);font-family:var(--font);font-size:1rem;font-weight:500;
+  padding:.4rem 0;border-radius:6px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
+}
+.lb-tab.active{border-color:var(--accent-cta);background:var(--accent-cta);color:var(--bg);font-weight:700;}
+.lb-tab:active:not(.active){background:var(--surface);color:var(--muted);}
+
+/* ── LIST ── */
+.lb-list{
+  flex:1;overflow-y:auto;padding:0 1.2rem .4rem;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+}
+.lb-row{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.6rem .75rem;border-radius:10px;border:1.5px solid var(--border);
+  margin-bottom:.35rem;background:var(--surface);
+}
+.lb-row.top1{border-color:#8f7a4a;background:var(--wrong-bg);}
+.lb-row.top2{border-color:#5a5a5a;}
+.lb-row.top3{border-color:#5e4a2a;}
+.lb-rank{font-size:1.3rem;font-weight:700;color:var(--muted);width:1.8rem;text-align:center;flex-shrink:0;}
+.lb-row.top1 .lb-rank{color:#8f7a4a;}
+.lb-row.top2 .lb-rank{color:#888;}
+.lb-row.top3 .lb-rank{color:#7a5a38;}
+.lb-name{flex:1;font-size:1.05rem;font-weight:500;}
+.lb-wpm-col{display:flex;flex-direction:column;align-items:flex-end;width:3.5rem;flex-shrink:0;}
+.lb-wpm{font-size:1.55rem;font-weight:700;color:var(--accent);line-height:1;}
+.lb-wpm-label{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.lb-acc{font-size:.9rem;font-weight:500;color:var(--muted);width:2.75rem;text-align:right;flex-shrink:0;}
+.lb-empty{text-align:center;color:var(--muted);font-size:.95rem;padding:3rem 0;letter-spacing:.06em;}
+.lb-loading{text-align:center;color:var(--muted);font-size:.8rem;padding:2rem 0;letter-spacing:.1em;text-transform:uppercase;font-weight:600;}
+.ad-placeholder{
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px dashed var(--border);border-radius:8px;
+  color:var(--muted);font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  opacity:.5;margin-top:.8rem;min-height:5rem;
+}
+
+/* ── FOOTER ── */
+footer{
+  flex-shrink:0;
+  padding:.6rem 1.2rem max(.9rem,env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  border-top:1px solid var(--border);
+}
+footer a{
+  font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;padding:.6rem .45rem;
+  -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;
+}
+footer a:focus,footer a:focus-visible{color:var(--muted);outline:none;}
+@media(hover:hover){footer a:hover{color:var(--accent);}}
+footer a:visited{color:var(--muted);}
+footer a:active{color:var(--muted);background:none;}
+.sep{color:var(--border);font-size:.72rem;}
+
+@media(min-width:37.5rem){
+  header,.lb-tabs,.lb-list,footer{padding-left:2rem;padding-right:2rem;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo">LEADER<em>BOARD</em></div>
+    <a class="home-btn" href="index.html">Home</a>
+    <a class="play-btn" href="index.html">PLAY</a>
+  </header>
+
+  <div class="lb-tabs">
+    <button class="lb-tab active" data-time="15">15s</button>
+    <button class="lb-tab" data-time="30">30s</button>
+    <button class="lb-tab" data-time="60">60s</button>
+  </div>
+
+  <div class="lb-list" id="lb-list">
+    <div class="lb-loading">Loading...</div>
+  </div>
+
+  <footer>
+    <a href="index.html">Home</a>
+    <span class="sep">·</span>
+    <a href="about.html">About</a>
+    <span class="sep">·</span>
+    <a href="privacy.html">Privacy Policy</a>
+    <span class="sep">·</span>
+    <a href="#" id="pwa-install-btn-lb" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
+  </footer>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, get, query, orderByChild, limitToLast }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const app = initializeApp({
+  apiKey:"AIzaSyClQ0SV1vuQiy_2Ji3_1YpnYJcmmt_WXlQ",
+  authDomain:"typefire-e5c68.firebaseapp.com",
+  databaseURL:"https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"typefire-e5c68",
+  storageBucket:"typefire-e5c68.firebasestorage.app",
+  messagingSenderId:"1065566297610",
+  appId:"1:1065566297610:web:c109b00d44a8cbb3fec9f3"
+});
+const db = getDatabase(app);
+
+const DB = 'https://typefire-e5c68-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+function escHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+let currentTime = 15;
+
+// Read ?t= param from URL (so index.html can pass current mode)
+const urlParams = new URLSearchParams(location.search);
+const tParam = parseInt(urlParams.get('t'));
+if(tParam===15||tParam===30||tParam===60) currentTime=tParam;
+
+async function loadLeaderboard(duration){
+  const list = document.getElementById('lb-list');
+  list.innerHTML = '<div class="lb-loading">Loading...</div>';
+  try{
+    const res = await fetch(`${DB}/scores/${duration}.json`,{headers:{'Accept':'application/json'}});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    if(!data||typeof data!=='object'||!Object.keys(data).length){
+      list.innerHTML='<div class="lb-empty">No scores yet.<br>Be the first!</div>';return;
+    }
+    const scores = Object.values(data).filter(s=>s&&typeof s.wpm==='number').sort((a,b)=>b.wpm-a.wpm).slice(0,10);
+    list.innerHTML = scores.map((s,i)=>{
+      const rc = i===0?'top1':i===1?'top2':i===2?'top3':'';
+      const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+      return `<div class="lb-row ${rc}">
+        <div class="lb-rank">${medal||i+1}</div>
+        <div class="lb-name">${escHtml(s.name||'Anonymous')}</div>
+        <div class="lb-wpm-col"><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div>
+        <div class="lb-acc">${s.acc?s.acc+'%':''}</div>
+      </div>`;
+    }).join('') + '<div class="ad-placeholder">Advertisement</div>';
+  }catch(e){
+    // Firebase SDK fallback
+    try{
+      const snap = await get(query(ref(db,`scores/${duration}`),orderByChild('wpm'),limitToLast(20)));
+      if(!snap.exists()){list.innerHTML='<div class="lb-empty">No scores yet.<br>Be the first!</div>';return;}
+      const scores=[];snap.forEach(c=>scores.push(c.val()));
+      scores.sort((a,b)=>b.wpm-a.wpm);
+      list.innerHTML = scores.slice(0,10).map((s,i)=>{
+        const rc=i===0?'top1':i===1?'top2':i===2?'top3':'';
+        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+        return `<div class="lb-row ${rc}">
+          <div class="lb-rank">${medal||i+1}</div>
+          <div class="lb-name">${escHtml(s.name||'Anonymous')}</div>
+          <div class="lb-wpm-col"><div class="lb-wpm">${s.wpm}</div><div class="lb-wpm-label">WPM</div></div>
+          <div class="lb-acc">${s.acc?s.acc+'%':''}</div>
+        </div>`;
+      }).join('') + '<div class="ad-placeholder">Advertisement</div>';
+    }catch(e2){
+      list.innerHTML='<div class="lb-empty">Failed to load.<br>Please try again.</div>';
+    }
+  }
+}
+
+// Set active tab from URL param
+document.querySelectorAll('.lb-tab').forEach(tab=>{
+  tab.classList.toggle('active', parseInt(tab.dataset.time)===currentTime);
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTime=parseInt(tab.dataset.time);
+    loadLeaderboard(currentTime);
+  });
+});
+
+loadLeaderboard(currentTime);
+
+// PWA install
+(function(){
+  const INSTALL_IDS=['pwa-install-btn-lb'];
+  function setInstall(v){INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';});}
+  let _dip=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dip=e;setInstall(true);});
+  window.addEventListener('appinstalled',()=>{setInstall(false);_dip=null;});
+  window._triggerInstall=()=>{if(_dip){_dip.prompt();_dip.userChoice.then(()=>{_dip=null;});}};
+  document.addEventListener('touchend',e=>{const t=e.target&&e.target.closest('button,a');if(t)setTimeout(()=>t.blur(),300);},{passive:true});
+})();
+</script>
+</body>
+</html>
