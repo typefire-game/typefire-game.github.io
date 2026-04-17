@@ -111,7 +111,8 @@ footer a:active{color:var(--muted);background:none;}
   </footer>
   <script>
   (function(){
-    var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=m.content;
+    // Force theme-color: remove then re-insert so Android Chrome re-reads it
+    (function(){var old=document.querySelector('meta[name="theme-color"]');var c=old?old.content:'#272a26';if(old)old.remove();var m=document.createElement('meta');m.name='theme-color';m.content=c;document.head.appendChild(m);})();
   })();
   (function(){
     const INSTALL_IDS=['pwa-install-btn-about'];

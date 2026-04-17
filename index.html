@@ -434,13 +434,16 @@ img, video { max-width:100%; height:auto; }
   .start-desc { font-size:1.75rem; white-space:nowrap; }
   .desc-br { display:none; }
 }
-/* PWA standalone: no browser chrome → spacers absorb extra height, gap stays identical */
+/* PWA standalone: no browser chrome → shrink top spacers to move button group up */
 @media(display-mode:standalone){
-  #start-screen { gap:1.1rem; padding-top:1.5rem; }
-  #start-screen > div[style*="flex:1"] { flex:1.6 !important; }
-  #start-screen > div[style*="flex:2"] { flex:3.2 !important; }
+  #start-screen { gap:1.1rem; padding-top:env(safe-area-inset-top,1.5rem); }
+  /* Top spacer smaller → logo+desc stay near top */
+  #start-screen > div[style*="flex:1"] { flex:.4 !important; }
+  /* Middle spacer smaller → button group moves up */
+  #start-screen > div[style*="flex:2"] { flex:.8 !important; }
+  /* Result screen: push ad+play-again group up to match GO bottom */
   #result-screen { gap:.3rem; }
-  #result-screen .again-btn { padding:.9rem 3rem; font-size:1.4rem; }
+  #result-spacer { flex:.4 !important; min-height:0; }
 }
 </style>
 </head>
@@ -1118,6 +1121,13 @@ $('mode-pick-go').addEventListener('click',async()=>{
 });
 $('mode-pick-cancel').addEventListener('click',closeModePicker);
 $('mode-picker').addEventListener('click',e=>{if(e.target===$('mode-picker'))closeModePicker();});
+
+// If returning from leaderboard with ?play=1, open mode picker (with overlay effect)
+if(new URLSearchParams(location.search).get('play')==='1'){
+  history.replaceState(null,'',location.pathname);
+  // Small delay so page has rendered before picker appears
+  setTimeout(()=>openModePicker('lb'),120);
+}
 
 document.querySelectorAll('.start-mode-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
