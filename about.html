@@ -7,6 +7,10 @@
 <meta name="description" content="About TYPEFIRE, a minimalist typing speed test focused on science, philosophy, and mathematics passages.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#272a26">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TYPEFIRE">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -106,6 +110,9 @@ footer a:active{color:var(--muted);background:none;}
     <a href="#" id="pwa-install-btn-about" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
   </footer>
   <script>
+  (function(){
+    var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=m.content;
+  })();
   (function(){
     const INSTALL_IDS=['pwa-install-btn-about'];
     function setInstall(v){INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';});}
