@@ -110,7 +110,7 @@ header {
 .logo { font-size:1.45rem; font-weight:800; letter-spacing:.04em; line-height:1; min-width:0; flex-shrink:1; white-space:nowrap; }
 .logo em { color:var(--accent); font-style:normal; }
 .header-right { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
-.header-time { font-size:1.8rem; font-weight:700; color:var(--accent); line-height:1; }
+.header-time { font-size:1.8rem; font-weight:700; color:var(--accent); line-height:1; min-width:2.2rem; text-align:right; }
 .lb-btn {
   background:none; border:1.5px solid var(--border); border-radius:6px;
   padding:.3rem .65rem; cursor:pointer; font-size:.8rem; font-weight:600;
@@ -514,7 +514,7 @@ img, video { max-width:100%; height:auto; }
     <button class="again-btn" id="again-btn">PLAY AGAIN</button>
     <footer class="site-footer" id="result-footer">
       <a href="#" class="js-go-home result-footer-link">Home</a>
-      <span class="footer-sep">·</span>
+      <span class="footer-sep" id="result-footer-sep-install" style="display:none;">·</span>
       <a href="#" id="pwa-install-btn-result" style="display:none;color:var(--accent);" class="result-footer-link" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
     </footer>
   </div>
@@ -536,11 +536,7 @@ img, video { max-width:100%; height:auto; }
     </div>
     <footer class="site-footer">
       <a href="#" class="js-go-home">Home</a>
-      <span class="footer-sep">·</span>
-      <a href="about.html">About</a>
-      <span class="footer-sep">·</span>
-      <a href="privacy.html">Privacy Policy</a>
-      <span class="footer-sep">·</span>
+      <span class="footer-sep" id="lb-overlay-footer-sep-install" style="display:none;">·</span>
       <a href="#" id="pwa-install-btn-lb" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
     </footer>
   </div>
@@ -623,7 +619,7 @@ img, video { max-width:100%; height:auto; }
     navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
 
   const INSTALL_IDS=['pwa-install-btn','pwa-install-btn-start','pwa-install-btn-result','pwa-install-btn-lb'];
-  function setInstall(v){ INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';}); }
+  function setInstall(v){ INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';}); ['result-footer-sep-install','lb-overlay-footer-sep-install'].forEach(id=>{const s=document.getElementById(id);if(s)s.style.display=v?'inline':'none';});}
   let _dip=null;
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dip=e;setInstall(true);});
   window.addEventListener('appinstalled',()=>{setInstall(false);_dip=null;});
@@ -650,11 +646,13 @@ img, video { max-width:100%; height:auto; }
   },{passive:false});
 
   // Dynamic theme-color: address bar green during game, dark otherwise
-  function setThemeColor(color){
+  // Assigned to window so non-module scripts (resetGame etc.) can call it
+  window.setThemeColor=function(color){
     let m=document.querySelector('meta[name="theme-color"]');
     if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m);}
     m.content=color;
-  }
+  };
+  const setThemeColor=window.setThemeColor;
 
   // Blur focused button/link after touch to prevent :focus/:hover residue color change
   document.addEventListener('touchend', e=>{
@@ -815,7 +813,14 @@ let active=false,done=false,startTime=null,lastVal='';
 let lastResult={wpm:0,acc:'—',errors:0,chars:0};
 const inp=$('ghost-input');
 
-function genWords(){words=passageToWords(getPassage());if(!words.length)words=passageToWords(getPassage());}
+function genWords(){
+  let raw=getPassage();
+  words=passageToWords(raw);
+  // If first passage returns empty (e.g. pool still warming up), try once more
+  if(!words.length){raw=getPassage();words=passageToWords(raw);}
+  // Absolute fallback to prevent blank screen
+  if(!words.length)words=['the','quick','brown','fox','jumps','over','the','lazy','dog'];
+}
 
 function render(){
   const d=$('word-display');
