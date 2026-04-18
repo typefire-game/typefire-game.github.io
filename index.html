@@ -7,6 +7,13 @@
 <meta name="description" content="Minimalist typing speed test. Pick 15, 30, or 60 seconds and see how fast you can type.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#272a26">
+<script>
+// Synchronous: runs during HTML parse, before browser finalises address bar colour
+(function(){
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m){var c=m.content;m.remove();var n=document.createElement('meta');n.name='theme-color';n.content=c;document.head.appendChild(n);}
+})();
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -645,6 +652,7 @@ img, video { max-width:100%; height:auto; }
   },{passive:false});
 
   // Dynamic theme-color: remove+re-insert forces Android Chrome to re-read
+  // Exposed on window so non-module code (resetGame etc.) can call it
   window.setThemeColor=function(color){
     const old=document.querySelector('meta[name="theme-color"]');
     if(old) old.remove();
@@ -653,8 +661,6 @@ img, video { max-width:100%; height:auto; }
     document.head.appendChild(m);
   };
   const setThemeColor=window.setThemeColor;
-  // Apply dark on load (overrides static meta)
-  setThemeColor('#272a26');
 
   // Blur focused button/link after touch to prevent :focus/:hover residue color change
   document.addEventListener('touchend', e=>{
@@ -742,38 +748,6 @@ img, video { max-width:100%; height:auto; }
         if (cursorEl && typeof positionCaret === 'function') positionCaret(cursorEl);
       });
     }
-  });
-
-  // Back-button navigation
-  // Keep ONE sentinel entry above the page so popstate always fires.
-  // We never push more; instead we inspect the current UI state and act.
-  // On home: do nothing (re-push sentinel to stay interceptable).
-  function getTopOverlay(){
-    if(document.getElementById('mode-picker').classList.contains('show')) return 'picker';
-    if(document.getElementById('lb-overlay').classList.contains('show')) return 'lb';
-    if(document.getElementById('result-screen').classList.contains('show')) return 'result';
-    if(document.getElementById('start-screen').style.display==='none') return 'game';
-    return 'home';
-  }
-  history.replaceState({tf:true},'');
-  history.pushState({tf:true},'');  // sentinel
-
-  window.addEventListener('popstate', ()=>{
-    const top=getTopOverlay();
-    const ss=document.getElementById('start-screen');
-    if(top==='picker'){
-      document.getElementById('mode-picker').classList.remove('show');
-    } else if(top==='lb'){
-      document.getElementById('lb-overlay').classList.remove('show');
-      ss.style.display='';
-    } else if(top==='result'){
-      document.getElementById('result-screen').classList.remove('show');
-      ss.style.display='';
-    } else if(top==='game'){
-      ss.style.display='';
-    }
-    // Always re-push sentinel so next back is also intercepted
-    history.pushState({tf:true},'');
   });
 })();
 </script>
@@ -1098,9 +1072,8 @@ let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
   pickerCaller=caller||null;pickerSelectedTime=totalTime;
   document.querySelectorAll('.mode-pick-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.time)===pickerSelectedTime));
-  const picker=$('mode-picker');
-  picker.classList.add('show');
-
+  $('mode-picker').classList.add('show');
+  pushNavState('picker');
 }
 document.querySelectorAll('.mode-pick-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
@@ -1134,31 +1107,43 @@ $('mode-picker').addEventListener('click',e=>{if(e.target===$('mode-picker'))clo
     setTimeout(()=>openModePicker('lb'),120);
   }
 })();
-// Push a state whenever we enter a non-home screen so the back gesture has something to pop.
+// ── BFCACHE: when returning via back/forward from bfcache, reset to home ──
+window.addEventListener('pageshow', e=>{
+  if(e.persisted){
+    // Page restored from bfcache — reset all state to home screen
+    clearInterval(timer); active=false; done=false;
+    $('lb-overlay').classList.remove('show');
+    $('result-screen').classList.remove('show');
+    $('mode-picker').classList.remove('show');
+    $('start-screen').style.display='';
+    document.documentElement.style.touchAction='pan-y';
+    document.body.style.overflow='';
+    setThemeColor('#272a26');
+  }
+});
+
+// ── BACK GESTURE / HISTORY ──
 function pushNavState(name){
-  history.pushState({nav:name},'',location.pathname+(location.search||''));
+  history.pushState({nav:name},'',location.pathname);
 }
 window.addEventListener('popstate',e=>{
-  const state=e.state&&e.state.nav;
-  // Game screen: if timer still running, treat as go-home
-  if(document.documentElement.style.touchAction==='none'||(!done&&active)){
+  const nav=e.state&&e.state.nav;
+  // Use history state, not DOM inspection, to decide what to do
+  if(nav==='game'||nav==='result'){
     goHome(); return;
   }
-  // lb-overlay visible
-  if($('lb-overlay').classList.contains('show')){
+  if(nav==='lb-overlay'){
     $('lb-overlay').classList.remove('show');
     if(active && !done) setThemeColor('#5e8f58');
     return;
   }
-  // result-screen visible
-  if($('result-screen').classList.contains('show')){
-    goHome(); return;
-  }
-  // mode-picker visible
-  if($('mode-picker').classList.contains('show')){
+  if(nav==='picker'){
     closeModePicker(); return;
   }
-  // Otherwise let browser navigate away (exit app)
+  // No matching state — might be bfcache pop or exit; just go home if not already there
+  if($('result-screen').classList.contains('show')||$('lb-overlay').classList.contains('show')){
+    goHome();
+  }
 });
 
 // Init — handle ?play=1 (legacy) param
@@ -1184,8 +1169,8 @@ const startLbBtn=document.getElementById('start-lb-btn');
 if(startLbBtn) startLbBtn.href=`leaderboard.html?t=${totalTime}`;
 $('lb-open-btn').addEventListener('click',()=>{
   setThemeColor('#272a26');
-  pushNavState('lb-overlay');
   $('lb-overlay').classList.add('show');
+  pushNavState('lb-overlay');
   loadLeaderboard(lbTime);
 });
 function closeModePicker(){

@@ -11,6 +11,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TYPEFIRE">
+<script>
+(function(){var m=document.querySelector('meta[name="theme-color"]');if(m){var c=m.content;m.remove();var n=document.createElement('meta');n.name='theme-color';n.content=c;document.head.appendChild(n);}})();
+</script>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -110,10 +113,6 @@ footer a:active{color:var(--muted);background:none;}
     <a href="#" id="pwa-install-btn-about" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
   </footer>
   <script>
-  (function(){
-    // Force theme-color: remove then re-insert so Android Chrome re-reads it
-    (function(){var old=document.querySelector('meta[name="theme-color"]');var c=old?old.content:'#272a26';if(old)old.remove();var m=document.createElement('meta');m.name='theme-color';m.content=c;document.head.appendChild(m);})();
-  })();
   (function(){
     const INSTALL_IDS=['pwa-install-btn-about'];
     function setInstall(v){INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';});}
