@@ -7,13 +7,6 @@
 <meta name="description" content="Minimalist typing speed test. Pick 15, 30, or 60 seconds and see how fast you can type.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#272a26">
-<script>
-// Synchronous: runs during HTML parse, before browser finalises address bar colour
-(function(){
-  var m=document.querySelector('meta[name="theme-color"]');
-  if(m){var c=m.content;m.remove();var n=document.createElement('meta');n.name='theme-color';n.content=c;document.head.appendChild(n);}
-})();
-</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
