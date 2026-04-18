@@ -1077,6 +1077,7 @@ function resetGame(){
     },100);
   }
   requestAnimationFrame(()=>inp.focus());
+  pushNavState('game');
 }
 
 // Home buttons
@@ -1160,13 +1161,7 @@ window.addEventListener('popstate',e=>{
   // Otherwise let browser navigate away (exit app)
 });
 
-// Patch all "enter screen" points to pushState
-const _origResetGame=resetGame;
-function resetGame(){
-  _origResetGame();
-  pushNavState('game');
-}
-// Init — replace ?play=1 handling with history-aware version
+// Init — handle ?play=1 (legacy) param
 if(new URLSearchParams(location.search).get('play')==='1'){
   history.replaceState(null,'',location.pathname);
   setTimeout(()=>openModePicker('lb'),120);
