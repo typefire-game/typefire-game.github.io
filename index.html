@@ -434,16 +434,12 @@ img, video { max-width:100%; height:auto; }
   .start-desc { font-size:1.75rem; white-space:nowrap; }
   .desc-br { display:none; }
 }
-/* PWA standalone: no browser chrome → shrink top spacers to move button group up */
+/* PWA standalone: no browser chrome → shrink spacers so button group moves up */
 @media(display-mode:standalone){
-  #start-screen { gap:1.1rem; padding-top:env(safe-area-inset-top,1.5rem); }
-  /* Top spacer smaller → logo+desc stay near top */
-  #start-screen > div[style*="flex:1"] { flex:.4 !important; }
-  /* Middle spacer smaller → button group moves up */
-  #start-screen > div[style*="flex:2"] { flex:.8 !important; }
-  /* Result screen: push ad+play-again group up to match GO bottom */
-  #result-screen { gap:.3rem; }
-  #result-spacer { flex:.4 !important; min-height:0; }
+  #start-screen { gap:.9rem; padding-top:max(1rem,env(safe-area-inset-top)); }
+  #start-screen > div[style*="flex:1"] { flex:.2 !important; }
+  #start-screen > div[style*="flex:2"] { flex:.5 !important; }
+  #result-spacer { flex:.2 !important; min-height:0; }
 }
 </style>
 </head>
@@ -546,7 +542,7 @@ img, video { max-width:100%; height:auto; }
 
   <!-- GAME UI -->
   <header>
-    <div class="logo">TYPE<em>FIRE</em></div>
+    <div class="logo js-go-home" style="cursor:pointer;" role="button" aria-label="Home">TYPE<em>FIRE</em></div>
     <div class="header-right">
       <button class="lb-btn" id="lb-open-btn">🏆 LEADERBOARD</button>
       <div class="header-time" id="time-display">15</div>
@@ -648,14 +644,17 @@ img, video { max-width:100%; height:auto; }
     }
   },{passive:false});
 
-  // Dynamic theme-color: address bar green during game, dark otherwise
-  // Assigned to window so non-module scripts (resetGame etc.) can call it
+  // Dynamic theme-color: remove+re-insert forces Android Chrome to re-read
   window.setThemeColor=function(color){
-    let m=document.querySelector('meta[name="theme-color"]');
-    if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m);}
-    m.content=color;
+    const old=document.querySelector('meta[name="theme-color"]');
+    if(old) old.remove();
+    const m=document.createElement('meta');
+    m.name='theme-color'; m.content=color;
+    document.head.appendChild(m);
   };
   const setThemeColor=window.setThemeColor;
+  // Apply dark on load (overrides static meta)
+  setThemeColor('#272a26');
 
   // Blur focused button/link after touch to prevent :focus/:hover residue color change
   document.addEventListener('touchend', e=>{
@@ -963,6 +962,7 @@ async function endGame(){
   document.body.style.overflow='';
   setThemeColor('#272a26');
   $('result-screen').classList.add('show');
+  pushNavState('result');
 
   const btns=$('result-screen').querySelectorAll('button');
   btns.forEach(b=>{b.disabled=true;b.style.opacity='.4';b.style.pointerEvents='none';});
@@ -1101,11 +1101,6 @@ function openModePicker(caller){
   picker.classList.add('show');
 
 }
-function closeModePicker(){
-  $('mode-picker').classList.remove('show');
-  if(pickerCaller!=='lb'&&pickerCaller!=='result')$('lb-overlay').classList.remove('show');
-  pickerCaller=null;
-}
 document.querySelectorAll('.mode-pick-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     pickerSelectedTime=parseInt(btn.dataset.time);
@@ -1122,10 +1117,58 @@ $('mode-pick-go').addEventListener('click',async()=>{
 $('mode-pick-cancel').addEventListener('click',closeModePicker);
 $('mode-picker').addEventListener('click',e=>{if(e.target===$('mode-picker'))closeModePicker();});
 
-// If returning from leaderboard with ?play=1, open mode picker (with overlay effect)
+// ── URL PARAM HANDLING ──
+// ?play=1 — from leaderboard PLAY btn (now handled via mode picker on leaderboard itself)
+// ?mode=N  — from leaderboard mode picker GO, start game immediately
+(function(){
+  const params=new URLSearchParams(location.search);
+  const modeParam=parseInt(params.get('mode'));
+  if(modeParam===15||modeParam===30||modeParam===60){
+    history.replaceState(null,'',location.pathname);
+    totalTime=modeParam;
+    $('start-screen').style.display='none';
+    setTimeout(()=>{resetGame();inp.focus();},50);
+  } else if(params.get('play')==='1'){
+    history.replaceState(null,'',location.pathname);
+    setTimeout(()=>openModePicker('lb'),120);
+  }
+})();
+// Push a state whenever we enter a non-home screen so the back gesture has something to pop.
+function pushNavState(name){
+  history.pushState({nav:name},'',location.pathname+(location.search||''));
+}
+window.addEventListener('popstate',e=>{
+  const state=e.state&&e.state.nav;
+  // Game screen: if timer still running, treat as go-home
+  if(document.documentElement.style.touchAction==='none'||(!done&&active)){
+    goHome(); return;
+  }
+  // lb-overlay visible
+  if($('lb-overlay').classList.contains('show')){
+    $('lb-overlay').classList.remove('show');
+    if(active && !done) setThemeColor('#5e8f58');
+    return;
+  }
+  // result-screen visible
+  if($('result-screen').classList.contains('show')){
+    goHome(); return;
+  }
+  // mode-picker visible
+  if($('mode-picker').classList.contains('show')){
+    closeModePicker(); return;
+  }
+  // Otherwise let browser navigate away (exit app)
+});
+
+// Patch all "enter screen" points to pushState
+const _origResetGame=resetGame;
+function resetGame(){
+  _origResetGame();
+  pushNavState('game');
+}
+// Init — replace ?play=1 handling with history-aware version
 if(new URLSearchParams(location.search).get('play')==='1'){
   history.replaceState(null,'',location.pathname);
-  // Small delay so page has rendered before picker appears
   setTimeout(()=>openModePicker('lb'),120);
 }
 
@@ -1145,9 +1188,19 @@ let lbTime=15;
 const startLbBtn=document.getElementById('start-lb-btn');
 if(startLbBtn) startLbBtn.href=`leaderboard.html?t=${totalTime}`;
 $('lb-open-btn').addEventListener('click',()=>{
+  setThemeColor('#272a26');
+  pushNavState('lb-overlay');
   $('lb-overlay').classList.add('show');
   loadLeaderboard(lbTime);
 });
+function closeModePicker(){
+  $('mode-picker').classList.remove('show');
+  if(pickerCaller!=='lb'&&pickerCaller!=='result') $('lb-overlay').classList.remove('show');
+  // If game was in progress (lb opened mid-game), restore green
+  if(active && !done) setThemeColor('#5e8f58');
+  pickerCaller=null;
+}
+// lb-close (PLAY from leaderboard overlay) opens mode picker; theme handled by closeModePicker
 $('lb-close').addEventListener('click',()=>openModePicker('lb'));
 document.querySelectorAll('.lb-tab').forEach(tab=>{
   tab.addEventListener('click',()=>{
