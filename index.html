@@ -484,7 +484,7 @@ img, video { max-width:100%; height:auto; }
   <!-- RESULT SCREEN -->
   <div id="result-screen">
     <div id="result-top-bar">
-      <button class="home-btn js-go-home">Home</button>
+      <a href="#" class="logo js-go-home" style="text-decoration:none;">TYPE<em>FIRE</em></a>
     </div>
     <div class="result-label">Your Speed</div>
     <div class="result-wpm" id="result-wpm">0</div>
@@ -856,7 +856,9 @@ function updateLive(){
   const liveTyped=totalTyped+currentTyped;
   const wpm=elapsed>0?Math.round((liveCorrect/5)/elapsed):0;
   const acc=liveTyped>0?Math.round(liveCorrect/liveTyped*100):'—';
-  $('wpm-live').textContent=wpm;$('acc-live').textContent=acc;$('err-live').textContent=errors;
+  // Live errors: committed errors + current word's wrong chars
+  const currentErrors=lastVal.split('').filter((c,i)=>c!==(words[curWord]||'')[i]).length;
+  $('wpm-live').textContent=wpm;$('acc-live').textContent=acc;$('err-live').textContent=errors+currentErrors;
 }
 
 function advance(typedVal){
@@ -1098,19 +1100,25 @@ $('mode-picker').addEventListener('click',e=>{if(e.target===$('mode-picker'))clo
     setTimeout(()=>openModePicker('lb'),120);
   }
 })();
-// ── BFCACHE: when returning via back/forward from bfcache, reset to home ──
+// ── BFCACHE: when returning via back/forward from bfcache ──
 window.addEventListener('pageshow', e=>{
-  if(e.persisted){
-    // Page restored from bfcache — reset all state to home screen
-    clearInterval(timer); active=false; done=false;
-    $('lb-overlay').classList.remove('show');
-    $('result-screen').classList.remove('show');
-    $('mode-picker').classList.remove('show');
-    $('start-screen').style.display='';
-    document.documentElement.style.touchAction='pan-y';
-    document.body.style.overflow='';
-    setThemeColor('#5e8f58');
+  if(!e.persisted) return;
+  const returnTo=sessionStorage.getItem('returnTo');
+  sessionStorage.removeItem('returnTo');
+  if(returnTo==='result'){
+    // Came back from leaderboard.html — restore result screen as-is
+    // Result screen is already showing (bfcache preserved DOM)
+    return;
   }
+  // Otherwise (e.g. mid-game): reset to home
+  clearInterval(timer); active=false; done=false;
+  $('lb-overlay').classList.remove('show');
+  $('result-screen').classList.remove('show');
+  $('mode-picker').classList.remove('show');
+  $('start-screen').style.display='';
+  document.documentElement.style.touchAction='pan-y';
+  document.body.style.overflow='';
+  setThemeColor('#5e8f58');
 });
 
 // ── BACK GESTURE / HISTORY ──
@@ -1219,6 +1227,7 @@ function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(
 
 $('result-lb-btn').addEventListener('click',async()=>{
   await submitOnLeave();
+  sessionStorage.setItem('returnTo','result');
   location.href=`leaderboard.html?t=${totalTime}`;
 });
 
