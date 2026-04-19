@@ -6,7 +6,7 @@
 <title>TYPEFIRE — Typing Speed Test</title>
 <meta name="description" content="Minimalist typing speed test. Pick 15, 30, or 60 seconds and see how fast you can type.">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#272a26">
+<meta name="theme-color" content="#5e8f58">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -927,7 +927,7 @@ async function endGame(){
   caretEl.classList.remove('visible');
   document.documentElement.style.touchAction='pan-y'; // restore scroll on result screen
   document.body.style.overflow='';
-  setThemeColor('#272a26');
+  setThemeColor('#5e8f58');
   $('result-screen').classList.add('show');
   pushNavState('result');
 
@@ -1009,7 +1009,7 @@ function goHome(){
   $('start-screen').style.display='';
   document.documentElement.style.touchAction='pan-y'; // restore scroll on home
   document.body.style.overflow='';
-  setThemeColor('#272a26');
+  setThemeColor('#5e8f58');
   // Clear history states so back button exits app correctly
 }
 
@@ -1109,7 +1109,7 @@ window.addEventListener('pageshow', e=>{
     $('start-screen').style.display='';
     document.documentElement.style.touchAction='pan-y';
     document.body.style.overflow='';
-    setThemeColor('#272a26');
+    setThemeColor('#5e8f58');
   }
 });
 
@@ -1159,7 +1159,7 @@ let lbTime=15;
 const startLbBtn=document.getElementById('start-lb-btn');
 if(startLbBtn) startLbBtn.href=`leaderboard.html?t=${totalTime}`;
 $('lb-open-btn').addEventListener('click',()=>{
-  setThemeColor('#272a26');
+  setThemeColor('#5e8f58');
   $('lb-overlay').classList.add('show');
   pushNavState('lb-overlay');
   loadLeaderboard(lbTime);
