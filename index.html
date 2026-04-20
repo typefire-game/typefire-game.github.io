@@ -278,6 +278,14 @@ img, video { max-width:100%; height:auto; }
 }
 #result-screen::-webkit-scrollbar { display:none; }
 #result-screen.show { display:flex; }
+#result-screen > header {
+  align-self:stretch;
+  padding:1rem 1.2rem .6rem;
+  margin:0 -1.5rem; /* cancel parent padding so border-bottom spans full width */
+  padding-left:1.2rem; padding-right:1.2rem;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
 /* footer pinned to bottom */
 #result-screen .site-footer {
   width:100%; max-width:20rem;
@@ -1002,9 +1010,18 @@ async function submitScore(wpm,acc,nickname){
   }
 }
 
+// ── NAVIGATION ──
+// Simple rule: store current screen in sessionStorage before leaving.
+// On return (bfcache or popstate), restore that screen.
+
+function pushNavState(name){
+  history.pushState({nav:name},'',location.pathname);
+}
+
 function goHome(){
   _doGoHome();
-  // Do NOT replaceState — keep history stack intact so browser back from home returns to result screen
+  // Push a null state so back-from-home has nothing to pop (exits app)
+  history.replaceState(null,'',location.pathname);
 }
 
 function _doGoHome(){
@@ -1017,6 +1034,48 @@ function _doGoHome(){
   document.body.style.overflow='';
   setThemeColor('#5e8f58');
 }
+
+// Save screen state to sessionStorage whenever we leave the page
+window.addEventListener('pagehide', ()=>{
+  const nav=history.state&&history.state.nav;
+  if(nav==='result'||$('result-screen').classList.contains('show')){
+    sessionStorage.setItem('screen','result');
+  } else {
+    sessionStorage.removeItem('screen');
+  }
+});
+
+// On bfcache restore, show the right screen
+window.addEventListener('pageshow', e=>{
+  if(!e.persisted) return;
+  const screen=sessionStorage.getItem('screen');
+  if(screen==='result'){
+    $('start-screen').style.display='none';
+    $('result-screen').classList.add('show');
+    $('lb-overlay').classList.remove('show');
+    $('mode-picker').classList.remove('show');
+  } else {
+    // Mid-game or unknown: go home
+    clearInterval(timer); active=false; done=false;
+    $('result-screen').classList.remove('show');
+    $('lb-overlay').classList.remove('show');
+    $('mode-picker').classList.remove('show');
+    $('start-screen').style.display='';
+    document.documentElement.style.touchAction='pan-y';
+    document.body.style.overflow='';
+    setThemeColor('#5e8f58');
+  }
+});
+
+window.addEventListener('popstate',e=>{
+  const nav=e.state&&e.state.nav;
+  if(nav==='picker'){ $('mode-picker').classList.remove('show'); return; }
+  if(nav==='lb-overlay'){ $('lb-overlay').classList.remove('show'); if(active&&!done)setThemeColor('#5e8f58'); return; }
+  if(nav==='result'){ $('lb-overlay').classList.remove('show'); $('mode-picker').classList.remove('show'); $('result-screen').classList.add('show'); $('start-screen').style.display='none'; return; }
+  if(nav==='game'){ _doGoHome(); return; }
+  // null state: clean up any open overlays
+  if($('result-screen').classList.contains('show')||$('lb-overlay').classList.contains('show')||$('mode-picker').classList.contains('show')) _doGoHome();
+});
 
 function resetGame(){
   clearInterval(timer);active=false;done=false;
@@ -1103,71 +1162,6 @@ $('mode-picker').addEventListener('click',e=>{if(e.target===$('mode-picker'))clo
     setTimeout(()=>openModePicker('lb'),120);
   }
 })();
-// ── BFCACHE: when returning via back/forward from bfcache ──
-window.addEventListener('pageshow', e=>{
-  if(!e.persisted) return;
-  const returnTo=sessionStorage.getItem('returnTo');
-  sessionStorage.removeItem('returnTo');
-  const nav=history.state&&history.state.nav;
-  // If returning to result state (via back gesture or from leaderboard), keep result screen
-  if(returnTo==='result'||nav==='result'){
-    $('result-screen').classList.add('show');
-    $('start-screen').style.display='none';
-    return;
-  }
-  // Mid-game or unknown: reset to home
-  clearInterval(timer); active=false; done=false;
-  $('lb-overlay').classList.remove('show');
-  $('result-screen').classList.remove('show');
-  $('mode-picker').classList.remove('show');
-  $('start-screen').style.display='';
-  document.documentElement.style.touchAction='pan-y';
-  document.body.style.overflow='';
-  setThemeColor('#5e8f58');
-});
-
-// ── BACK GESTURE / HISTORY ──
-function pushNavState(name){
-  history.pushState({nav:name},'',location.pathname);
-}
-window.addEventListener('popstate',e=>{
-  const nav=e.state&&e.state.nav;
-
-  if(nav==='picker'){
-    // Close picker, stay on whatever screen was behind it
-    $('mode-picker').classList.remove('show');
-    return;
-  }
-  if(nav==='lb-overlay'){
-    // Close lb-overlay, stay on game screen
-    $('lb-overlay').classList.remove('show');
-    if(active && !done) setThemeColor('#5e8f58');
-    return;
-  }
-  if(nav==='result'){
-    // Always restore result screen when popping back to this state
-    // (covers: back from lb-overlay, back from home, back from picker)
-    $('lb-overlay').classList.remove('show');
-    $('mode-picker').classList.remove('show');
-    $('result-screen').classList.add('show');
-    $('start-screen').style.display='none';
-    setThemeColor('#5e8f58');
-    return;
-  }
-  if(nav==='game'){
-    // Popped back to game state — this means user came from result screen going back to game
-    // Game screen shouldn't be re-entered; go home instead
-    _doGoHome(); return;
-  }
-  // nav is null/undefined — popped past all our states, truly going back to base
-  // If any overlay is still showing, clean up
-  if($('result-screen').classList.contains('show')||
-     $('lb-overlay').classList.contains('show')||
-     $('mode-picker').classList.contains('show')){
-    _doGoHome();
-  }
-});
-
 // Init — handle ?play=1 (legacy) param
 if(new URLSearchParams(location.search).get('play')==='1'){
   history.replaceState(null,'',location.pathname);
@@ -1250,7 +1244,6 @@ function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(
 
 $('result-lb-btn').addEventListener('click',async()=>{
   await submitOnLeave();
-  sessionStorage.setItem('returnTo','result');
   location.href=`leaderboard.html?t=${totalTime}`;
 });
 
