@@ -286,7 +286,6 @@ img, video { max-width:100%; height:auto; }
 }
 /* spacer pushes ad→PLAY AGAIN group down */
 #result-spacer { flex:1; min-height:0; }
-#result-top-bar { width:100%; display:flex; align-items:center; padding:1rem 1.2rem .6rem; border-bottom:1px solid var(--border); flex-shrink:0; }
 .result-label { font-size:.95rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
 .result-wpm { font-size:4.5rem; font-weight:700; color:var(--accent); line-height:1; }
 .result-sub { font-size:.95rem; font-weight:500; letter-spacing:.15em; color:var(--muted); margin-bottom:.2rem; }
@@ -483,9 +482,9 @@ img, video { max-width:100%; height:auto; }
 
   <!-- RESULT SCREEN -->
   <div id="result-screen">
-    <div id="result-top-bar">
-      <a href="#" class="logo js-go-home" style="text-decoration:none;">TYPE<em>FIRE</em></a>
-    </div>
+    <header>
+      <a href="#" class="logo js-go-home">TYPE<em>FIRE</em></a>
+    </header>
     <div class="result-label">Your Speed</div>
     <div class="result-wpm" id="result-wpm">0</div>
     <div class="result-sub">words per minute</div>
@@ -1109,12 +1108,14 @@ window.addEventListener('pageshow', e=>{
   if(!e.persisted) return;
   const returnTo=sessionStorage.getItem('returnTo');
   sessionStorage.removeItem('returnTo');
-  if(returnTo==='result'){
-    // Came back from leaderboard.html — restore result screen as-is
-    // Result screen is already showing (bfcache preserved DOM)
+  const nav=history.state&&history.state.nav;
+  // If returning to result state (via back gesture or from leaderboard), keep result screen
+  if(returnTo==='result'||nav==='result'){
+    $('result-screen').classList.add('show');
+    $('start-screen').style.display='none';
     return;
   }
-  // Otherwise (e.g. mid-game): reset to home
+  // Mid-game or unknown: reset to home
   clearInterval(timer); active=false; done=false;
   $('lb-overlay').classList.remove('show');
   $('result-screen').classList.remove('show');
