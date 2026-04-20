@@ -107,7 +107,7 @@ header {
   display:flex; align-items:center; justify-content:space-between; gap:.5rem;
   flex-shrink:0; flex-wrap:wrap;
 }
-.logo { font-size:1.45rem; font-weight:800; letter-spacing:.04em; line-height:1; min-width:0; flex-shrink:1; white-space:nowrap; }
+.logo { font-size:1.5rem; font-weight:900; letter-spacing:.04em; line-height:1; min-width:0; flex-shrink:1; white-space:nowrap; color:var(--ink); text-decoration:none; }
 .logo em { color:var(--accent); font-style:normal; }
 .header-right { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
 .header-time { font-size:1.8rem; font-weight:700; color:var(--accent); line-height:1; width:2.4rem; min-width:2.4rem; text-align:right; flex-shrink:0; }
@@ -931,7 +931,7 @@ async function endGame(){
   document.body.style.overflow='';
   setThemeColor('#5e8f58');
   $('result-screen').classList.add('show');
-  pushNavState('result');
+  history.replaceState({nav:'result'},'',location.pathname);
 
   const btns=$('result-screen').querySelectorAll('button');
   btns.forEach(b=>{b.disabled=true;b.style.opacity='.4';b.style.pointerEvents='none';});
@@ -1004,15 +1004,20 @@ async function submitScore(wpm,acc,nickname){
 }
 
 function goHome(){
+  _doGoHome();
+  // Clear all our nav states so back button exits the app/site correctly
+  history.replaceState(null,'',location.pathname);
+}
+
+function _doGoHome(){
   submitOnLeave();
   $('lb-overlay').classList.remove('show');
   $('result-screen').classList.remove('show');
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
-  document.documentElement.style.touchAction='pan-y'; // restore scroll on home
+  document.documentElement.style.touchAction='pan-y';
   document.body.style.overflow='';
   setThemeColor('#5e8f58');
-  // Clear history states so back button exits app correctly
 }
 
 function resetGame(){
@@ -1127,21 +1132,35 @@ function pushNavState(name){
 }
 window.addEventListener('popstate',e=>{
   const nav=e.state&&e.state.nav;
-  // Use history state, not DOM inspection, to decide what to do
-  if(nav==='game'||nav==='result'){
-    goHome(); return;
+
+  if(nav==='picker'){
+    // Close picker, stay on whatever screen was behind it
+    $('mode-picker').classList.remove('show');
+    return;
   }
   if(nav==='lb-overlay'){
+    // Close lb-overlay, stay on game screen
     $('lb-overlay').classList.remove('show');
     if(active && !done) setThemeColor('#5e8f58');
     return;
   }
-  if(nav==='picker'){
-    closeModePicker(); return;
+  if(nav==='result'){
+    // If result screen is still showing (e.g. came back from lb-overlay), stay there
+    if($('result-screen').classList.contains('show')) return;
+    // Otherwise result was already hidden (e.g. pressed back from game→result flow)
+    _doGoHome(); return;
   }
-  // No matching state — might be bfcache pop or exit; just go home if not already there
-  if($('result-screen').classList.contains('show')||$('lb-overlay').classList.contains('show')){
-    goHome();
+  if(nav==='game'){
+    // Popped back to game state — this means user came from result screen going back to game
+    // Game screen shouldn't be re-entered; go home instead
+    _doGoHome(); return;
+  }
+  // nav is null/undefined — popped past all our states, truly going back to base
+  // If any overlay is still showing, clean up
+  if($('result-screen').classList.contains('show')||
+     $('lb-overlay').classList.contains('show')||
+     $('mode-picker').classList.contains('show')){
+    _doGoHome();
   }
 });
 
