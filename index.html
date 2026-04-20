@@ -1019,8 +1019,11 @@ function pushNavState(name){
 }
 
 function goHome(){
+  // If leaving from result screen, record it so back-gesture can restore it
+  if($('result-screen').classList.contains('show')){
+    sessionStorage.setItem('screen','result');
+  }
   _doGoHome();
-  // Push a null state so back-from-home has nothing to pop (exits app)
   history.replaceState(null,'',location.pathname);
 }
 
@@ -1035,13 +1038,10 @@ function _doGoHome(){
   setThemeColor('#5e8f58');
 }
 
-// Save screen state to sessionStorage whenever we leave the page
+// pagehide: fallback for cases not covered by goHome (e.g. navigating to leaderboard from result)
 window.addEventListener('pagehide', ()=>{
-  const nav=history.state&&history.state.nav;
-  if(nav==='result'||$('result-screen').classList.contains('show')){
+  if($('result-screen').classList.contains('show')||history.state?.nav==='result'){
     sessionStorage.setItem('screen','result');
-  } else {
-    sessionStorage.removeItem('screen');
   }
 });
 
