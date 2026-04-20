@@ -103,9 +103,9 @@ body {
 
 /* ── HEADER ── */
 header {
-  padding:.75rem 1.2rem .4rem;
+  padding:1rem 1.2rem .6rem;
   display:flex; align-items:center; justify-content:space-between; gap:.5rem;
-  flex-shrink:0; flex-wrap:wrap;
+  flex-shrink:0; border-bottom:1px solid var(--border);
 }
 .logo { font-size:1.5rem; font-weight:900; letter-spacing:.04em; line-height:1; min-width:0; flex-shrink:1; white-space:nowrap; color:var(--ink); text-decoration:none; }
 .logo em { color:var(--accent); font-style:normal; }
@@ -286,7 +286,7 @@ img, video { max-width:100%; height:auto; }
 }
 /* spacer pushes ad→PLAY AGAIN group down */
 #result-spacer { flex:1; min-height:0; }
-#result-top-bar { width:100%; max-width:20rem; display:flex; justify-content:flex-start; padding:.7rem 0 .2rem; }
+#result-top-bar { width:100%; display:flex; align-items:center; padding:1rem 1.2rem .6rem; border-bottom:1px solid var(--border); flex-shrink:0; }
 .result-label { font-size:.95rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
 .result-wpm { font-size:4.5rem; font-weight:700; color:var(--accent); line-height:1; }
 .result-sub { font-size:.95rem; font-weight:500; letter-spacing:.15em; color:var(--muted); margin-bottom:.2rem; }
@@ -1005,8 +1005,7 @@ async function submitScore(wpm,acc,nickname){
 
 function goHome(){
   _doGoHome();
-  // Clear all our nav states so back button exits the app/site correctly
-  history.replaceState(null,'',location.pathname);
+  // Do NOT replaceState — keep history stack intact so browser back from home returns to result screen
 }
 
 function _doGoHome(){
@@ -1145,10 +1144,14 @@ window.addEventListener('popstate',e=>{
     return;
   }
   if(nav==='result'){
-    // If result screen is still showing (e.g. came back from lb-overlay), stay there
-    if($('result-screen').classList.contains('show')) return;
-    // Otherwise result was already hidden (e.g. pressed back from game→result flow)
-    _doGoHome(); return;
+    // Always restore result screen when popping back to this state
+    // (covers: back from lb-overlay, back from home, back from picker)
+    $('lb-overlay').classList.remove('show');
+    $('mode-picker').classList.remove('show');
+    $('result-screen').classList.add('show');
+    $('start-screen').style.display='none';
+    setThemeColor('#5e8f58');
+    return;
   }
   if(nav==='game'){
     // Popped back to game state — this means user came from result screen going back to game
