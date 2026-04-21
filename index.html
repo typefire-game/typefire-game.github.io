@@ -626,6 +626,31 @@ img, video { max-width:100%; height:auto; }
     for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}
     return b;
   }
+
+  // Embedded fallback passages — game starts instantly without waiting for passages.json
+  const _FALLBACK=[
+    "The natural world is governed by laws that can be discovered through careful observation and experiment.",
+    "Consciousness remains one of the most profound mysteries in science and philosophy alike.",
+    "Mathematics is the language in which the universe is written, according to Galileo.",
+    "Evolution by natural selection explains the diversity of life on Earth over billions of years.",
+    "The speed of light in a vacuum is constant regardless of the motion of the source or observer.",
+    "Entropy in a closed system tends to increase over time, as stated by the second law of thermodynamics.",
+    "Language shapes the way we perceive reality and influences the thoughts we are able to express.",
+    "Atoms are mostly empty space, with a dense nucleus surrounded by a cloud of electrons.",
+    "The theory of relativity unified space and time into a single four-dimensional continuum.",
+    "Democratic institutions depend on an informed citizenry capable of critical reasoning.",
+    "Memory is not a perfect recording but a reconstructive process subject to distortion.",
+    "The genome contains the instructions for building and operating a living organism.",
+    "Philosophy asks questions that science cannot yet answer and may never fully resolve.",
+    "Plate tectonics explains the movement of continents and the formation of mountain ranges.",
+    "The universe began approximately thirteen point eight billion years ago in the Big Bang.",
+    "Neurons communicate through electrochemical signals across gaps called synapses.",
+    "Quantum mechanics describes the behavior of matter and energy at the smallest scales.",
+    "Culture is transmitted across generations through language, ritual, and shared practice.",
+    "The immune system distinguishes between self and non-self to protect the body from pathogens.",
+    "Logical reasoning requires that conclusions follow necessarily from their premises."
+  ];
+
   window._passagesReady=false;
   window._allPassages=[];
   window._poolCursor=0;
@@ -645,6 +670,8 @@ img, video { max-width:100%; height:auto; }
     return raw;
   };
 
+  // Load fallback immediately so game is always ready
+
   function _loadPassagesFromData(data){
     if(!Array.isArray(data)||!data.length)return false;
     window._allPassages=_shuffleArray(data);
@@ -654,6 +681,9 @@ img, video { max-width:100%; height:auto; }
     window._passagesReady=true;
     return true;
   }
+
+  // Load fallback immediately — game is always ready from first keystroke
+  _loadPassagesFromData(_FALLBACK);
 
   function _attemptFetch(attempt){
     attempt=attempt||1;
