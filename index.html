@@ -569,31 +569,37 @@ img, video { max-width:100%; height:auto; }
   document.addEventListener('gesturestart', e=>e.preventDefault());
   document.addEventListener('gesturechange', e=>e.preventDefault());
   document.addEventListener('touchmove', e=>{
-    if(e.touches.length>1) e.preventDefault(); // two-finger = pinch
-    // Block ALL scroll during game
+    if(e.touches.length>1){ e.preventDefault(); return; } // pinch
     if(document.documentElement.style.touchAction==='none'){
+      // During game: block scroll UNLESS it's a downward pull from top (PTR)
+      const t=e.touches[0];
+      if(_ptrStartY>0 && t.clientY-_ptrStartY>0 && window.scrollY===0) return; // allow PTR
       e.preventDefault();
     }
   },{passive:false});
 
-  // PTR: intercept pull-down on home/game screens
+  // PTR: intercept pull-down on game/home screens
   let _ptrStartY=0;
   document.addEventListener('touchstart',e=>{
     _ptrStartY=e.touches[0].clientY;
   },{passive:true});
   document.addEventListener('touchend',e=>{
     const dy=e.changedTouches[0].clientY-_ptrStartY;
-    if(dy<60) return; // not a significant pull
-    const isGame=active&&!done; // game in progress
-    const isHome=!isGame&&!$('result-screen').classList.contains('show')&&!$('mode-picker').classList.contains('show');
+    _ptrStartY=0;
+    if(dy<60) return;
+    const onResultScreen=$('result-screen').classList.contains('show');
+    const onPickerScreen=$('mode-picker').classList.contains('show');
+    const onGameScreen=document.documentElement.style.touchAction==='none';
+    // isHome: not game, not result, not picker
+    const isHome=!onGameScreen&&!onResultScreen&&!onPickerScreen;
     if(isHome){
-      location.replace(location.pathname); // clear history stack and reload
-    } else if(isGame){
+      location.replace(location.pathname);
+    } else if(onGameScreen){
       clearInterval(timer); active=false; done=false;
       showHome();
       history.replaceState(null,'',location.pathname);
     }
-    // result/picker: let native PTR happen
+    // result/picker: native PTR (do nothing)
   },{passive:true});
 
   // Dynamic theme-color: remove+re-insert forces Android Chrome to re-read
