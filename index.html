@@ -584,20 +584,16 @@ img, video { max-width:100%; height:auto; }
   document.addEventListener('touchend',e=>{
     const dy=e.changedTouches[0].clientY-_ptrStartY;
     if(dy<60) return; // not a significant pull
-    const onHome=$('start-screen').style.display!=='none'&&$('start-screen').style.display!=='';
-    const onHomeDef=$('start-screen').style.display==='';
-    const isHome=(onHome||onHomeDef)&&!$('result-screen').classList.contains('show');
-    const isGame=document.documentElement.style.touchAction==='none';
+    const isGame=active&&!done; // game in progress
+    const isHome=!isGame&&!$('result-screen').classList.contains('show')&&!$('mode-picker').classList.contains('show');
     if(isHome){
-      // Clear entire history stack and reload
-      location.replace(location.pathname);
+      location.replace(location.pathname); // clear history stack and reload
     } else if(isGame){
-      // Mid-game PTR → go home
       clearInterval(timer); active=false; done=false;
       showHome();
       history.replaceState(null,'',location.pathname);
     }
-    // result/picker/etc: let native PTR happen (do nothing here)
+    // result/picker: let native PTR happen
   },{passive:true});
 
   // Dynamic theme-color: remove+re-insert forces Android Chrome to re-read
