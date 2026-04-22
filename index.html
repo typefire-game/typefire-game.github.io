@@ -276,7 +276,7 @@ img, video { max-width:100%; height:auto; }
   overflow-y:auto; overflow-x:hidden;
   scrollbar-width:none;
   max-width:42.5rem; margin:0 auto; left:0; right:0;
-  gap:.3rem;
+  gap:1.1rem;
 }
 #result-screen::-webkit-scrollbar { display:none; }
 #result-screen.show { display:flex; }
@@ -300,18 +300,18 @@ img, video { max-width:100%; height:auto; }
 #result-spacer { flex:.7; min-height:0; }
 .result-label { font-size:.95rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
 .result-wpm { font-size:4.5rem; font-weight:700; color:var(--accent); line-height:1; }
-.result-sub { font-size:.95rem; font-weight:500; letter-spacing:.15em; color:var(--muted); margin-bottom:.2rem; }
-.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4rem; width:100%; max-width:20rem; margin-bottom:.3rem; }
+.result-sub { font-size:.95rem; font-weight:500; letter-spacing:.15em; color:var(--muted); }
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4rem; width:100%; max-width:20rem; }
 .result-cell { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:.35rem .65rem; }
 .result-cell .v { font-size:1.6rem; font-weight:700; line-height:1; }
 .result-cell .l { font-size:.75rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-top:.15rem; }
 .rank-badge {
   font-size:.9rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
   color:var(--accent); border:1.5px solid var(--accent);
-  border-radius:99px; padding:.2rem .8rem; margin-bottom:.2rem; display:none;
+  border-radius:99px; padding:.2rem .8rem; display:none;
 }
 .rank-badge.show { display:block; }
-.nickname-row { display:flex; gap:.5rem; width:100%; max-width:20rem; margin-bottom:.25rem; }
+.nickname-row { display:flex; gap:.5rem; width:100%; max-width:20rem; }
 .nickname-input {
   flex:1; border:1.5px solid var(--border); background:var(--surface);
   border-radius:8px; padding:.55rem .75rem; font-family:var(--font);
@@ -454,7 +454,7 @@ img, video { max-width:100%; height:auto; }
     </div>
     <!-- spacer: pushes ad group down so PLAY AGAIN bottom aligns with GO bottom -->
     <div id="result-spacer"></div>
-    <div style="width:100%;max-width:20rem;margin-bottom:.3rem;flex-shrink:0;">
+    <div style="width:100%;max-width:20rem;flex-shrink:0;">
       <div class="ad-placeholder" style="min-height:3.125rem;">Advertisement</div>
     </div>
     <div class="nickname-row">
