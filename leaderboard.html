@@ -28,7 +28,7 @@ html,body{
   background:var(--bg);color:var(--ink);font-family:var(--font);
   height:100dvh;overflow:hidden;
   -webkit-font-smoothing:antialiased;
-  overscroll-behavior:none;
+  overscroll-behavior-x:none;
 }
 body,button,a,div,span,p,header,footer{user-select:none;-webkit-user-select:none;}
 button{outline:none;}
@@ -180,6 +180,9 @@ footer a:active{color:var(--muted);background:none;}
 
 @media(min-width:37.5rem){
   header,.lb-tabs,.lb-list,footer{padding-left:2rem;padding-right:2rem;}
+}
+@media(display-mode:standalone){
+  .page{height:100dvh;height:100svh;}
 }
 </style>
 </head>

@@ -288,8 +288,9 @@ img, video { max-width:100%; height:auto; }
 }
 /* footer pinned to bottom */
 #result-screen .site-footer {
-  width:100%; max-width:20rem;
-  border-top:none; padding:.3rem 0 max(.5rem, env(safe-area-inset-bottom));
+  width:100%; max-width:none; align-self:stretch;
+  border-top:1px solid var(--border);
+  padding:.5rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
   flex-shrink:0; margin-top:auto;
 }
 /* spacer pushes ad→PLAY AGAIN group down */
@@ -509,11 +510,7 @@ img, video { max-width:100%; height:auto; }
 
   <footer class="site-footer" id="main-footer">
     <a href="#" class="js-go-home">Home</a>
-    <span class="footer-sep">·</span>
-    <a href="about.html">About</a>
-    <span class="footer-sep">·</span>
-    <a href="privacy.html">Privacy Policy</a>
-    <span class="footer-sep">·</span>
+    <span class="footer-sep" id="main-footer-sep-install" style="display:none;">·</span>
     <a href="#" id="pwa-install-btn" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
   </footer>
 </div>
@@ -550,7 +547,10 @@ img, video { max-width:100%; height:auto; }
     navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
 
   const INSTALL_IDS=['pwa-install-btn','pwa-install-btn-start','pwa-install-btn-result','pwa-install-btn-lb'];
-  function setInstall(v){ INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';}); const sep=document.getElementById('result-footer-sep-install');if(sep)sep.style.display=v?'inline':'none';}
+  function setInstall(v){
+    INSTALL_IDS.forEach(id=>{const b=document.getElementById(id);if(b)b.style.display=v?'inline':'none';});
+    ['result-footer-sep-install','main-footer-sep-install'].forEach(id=>{const s=document.getElementById(id);if(s)s.style.display=v?'inline':'none';});
+  }
   let _dip=null;
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dip=e;setInstall(true);});
   window.addEventListener('appinstalled',()=>{setInstall(false);_dip=null;});
