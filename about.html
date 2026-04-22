@@ -23,6 +23,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 img,video{max-width:100%;height:auto;}
 html,body{background:var(--bg);color:var(--ink);font-family:var(--font);min-height:100dvh;}
+:root{--header-h:3.4rem;}
 .ad-placeholder{
   border:1px dashed var(--border);
   padding:.8rem;text-align:center;width:100%;
@@ -33,9 +34,13 @@ html,body{background:var(--bg);color:var(--ink);font-family:var(--font);min-heig
 }
 .page{max-width:42.5rem;margin:0 auto;display:flex;flex-direction:column;min-height:100dvh;}
 header{
-  padding:1rem 1.2rem .6rem;
+  height:var(--header-h);
+  padding:0 1.2rem;
   display:flex;align-items:center;gap:.5rem;
   border-bottom:1px solid var(--border);
+  box-sizing:border-box;
+  position:sticky;top:0;z-index:10;
+  background:var(--bg);
 }
 .logo{font-size:1.5rem;font-weight:900;letter-spacing:.04em;color:var(--ink);text-decoration:none;flex:1;min-width:0;white-space:nowrap;overflow:hidden;
   user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
@@ -80,7 +85,7 @@ footer a:active{color:var(--muted);background:none;}
     <a class="logo" href="index.html">TYPE<em>FIRE</em></a>
     <a class="home-btn" href="index.html">Home</a>
   </header>
-  <div class="ad-placeholder">Advertisement</div>
+  <div class="ad-placeholder" style="position:sticky;top:var(--header-h);z-index:8;min-height:3.125rem;">Advertisement</div>
   <main>
     <h1>About TYPEFIRE</h1>
 
