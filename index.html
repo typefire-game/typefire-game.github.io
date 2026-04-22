@@ -180,13 +180,14 @@ header {
 }
 
 /* ── AD ── */
-.ad-slot { padding:.4rem 1.2rem; flex-shrink:0; }
+.ad-slot { padding:.4rem 0; flex-shrink:0; width:100%; }
 .ad-placeholder {
-  border:1px dashed var(--border); border-radius:8px;
+  border:1px dashed var(--border);
   padding:.8rem; text-align:center;
   display:flex; align-items:center; justify-content:center;
   font-size:.7rem; font-weight:600; letter-spacing:.12em;
   text-transform:uppercase; color:var(--border);
+  width:100%;
 }
 
 /* ── FOOTER ── */
@@ -296,7 +297,7 @@ img, video { max-width:100%; height:auto; }
   margin-top:auto;
 }
 /* spacer pushes ad→PLAY AGAIN group down */
-#result-spacer { flex:1; min-height:0; }
+#result-spacer { flex:.3; min-height:0; }
 .result-label { font-size:.95rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
 .result-wpm { font-size:4.5rem; font-weight:700; color:var(--accent); line-height:1; }
 .result-sub { font-size:.95rem; font-weight:500; letter-spacing:.15em; color:var(--muted); margin-bottom:.2rem; }
@@ -454,7 +455,7 @@ img, video { max-width:100%; height:auto; }
     <!-- spacer: pushes ad group down so PLAY AGAIN bottom aligns with GO bottom -->
     <div id="result-spacer"></div>
     <div style="width:100%;max-width:20rem;margin-bottom:.3rem;flex-shrink:0;">
-      <div class="ad-placeholder" style="min-height:5.625rem;">Advertisement</div>
+      <div class="ad-placeholder" style="min-height:3.125rem;">Advertisement</div>
     </div>
     <div class="nickname-row">
       <input class="nickname-input" id="nickname-input" type="search"
