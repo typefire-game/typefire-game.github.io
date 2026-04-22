@@ -87,7 +87,6 @@ header{
 /* ── TABS ── */
 .lb-tabs{
   display:flex;gap:.4rem;padding:.5rem 1.2rem;flex-shrink:0;
-  height:var(--tabs-h);box-sizing:border-box;
   position:sticky;top:var(--header-h);z-index:9;
   background:var(--bg);border-bottom:1px solid var(--border);
 }
@@ -213,7 +212,7 @@ footer a:active{color:var(--muted);background:none;}
     </div>
   </div>
 
-  <div class="ad-placeholder" style="min-height:3.125rem;background:var(--bg);">Advertisement</div>
+  <div class="ad-placeholder" style="position:sticky;bottom:calc(2.8rem + max(.9rem,env(safe-area-inset-bottom)));min-height:3.125rem;background:var(--bg);z-index:8;">Advertisement</div>
 
   <footer>
     <a href="index.html">Home</a>
