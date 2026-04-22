@@ -271,10 +271,11 @@ img, video { max-width:100%; height:auto; }
 #result-screen {
   display:none; position:fixed; inset:0; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:10; padding:0 1.5rem env(safe-area-inset-bottom); gap:.3rem;
+  z-index:10; padding:0 1.5rem 0;
   overflow-y:auto; overflow-x:hidden;
   scrollbar-width:none;
   max-width:42.5rem; margin:0 auto; left:0; right:0;
+  gap:.3rem;
 }
 #result-screen::-webkit-scrollbar { display:none; }
 #result-screen.show { display:flex; }
@@ -290,7 +291,7 @@ img, video { max-width:100%; height:auto; }
 #result-screen .site-footer {
   width:100%; max-width:none; align-self:stretch;
   border-top:1px solid var(--border);
-  padding:.5rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
+  padding:.5rem 1.5rem max(1.4rem, env(safe-area-inset-bottom));
   flex-shrink:0;
 }
 /* spacer pushes ad→PLAY AGAIN group down */
