@@ -67,6 +67,7 @@ html, body {
 
 body {
   display:flex; flex-direction:column; align-items:center;
+  min-height:100vh;
   min-height:100dvh;
   overscroll-behavior-x:none;
 }
@@ -97,7 +98,7 @@ body {
 #app {
   display:flex; flex-direction:column;
   max-width:42.5rem; width:100%; margin:0 auto;
-  position:relative; min-height:100dvh;
+  position:relative; min-height:100vh; min-height:100dvh;
   overflow-x:hidden;
 }
 
@@ -434,9 +435,6 @@ img, video { max-width:100%; height:auto; }
     <div class="start-logo">TYPE<em>FIRE</em></div>
     <p class="start-desc">Type the words<br class="desc-br"> as fast as you can.</p>
     <div style="flex:2;"></div>
-    <div style="width:100%;max-width:17.5rem;">
-      <div class="ad-placeholder" style="min-height:3.75rem;">Advertisement</div>
-    </div>
     <a href="leaderboard.html" class="start-lb-btn" id="start-lb-btn">🏆 LEADERBOARD</a>
     <div class="start-modes">
       <button class="start-mode-btn active" data-time="15">15s</button>
@@ -444,6 +442,9 @@ img, video { max-width:100%; height:auto; }
       <button class="start-mode-btn" data-time="60">60s</button>
     </div>
     <button class="start-btn" id="start-btn">GO</button>
+    <div style="width:100%;max-width:17.5rem;">
+      <div class="ad-placeholder" style="min-height:3.75rem;">Advertisement</div>
+    </div>
     <footer class="site-footer">
       <a href="about.html">About</a>
       <span class="footer-sep">·</span>
@@ -473,9 +474,8 @@ img, video { max-width:100%; height:auto; }
     </div>
     <!-- spacer: kept for JS compat, hidden via CSS -->
     <div id="result-spacer"></div>
-    <!-- Bottom 5-row group: mirrors start-screen bottom layout -->
+    <!-- Bottom group: nickname → LB+SHARE → PLAY AGAIN → ad → footer -->
     <div id="result-bottom">
-      <div class="ad-placeholder">Advertisement</div>
       <div class="nickname-row">
         <input class="nickname-input" id="nickname-input" type="search"
           placeholder="Nickname for leaderboard" maxlength="16"
@@ -486,6 +486,7 @@ img, video { max-width:100%; height:auto; }
         <button class="share-btn" id="share-btn">SHARE</button>
       </div>
       <button class="again-btn" id="again-btn">PLAY AGAIN</button>
+      <div class="ad-placeholder">Advertisement</div>
     </div>
     <footer class="site-footer" id="result-footer">
       <a href="#" class="js-go-home result-footer-link">Home</a>
