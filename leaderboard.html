@@ -170,23 +170,19 @@ header{
 /* ── FOOTER ── */
 footer{
   flex-shrink:0;
-  padding:0 1.2rem max(.9rem,env(safe-area-inset-bottom));
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:.3rem 1.2rem max(.9rem,env(safe-area-inset-bottom));
+  display:flex;align-items:center;justify-content:center;gap:.1rem;flex-wrap:wrap;
   border-top:1px solid var(--border);
   background:var(--bg);
   position:sticky;bottom:0;
   margin-top:auto;
 }
-.footer-ad{
-  width:100%;display:flex;align-items:center;justify-content:center;
-  border:1px dashed var(--border);
-  color:var(--muted);font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-  min-height:3.125rem;box-sizing:border-box;background:var(--bg);
-  margin:.5rem 0;
-}
-.footer-links{
-  display:flex;align-items:center;justify-content:center;gap:.1rem;flex-wrap:wrap;
-  width:100%;padding:.3rem 0 .2rem;
+.top-ad{
+  width:100%;min-height:3.125rem;box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--border);
+  font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--border);background:var(--bg);flex-shrink:0;
 }
 footer a{
   font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
@@ -200,17 +196,19 @@ footer a:active{color:var(--muted);background:none;}
 .sep{color:var(--border);font-size:.72rem;}
 
 @media(min-width:37.5rem){
-  header,.lb-tabs,.lb-list,footer,.footer-ad,.footer-links{padding-left:2rem;padding-right:2rem;}
-  .footer-ad{margin-left:0;margin-right:0;}
+  header,.lb-tabs,.lb-list,footer{padding-left:2rem;padding-right:2rem;}
 }
 </style>
 </head>
 <body>
 <div class="page">
   <header>
-    <div class="logo">LEADER<em>BOARD</em></div>
-    <a class="home-btn" href="index.html">Home</a>
-    <button class="play-btn" id="play-btn">PLAY</button>
+    <div class="top-ad">Advertisement</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:1rem 1.2rem .6rem;">
+      <div class="logo">LEADER<em>BOARD</em></div>
+      <a class="home-btn" href="index.html">Home</a>
+      <button class="play-btn" id="play-btn">PLAY</button>
+    </div>
   </header>
 
   <div class="lb-tabs">
@@ -226,12 +224,9 @@ footer a:active{color:var(--muted);background:none;}
   </div>
 
   <footer>
-    <div class="footer-ad">Advertisement</div>
-    <div class="footer-links">
-      <a href="index.html">Home</a>
-      <span class="sep" id="lb-footer-sep-install" style="display:none;">·</span>
-      <a href="#" id="pwa-install-btn-lb" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
-    </div>
+    <a href="index.html">Home</a>
+    <span class="sep" id="lb-footer-sep-install" style="display:none;">·</span>
+    <a href="#" id="pwa-install-btn-lb" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
   </footer>
 </div>
 

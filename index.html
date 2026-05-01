@@ -104,10 +104,24 @@ body {
 
 /* ── HEADER ── */
 header {
-  padding:1rem 1.2rem .6rem;
-  display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+  display:flex; flex-direction:column;
   flex-shrink:0; border-bottom:1px solid var(--border);
 }
+.top-ad {
+  width:100%; min-height:3.125rem; box-sizing:border-box;
+  display:flex; align-items:center; justify-content:center;
+  border-bottom:1px solid var(--border);
+  font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--border); background:var(--bg); flex-shrink:0;
+}
+.header-main {
+  padding:1rem 1.2rem .6rem;
+  display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+}
+/* result-screen header has logo directly (no .header-main wrapper needed) */
+#result-screen header > .logo { padding:1rem 1.2rem .6rem; display:block; }
+/* start-screen top-ad sits at very top with no header wrapper */
+#start-screen > .top-ad { flex-shrink:0; }
 .logo { font-size:1.5rem; font-weight:900; letter-spacing:.04em; line-height:1; min-width:0; flex-shrink:1; white-space:nowrap; color:var(--ink); text-decoration:none; }
 .logo em { color:var(--accent); font-style:normal; }
 .header-right { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
@@ -194,22 +208,9 @@ header {
 /* ── FOOTER ── */
 .site-footer {
   flex-shrink:0;
-  padding:0 1.5rem max(.7rem, env(safe-area-inset-bottom));
-  display:flex; flex-direction:column; align-items:center;
+  padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
+  display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
   border-top:1px solid var(--border); margin-top:auto;
-}
-.site-footer .footer-ad {
-  width:100%; max-width:17.5rem;
-  display:flex; align-items:center; justify-content:center;
-  border:1px dashed var(--border);
-  font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
-  color:var(--border); min-height:3.125rem; box-sizing:border-box;
-  margin:.5rem 0;
-}
-.site-footer .footer-links {
-  display:flex; align-items:center; justify-content:center;
-  gap:.1rem; flex-wrap:wrap; width:100%;
-  padding:.3rem 0 .2rem;
 }
 .site-footer a {
   font-size:.8rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
@@ -295,13 +296,31 @@ img, video { max-width:100%; height:auto; }
 #result-screen.show { display:flex; }
 #result-screen > header {
   align-self:stretch;
-  padding:1rem 1.2rem .6rem;
   margin:0 -1.5rem;
-  padding-left:1.2rem; padding-right:1.2rem;
   border-bottom:1px solid var(--border);
   flex-shrink:0;
+  padding:0;
+  display:flex; flex-direction:column;
 }
-/* Top stats area: uses remaining space, centres content, clips if too tall */
+#result-screen > header > .top-ad {
+  width:100%; min-height:3.125rem; box-sizing:border-box;
+  display:flex; align-items:center; justify-content:center;
+  border-bottom:1px solid var(--border);
+  font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--border); background:var(--bg); flex-shrink:0;
+}
+#result-screen > header > .logo {
+  display:block; padding:1rem 1.2rem .6rem;
+}
+/* footer always at bottom, no sticky needed (fixed screen) */
+#result-screen .site-footer {
+  width:calc(100% + 3rem); align-self:stretch;
+  border-top:1px solid var(--border);
+  padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
+  flex-shrink:0; background:var(--bg);
+  margin:0 -1.5rem;
+  display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
+}
 #result-top-area {
   flex:1; min-height:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -310,16 +329,6 @@ img, video { max-width:100%; height:auto; }
 }
 /* spacer inside result-screen is gone; layout handled by flex */
 #result-spacer { display:none; }
-/* footer always at bottom, no sticky needed (fixed screen) */
-#result-screen .site-footer {
-  width:calc(100% + 3rem); align-self:stretch;
-  border-top:1px solid var(--border);
-  padding:0 1.5rem max(.7rem, env(safe-area-inset-bottom));
-  flex-shrink:0;
-  background:var(--bg);
-  margin:0 -1.5rem;
-  display:flex; flex-direction:column; align-items:center;
-}
 #result-screen .site-footer .footer-ad {
   width:100%; max-width:20rem;
   margin:.5rem 0;
@@ -450,6 +459,7 @@ img, video { max-width:100%; height:auto; }
 
   <!-- START SCREEN -->
   <div id="start-screen">
+    <div class="top-ad">Advertisement</div>
     <div style="flex:1;"></div>
     <div class="start-logo">TYPE<em>FIRE</em></div>
     <p class="start-desc">Type the words<br class="desc-br"> as fast as you can.</p>
@@ -462,20 +472,18 @@ img, video { max-width:100%; height:auto; }
     </div>
     <button class="start-btn" id="start-btn">GO</button>
     <footer class="site-footer">
-      <div class="footer-ad">Advertisement</div>
-      <div class="footer-links">
-        <a href="about.html">About</a>
-        <span class="footer-sep">·</span>
-        <a href="privacy.html">Privacy Policy</a>
-        <span class="footer-sep">·</span>
-        <a href="#" id="pwa-install-btn-start" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
-      </div>
+      <a href="about.html">About</a>
+      <span class="footer-sep">·</span>
+      <a href="privacy.html">Privacy Policy</a>
+      <span class="footer-sep">·</span>
+      <a href="#" id="pwa-install-btn-start" style="display:none;color:var(--accent);" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
     </footer>
   </div>
 
   <!-- RESULT SCREEN -->
   <div id="result-screen">
     <header>
+      <div class="top-ad">Advertisement</div>
       <a href="#" class="logo js-go-home">TYPE<em>FIRE</em></a>
     </header>
     <!-- Top area: stats, auto-fills remaining vertical space -->
@@ -507,12 +515,9 @@ img, video { max-width:100%; height:auto; }
       <button class="again-btn" id="again-btn">PLAY AGAIN</button>
     </div>
     <footer class="site-footer" id="result-footer">
-      <div class="footer-ad">Advertisement</div>
-      <div class="footer-links">
-        <a href="#" class="js-go-home result-footer-link">Home</a>
-        <span class="footer-sep" id="result-footer-sep-install" style="display:none;">·</span>
-        <a href="#" id="pwa-install-btn-result" style="display:none;color:var(--accent);" class="result-footer-link" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
-      </div>
+      <a href="#" class="js-go-home result-footer-link">Home</a>
+      <span class="footer-sep" id="result-footer-sep-install" style="display:none;">·</span>
+      <a href="#" id="pwa-install-btn-result" style="display:none;color:var(--accent);" class="result-footer-link" onclick="event.preventDefault();window._triggerInstall&&window._triggerInstall();">Install</a>
     </footer>
   </div>
 
@@ -520,10 +525,13 @@ img, video { max-width:100%; height:auto; }
 
   <!-- GAME UI -->
   <header>
-    <div class="logo js-go-home" style="cursor:pointer;" role="button" aria-label="Home">TYPE<em>FIRE</em></div>
-    <div class="header-right">
-      <button class="lb-btn" id="lb-open-btn">🏆 LEADERBOARD</button>
-      <div class="header-time" id="time-display">15</div>
+    <div class="top-ad">Advertisement</div>
+    <div class="header-main">
+      <div class="logo js-go-home" style="cursor:pointer;" role="button" aria-label="Home">TYPE<em>FIRE</em></div>
+      <div class="header-right">
+        <button class="lb-btn" id="lb-open-btn">🏆 LEADERBOARD</button>
+        <div class="header-time" id="time-display">15</div>
+      </div>
     </div>
   </header>
 
@@ -548,10 +556,6 @@ img, video { max-width:100%; height:auto; }
   </div>
 
   <div id="caret"></div>
-
-  <div class="ad-slot">
-    <div class="ad-placeholder" style="min-height:3.125rem;">Advertisement</div>
-  </div>
 
   <footer class="site-footer" id="main-footer">
     <a href="#" class="js-go-home">Home</a>
