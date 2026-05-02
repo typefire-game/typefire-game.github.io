@@ -336,6 +336,8 @@ loadLeaderboard(currentTime);
 let pickerTime=15;
 const picker=document.getElementById('mode-picker');
 function openPicker(){
+  pickerTime=currentTime;
+  document.querySelectorAll('.mode-pick-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.time)===pickerTime));
   picker.classList.add('show');
   history.pushState({nav:'picker'},'',location.pathname+location.search);
 }

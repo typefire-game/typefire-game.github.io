@@ -297,7 +297,7 @@ img, video { max-width:100%; height:auto; }
   display:none; position:fixed; inset:0; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
   z-index:10; padding:0 1.5rem 0;
-  overflow:hidden;
+  overflow-y:auto;
   max-width:42.5rem; margin:0 auto; left:0; right:0;
   gap:0;
 }
@@ -329,7 +329,7 @@ img, video { max-width:100%; height:auto; }
 #result-top-area {
   flex:1; min-height:0;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-  gap:.55rem; width:100%; overflow:hidden;
+  gap:.55rem; width:100%;
   padding:0;
 }
 /* spacer absorbs free space, pushing content down; gap controls spacing between items */
