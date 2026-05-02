@@ -150,7 +150,7 @@ header {
 .progress-fill { height:100%; background:var(--accent); border-radius:99px; width:100%; transition:width 1s linear; }
 
 /* ── WORD AREA ── */
-.words-wrap { flex-shrink:0; padding:1.2rem 1.2rem .7rem; position:relative; cursor:text; }
+.words-wrap { flex:1; min-height:0; padding:0 1.2rem; position:relative; cursor:text; display:flex; align-items:center; }
 .words-clip {
   overflow:hidden;
   height:calc(var(--word-size) * var(--word-lh) * 3);
@@ -328,12 +328,12 @@ img, video { max-width:100%; height:auto; }
 }
 #result-top-area {
   flex:1; min-height:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   gap:.55rem; width:100%; overflow:hidden;
-  padding:.65rem 0 0;
+  padding:0;
 }
-/* spacer inside result-screen is gone; layout handled by flex */
-#result-spacer { display:none; }
+/* spacer absorbs free space, pushing content down; gap controls spacing between items */
+#result-spacer { flex:1; min-height:0; }
 /* Bottom group: nickname → LB+SHARE → PLAY AGAIN */
 #result-bottom {
   display:flex; flex-direction:column; align-items:center;
@@ -490,6 +490,7 @@ img, video { max-width:100%; height:auto; }
     </header>
     <!-- Top area: stats, auto-fills remaining vertical space -->
     <div id="result-top-area">
+      <div id="result-spacer"></div>
       <div class="result-label">Your Speed</div>
       <div class="result-wpm" id="result-wpm">0</div>
       <div class="result-sub">words per minute</div>
@@ -501,8 +502,6 @@ img, video { max-width:100%; height:auto; }
         <div class="result-cell"><div class="v" id="r-time">0s</div><div class="l">Duration</div></div>
       </div>
     </div>
-    <!-- spacer: kept for JS compat, hidden via CSS -->
-    <div id="result-spacer"></div>
     <!-- Bottom group: nickname → LB+SHARE → PLAY AGAIN -->
     <div id="result-bottom">
       <div class="nickname-row">
