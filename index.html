@@ -327,13 +327,13 @@ img, video { max-width:100%; height:auto; }
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 #result-top-area {
-  flex:1; min-height:0;
+  flex-shrink:0;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   gap:.55rem; width:100%;
   padding:0;
 }
 /* spacer absorbs free space, pushing content down; gap controls spacing between items */
-#result-spacer { flex:1; min-height:0; }
+#result-spacer { flex:1; min-height:.55rem; }
 /* Bottom group: nickname → LB+SHARE → PLAY AGAIN */
 #result-bottom {
   display:flex; flex-direction:column; align-items:center;
