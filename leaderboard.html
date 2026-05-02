@@ -174,8 +174,7 @@ header{
 /* ── FOOTER ── */
 footer{
   flex-shrink:0;
-  padding:.3rem 1.2rem .3rem;
-  padding-bottom:max(.3rem,env(safe-area-inset-bottom));
+  padding:.3rem 1.2rem max(.7rem,env(safe-area-inset-bottom));
   display:flex;align-items:center;justify-content:center;gap:.1rem;flex-wrap:wrap;
   border-top:1px solid var(--border);
   background:var(--bg);
@@ -191,7 +190,7 @@ footer{
 }
 footer a{
   font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;padding:.5rem .45rem;
+  color:var(--muted);text-decoration:none;padding:.6rem .45rem;
   -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;
 }
 footer a:focus,footer a:focus-visible{color:var(--muted);outline:none;}
