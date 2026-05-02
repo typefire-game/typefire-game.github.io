@@ -40,7 +40,6 @@
   --font:      'Inter', sans-serif;
   --word-size: 1.5rem;
   --word-lh:   2.6;
-  --header-h:  3.25rem;
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -139,7 +138,7 @@ header {
 .lb-btn:active { border-color:var(--border); color:var(--muted); background:none; }
 
 /* ── STATS ── */
-.stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.4rem; padding:.45rem 1.2rem .45rem; flex-shrink:0; }
+.stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.4rem; padding:.7rem 1.2rem .7rem; flex-shrink:0; }
 .stat-box { background:var(--surface); border:1.5px solid var(--border); border-radius:8px; padding:.45rem .65rem; }
 .stat-box .val { font-size:2rem; font-weight:700; line-height:1; color:var(--ink); }
 .stat-box .lbl { font-size:.7rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-top:.15rem; }
@@ -210,7 +209,8 @@ header {
 /* ── FOOTER ── */
 .site-footer {
   flex-shrink:0;
-  padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
+  padding:.3rem 1.5rem .3rem;
+  padding-bottom:max(.3rem, env(safe-area-inset-bottom));
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
   border-top:1px solid var(--border); margin-top:auto;
 }
@@ -317,11 +317,15 @@ img, video { max-width:100%; height:auto; }
   font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
   color:var(--border); background:var(--bg); flex-shrink:0;
 }
+#result-screen > header > .logo {
+  display:block; padding:1rem 1.2rem .6rem;
+}
 /* footer always at bottom, no sticky needed (fixed screen) */
 #result-screen .site-footer {
   width:calc(100% + 3rem); align-self:stretch;
   border-top:1px solid var(--border);
-  padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
+  padding:.3rem 1.5rem .3rem;
+  padding-bottom:max(.3rem, env(safe-area-inset-bottom));
   flex-shrink:0; background:var(--bg);
   margin:0 -1.5rem;
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
@@ -330,7 +334,7 @@ img, video { max-width:100%; height:auto; }
   flex:1; min-height:0;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
   gap:.55rem; width:100%; overflow:hidden;
-  padding:.55rem 0 0;
+  padding:.45rem 0 0;
 }
 /* spacer inside result-screen is gone; layout handled by flex */
 #result-spacer { display:none; }
