@@ -299,15 +299,13 @@ img, video { max-width:100%; height:auto; }
   flex-direction:column; align-items:center; justify-content:flex-start;
   z-index:10; padding:0;
   overflow-y:auto; -webkit-overflow-scrolling:touch;
-  max-width:42.5rem; margin:0 auto; left:0; right:0;
   gap:0;
 }
 #result-screen.show { display:flex; }
 #result-screen > header {
-  align-self:stretch;
+  width:100%; max-width:42.5rem; align-self:center;
   border-bottom:1px solid var(--border);
-  flex-shrink:0;
-  padding:0;
+  flex-shrink:0; padding:0;
   display:flex; flex-direction:column;
   position:sticky; top:0; z-index:1; background:var(--bg);
 }
@@ -318,20 +316,20 @@ img, video { max-width:100%; height:auto; }
   font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
   color:var(--border); background:var(--bg); flex-shrink:0;
 }
-/* scroll container: single flex column, no inner wrapper needed */
 #result-scroll {
   flex:1; min-height:0;
-  width:100%; display:flex; flex-direction:column; align-items:center;
+  width:100%; max-width:42.5rem; align-self:center;
+  display:flex; flex-direction:column; align-items:center;
   padding:0 1.5rem;
   box-sizing:border-box;
 }
 /* footer at bottom of scroll content */
 #result-screen .site-footer {
-  width:calc(100% + 3rem); align-self:stretch;
+  width:100%; max-width:42.5rem; align-self:center;
   border-top:1px solid var(--border);
   padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
   flex-shrink:0; background:var(--bg);
-  margin:clamp(.55rem, 3dvh, 1.5rem) -1.5rem 0;
+  margin:clamp(.55rem, 3dvh, 1.5rem) 0 0;
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 #result-top-area {
