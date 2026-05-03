@@ -1051,6 +1051,7 @@ function showHome(){
   rs.classList.remove('show');
   rs.style.transform='';
   rs.style.height='';
+  rs.style.top='';
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
   document.documentElement.style.touchAction='pan-y';
@@ -1139,6 +1140,17 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
+// Fit result-screen to visualViewport (handles keyboard appearing)
+if(window.visualViewport){
+  function onResultVV(){
+    const rs=$('result-screen');
+    if(!rs||!rs.classList.contains('show'))return;
+    rs.style.height=window.visualViewport.height+'px';
+    rs.style.top=window.visualViewport.offsetTop+'px';
+  }
+  visualViewport.addEventListener('resize',onResultVV);
+  visualViewport.addEventListener('scroll',onResultVV);
+}
 let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
   pickerCaller=caller||null;pickerSelectedTime=totalTime;
