@@ -298,7 +298,7 @@ img, video { max-width:100%; height:auto; }
   display:none; position:fixed; inset:0; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
   z-index:10; padding:0;
-  overflow-y:auto; -webkit-overflow-scrolling:touch;
+  overflow-y:hidden;
   gap:0;
 }
 #result-screen.show { display:flex; }
@@ -992,10 +992,6 @@ async function endGame(){
   // If nickname already filled (from previous game), also mark submitted-ready
   if(nf.value.trim().length>=1) setTimeout(()=>submitOnLeave(),200);
   // theme-color already restored by endGame; no extra handling needed here
-
-  // When keyboard appears, prevent scroll so all elements move together
-  nf.addEventListener('focus',()=>{ $('result-screen').style.overflowY='hidden'; });
-  nf.addEventListener('blur', ()=>{ $('result-screen').style.overflowY='auto'; });
 }
 
 let scoreSubmitted=false;
@@ -1082,9 +1078,13 @@ window.addEventListener('popstate',e=>{
   const nav=e.state&&e.state.nav;
   if(nav==='picker'){ $('mode-picker').classList.remove('show'); return; }
   if(nav==='result'){
-    $('mode-picker').classList.remove('show');
-    $('result-screen').classList.add('show');
-    $('start-screen').style.display='none';
+    if(lastResult&&lastResult.wpm>0){
+      $('mode-picker').classList.remove('show');
+      $('result-screen').classList.add('show');
+      $('start-screen').style.display='none';
+    } else {
+      showHome();
+    }
     return;
   }
   // 'home', 'game', null — show home
