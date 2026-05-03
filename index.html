@@ -1062,6 +1062,7 @@ function showHome(){
   rs.classList.remove('show');
   rs.style.transform='';
   rs.style.height='';
+  rs.style.top='';
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
   document.documentElement.style.touchAction='pan-y';
@@ -1146,7 +1147,16 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Mode picker
+// Adjust result-screen when keyboard appears
+if(window.visualViewport){
+  visualViewport.addEventListener('resize',()=>{
+    const rs=document.getElementById('result-screen');
+    if(!rs||!rs.classList.contains('show'))return;
+    const vv=visualViewport;
+    rs.style.top=vv.offsetTop+'px';
+    rs.style.height=vv.height+'px';
+  });
+}
 let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
   pickerCaller=caller||null;pickerSelectedTime=totalTime;
