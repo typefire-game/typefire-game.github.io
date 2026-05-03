@@ -298,7 +298,7 @@ img, video { max-width:100%; height:auto; }
   display:none; position:fixed; inset:0; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
   z-index:10; padding:0;
-  overflow:hidden;
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
   max-width:42.5rem; margin:0 auto; left:0; right:0;
   gap:0;
 }
@@ -309,6 +309,7 @@ img, video { max-width:100%; height:auto; }
   flex-shrink:0;
   padding:0;
   display:flex; flex-direction:column;
+  position:sticky; top:0; z-index:1; background:var(--bg);
 }
 #result-screen > header > .top-ad {
   width:100%; min-height:3.125rem; box-sizing:border-box;
@@ -317,20 +318,20 @@ img, video { max-width:100%; height:auto; }
   font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
   color:var(--border); background:var(--bg); flex-shrink:0;
 }
-/* inner container: scrollable when rank-badge adds height */
+/* scroll container: single flex column, no inner wrapper needed */
 #result-scroll {
-  flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  flex:1; min-height:0;
   width:100%; display:flex; flex-direction:column; align-items:center;
   padding:0 1.5rem;
   box-sizing:border-box;
 }
-/* footer always at bottom of scroll container */
+/* footer at bottom of scroll content */
 #result-screen .site-footer {
   width:calc(100% + 3rem); align-self:stretch;
   border-top:1px solid var(--border);
   padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
   flex-shrink:0; background:var(--bg);
-  margin:1.1rem -1.5rem 0;
+  margin:clamp(.55rem, 3dvh, 1.5rem) -1.5rem 0;
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 #result-top-area {
@@ -339,15 +340,14 @@ img, video { max-width:100%; height:auto; }
   gap:.55rem; width:100%;
   padding:.55rem 0 0;
 }
-/* spacer between top-area and bottom, absorbs free space */
 #result-spacer { display:none; }
-#result-mid-spacer { flex:1; min-height:1.1rem; }
-/* Bottom group: nickname → LB+SHARE → PLAY AGAIN */
+/* flexible spacer between top and bottom: shrinks on short screens */
+#result-mid-spacer { flex:1; min-height:clamp(.55rem, 2dvh, 1.5rem); }
+/* Bottom group */
 #result-bottom {
   display:flex; flex-direction:column; align-items:center;
-  gap:1.1rem; width:100%; flex-shrink:0;
-  padding-bottom:0;
-  margin-top:0;
+  gap:clamp(.6rem, 2dvh, 1.1rem); width:100%; flex-shrink:0;
+  padding-bottom:0; margin-top:0;
 }
 /* nickname row */
 #result-bottom .nickname-row {
