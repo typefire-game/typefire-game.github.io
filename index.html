@@ -316,10 +316,11 @@ img, video { max-width:100%; height:auto; }
   font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
   color:var(--border); background:var(--bg); flex-shrink:0;
 }
-/* scrollable body inside result-screen */
+/* inner container: space-between normally, scrollable when rank-badge adds height */
 #result-scroll {
   flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
   width:100%; display:flex; flex-direction:column; align-items:center;
+  justify-content:space-between;
   padding:0 1.5rem;
   box-sizing:border-box;
 }
@@ -333,8 +334,8 @@ img, video { max-width:100%; height:auto; }
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 #result-top-area {
-  flex-shrink:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  flex:1; min-height:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
   gap:.55rem; width:100%;
   padding:.55rem 0 0;
 }
