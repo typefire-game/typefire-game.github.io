@@ -317,11 +317,10 @@ img, video { max-width:100%; height:auto; }
   font-size:.7rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
   color:var(--border); background:var(--bg); flex-shrink:0;
 }
-/* inner container: space-between normally, scrollable when rank-badge adds height */
+/* inner container: scrollable when rank-badge adds height */
 #result-scroll {
   flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
   width:100%; display:flex; flex-direction:column; align-items:center;
-  justify-content:space-between;
   padding:0 1.5rem;
   box-sizing:border-box;
 }
@@ -335,19 +334,20 @@ img, video { max-width:100%; height:auto; }
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 #result-top-area {
-  flex:1; min-height:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   gap:.55rem; width:100%;
-  padding:.55rem 0;
+  padding:.55rem 0 0;
 }
-/* spacer no longer needed */
+/* spacer between top-area and bottom, absorbs free space */
 #result-spacer { display:none; }
+#result-mid-spacer { flex:1; min-height:1.1rem; }
 /* Bottom group: nickname → LB+SHARE → PLAY AGAIN */
 #result-bottom {
   display:flex; flex-direction:column; align-items:center;
   gap:1.1rem; width:100%; flex-shrink:0;
   padding-bottom:0;
-  margin-top:1.1rem;
+  margin-top:0;
 }
 /* nickname row */
 #result-bottom .nickname-row {
@@ -437,8 +437,7 @@ img, video { max-width:100%; height:auto; }
 .mode-pick-cancel:active { color:var(--muted); background:none; }
 
 @media(min-width:37.5rem){
-  header { padding:1.2rem 2rem .6rem; }
-  .stats-row,.words-wrap,.progress-wrap,.ad-slot { padding-left:2rem; padding-right:2rem; }
+  .top-ad,.header-main,.stats-row,.words-wrap,.progress-wrap,.ad-slot { padding-left:2rem; padding-right:2rem; }
   :root { --word-size:1.65rem; }
   .start-desc { font-size:1.75rem; white-space:nowrap; }
   .desc-br { display:none; }
@@ -508,6 +507,7 @@ img, video { max-width:100%; height:auto; }
         <div class="result-cell"><div class="v" id="r-time">0s</div><div class="l">Duration</div></div>
       </div>
     </div>
+    <div id="result-mid-spacer"></div>
     <!-- Bottom group: nickname → LB+SHARE → PLAY AGAIN -->
     <div id="result-bottom">
       <div class="nickname-row">
