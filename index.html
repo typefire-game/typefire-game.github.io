@@ -980,6 +980,7 @@ async function endGame(){
   // theme-color already restored by endGame; no extra handling needed here
   nf.addEventListener('focus', openKeyboardFooter);
   nf.addEventListener('blur',  closeKeyboardFooter);
+  nf.addEventListener('focusout', closeKeyboardFooter);
 }
 
 let scoreSubmitted=false;
@@ -1142,16 +1143,21 @@ $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openMode
 
 // Fit result-screen to visualViewport (handles keyboard appearing)
 // Footer positioning when keyboard appears
-const resultFooter=document.querySelector('#result-screen .site-footer');
 let keyboardOpen=false;
+function getResultFooter(){ return document.querySelector('#result-screen .site-footer'); }
 function updateResultFooter(){
-  if(!keyboardOpen||!resultFooter)return;
+  if(!keyboardOpen)return;
+  const f=getResultFooter();
+  if(!f)return;
   const vv=window.visualViewport;
-  resultFooter.style.position='fixed';
-  resultFooter.style.top=(vv.offsetTop+vv.height)+'px';
-  resultFooter.style.left='0';
-  resultFooter.style.right='0';
-  resultFooter.style.margin='0';
+  const maxW=Math.min(window.innerWidth, 42.5*16);
+  const left=(window.innerWidth-maxW)/2;
+  f.style.position='fixed';
+  f.style.top=vv.height+'px';
+  f.style.left=left+'px';
+  f.style.right=left+'px';
+  f.style.margin='0';
+  f.style.width='';
 }
 function openKeyboardFooter(){
   keyboardOpen=true;
@@ -1159,12 +1165,13 @@ function openKeyboardFooter(){
 }
 function closeKeyboardFooter(){
   keyboardOpen=false;
-  if(!resultFooter)return;
-  resultFooter.style.position='';
-  resultFooter.style.top='';
-  resultFooter.style.left='';
-  resultFooter.style.right='';
-  resultFooter.style.margin='';
+  const f=getResultFooter();
+  if(!f)return;
+  f.style.position='';
+  f.style.top='';
+  f.style.left='';
+  f.style.right='';
+  f.style.margin='';
 }
 if(window.visualViewport){
   visualViewport.addEventListener('resize',updateResultFooter);
