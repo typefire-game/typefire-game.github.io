@@ -1148,7 +1148,10 @@ function updateResultFooter(){
   const rs=$('result-screen');
   if(!rs||!rs.classList.contains('show'))return;
   const vv=window.visualViewport;
-  const shift=window.innerHeight-vv.height-vv.offsetTop;
+  const footer=rs.querySelector('.site-footer');
+  if(!footer)return;
+  const footerBottom=footer.getBoundingClientRect().bottom;
+  const shift=footerBottom-vv.height;
   rs.style.top=(-shift)+'px';
 }
 function openKeyboardFooter(){
