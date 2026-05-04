@@ -297,7 +297,8 @@ img, video { max-width:100%; height:auto; }
 #result-screen {
   display:none; position:fixed; inset:0; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:10; padding:0; gap:0;
+  z-index:10; padding:0;
+  gap:0;
 }
 #result-screen.show { display:flex; }
 #result-screen > header {
@@ -317,20 +318,22 @@ img, video { max-width:100%; height:auto; }
 #result-scroll {
   width:100%; max-width:42.5rem; align-self:center;
   display:flex; flex-direction:column; align-items:center;
-  padding:0 1.5rem; box-sizing:border-box;
-  gap:.55rem; padding-top:.55rem;
+  padding:0 1.5rem;
+  box-sizing:border-box;
+  gap:.55rem;
+  padding-top:.55rem;
 }
 #result-top-area { display:contents; }
 #result-mid-spacer { display:none; }
 #result-bottom { display:contents; }
 #result-spacer { display:none; }
-/* footer: normally in flow; fixed when keyboard is open */
+/* footer */
 #result-screen .site-footer {
-  width:100%; max-width:42.5rem; align-self:center;
+  width:calc(100% + 3rem); align-self:stretch;
   border-top:1px solid var(--border);
   padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
   flex-shrink:0; background:var(--bg);
-  margin:.55rem 0 0;
+  margin:.55rem -1.5rem 0;
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 /* nickname row */
@@ -978,9 +981,6 @@ async function endGame(){
   // If nickname already filled (from previous game), also mark submitted-ready
   if(nf.value.trim().length>=1) setTimeout(()=>submitOnLeave(),200);
   // theme-color already restored by endGame; no extra handling needed here
-  nf.addEventListener('focus', openKeyboardFooter);
-  nf.addEventListener('blur',  closeKeyboardFooter);
-  nf.addEventListener('focusout', closeKeyboardFooter);
 }
 
 let scoreSubmitted=false;
@@ -1051,8 +1051,6 @@ function showHome(){
   rs.classList.remove('show');
   rs.style.transform='';
   rs.style.height='';
-  rs.style.top='';
-  closeKeyboardFooter();
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
   document.documentElement.style.touchAction='pan-y';
@@ -1141,32 +1139,6 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Fit result-screen to visualViewport (handles keyboard appearing)
-// Shift result-screen up when keyboard appears so footer aligns to green bar
-let keyboardOpen=false;
-function updateResultFooter(){
-  const rs=$('result-screen');
-  if(!rs||!rs.classList.contains('show'))return;
-  const vv=window.visualViewport;
-  const footer=rs.querySelector('.site-footer');
-  if(!footer)return;
-  const footerBottom=footer.getBoundingClientRect().bottom;
-  const shift=footerBottom-vv.height;
-  rs.style.top=(-shift)+'px';
-}
-function openKeyboardFooter(){
-  keyboardOpen=true;
-  updateResultFooter();
-}
-function closeKeyboardFooter(){
-  keyboardOpen=false;
-  const rs=$('result-screen');
-  if(rs) rs.style.top='';
-}
-if(window.visualViewport){
-  visualViewport.addEventListener('resize',updateResultFooter);
-  visualViewport.addEventListener('scroll',updateResultFooter);
-}
 let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
   pickerCaller=caller||null;pickerSelectedTime=totalTime;
