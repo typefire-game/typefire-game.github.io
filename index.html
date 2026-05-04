@@ -1139,6 +1139,15 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
+// Fit result-screen height to visualViewport so footer aligns to green bar
+if(window.visualViewport){
+  function onResultVV(){
+    const rs=$('result-screen');
+    if(!rs||!rs.classList.contains('show'))return;
+    rs.style.height=window.visualViewport.height+'px';
+  }
+  visualViewport.addEventListener('resize',onResultVV);
+}
 let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
   pickerCaller=caller||null;pickerSelectedTime=totalTime;
