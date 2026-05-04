@@ -299,6 +299,7 @@ img, video { max-width:100%; height:auto; }
   flex-direction:column; align-items:center; justify-content:flex-start;
   z-index:10; padding:0;
   gap:0;
+  transition:height .25s ease, top .25s ease;
 }
 #result-screen.show { display:flex; }
 #result-screen > header {
@@ -316,6 +317,7 @@ img, video { max-width:100%; height:auto; }
 }
 /* single flex column for all result content */
 #result-scroll {
+  flex:1; min-height:0;
   width:100%; max-width:42.5rem; align-self:center;
   display:flex; flex-direction:column; align-items:center;
   padding:0 1.5rem;
@@ -333,7 +335,7 @@ img, video { max-width:100%; height:auto; }
   border-top:1px solid var(--border);
   padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
   flex-shrink:0; background:var(--bg);
-  margin:.55rem -1.5rem 0;
+  margin:auto -1.5rem 0;
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 /* nickname row */
