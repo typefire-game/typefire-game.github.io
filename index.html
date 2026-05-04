@@ -1155,7 +1155,7 @@ if(window.visualViewport){
       const footerBottom=footer.getBoundingClientRect().bottom;
       const shift=footerBottom-vv.height;
       dbg.textContent=`vvH:${Math.round(vv.height)} footerB:${Math.round(footerBottom)} shift:${Math.round(shift)}`;
-      if(shift>0) rs.style.transform=`translateY(${-shift}px)`;
+      rs.style.transform=`translateY(${-shift}px)`;
     });
   }
   visualViewport.addEventListener('resize',onResultVV);
