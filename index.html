@@ -1142,22 +1142,14 @@ $('start-btn').addEventListener('click',()=>{
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
 // Fit result-screen to visualViewport (handles keyboard appearing)
-// Footer positioning when keyboard appears
+// Shift result-screen up when keyboard appears so footer aligns to green bar
 let keyboardOpen=false;
-function getResultFooter(){ return document.querySelector('#result-screen .site-footer'); }
 function updateResultFooter(){
-  if(!keyboardOpen)return;
-  const f=getResultFooter();
-  if(!f)return;
+  const rs=$('result-screen');
+  if(!rs||!rs.classList.contains('show'))return;
   const vv=window.visualViewport;
-  const maxW=Math.min(window.innerWidth, 42.5*16);
-  const left=(window.innerWidth-maxW)/2;
-  f.style.position='fixed';
-  f.style.top=vv.height+'px';
-  f.style.left=left+'px';
-  f.style.right=left+'px';
-  f.style.margin='0';
-  f.style.width='';
+  const shift=window.innerHeight-vv.height-vv.offsetTop;
+  rs.style.top=(-shift)+'px';
 }
 function openKeyboardFooter(){
   keyboardOpen=true;
@@ -1165,13 +1157,8 @@ function openKeyboardFooter(){
 }
 function closeKeyboardFooter(){
   keyboardOpen=false;
-  const f=getResultFooter();
-  if(!f)return;
-  f.style.position='';
-  f.style.top='';
-  f.style.left='';
-  f.style.right='';
-  f.style.margin='';
+  const rs=$('result-screen');
+  if(rs) rs.style.top='';
 }
 if(window.visualViewport){
   visualViewport.addEventListener('resize',updateResultFooter);
