@@ -297,8 +297,7 @@ img, video { max-width:100%; height:auto; }
 #result-screen {
   display:none; position:fixed; top:0; left:0; right:0; height:100dvh; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:10; padding:0;
-  gap:0;
+  z-index:10; padding:0; gap:0; overflow:hidden;
 }
 #result-screen.show { display:flex; }
 #result-screen > header {
@@ -1139,12 +1138,19 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Fit result-screen height to visualViewport so footer aligns to green bar
+// Shift result-screen up when keyboard appears using transform
 if(window.visualViewport){
   function onResultVV(){
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
-    rs.style.height=window.visualViewport.height+'px';
+    const vv=window.visualViewport;
+    const footer=rs.querySelector('.site-footer');
+    if(!footer)return;
+    // Reset transform first to get real positions
+    rs.style.transform='';
+    const footerBottom=footer.getBoundingClientRect().bottom;
+    const shift=footerBottom-vv.height;
+    if(shift>0) rs.style.transform=`translateY(${-shift}px)`;
   }
   visualViewport.addEventListener('resize',onResultVV);
 }
