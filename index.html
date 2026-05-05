@@ -1140,23 +1140,20 @@ $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openMode
 
 // Shift result-screen up when keyboard appears using transform
 if(window.visualViewport){
-  // debug element
-  const dbg=document.createElement('div');
-  dbg.style.cssText='position:fixed;top:0;left:0;background:red;color:white;font-size:12px;z-index:9999;padding:2px 6px;';
-  document.body.appendChild(dbg);
   function onResultVV(){
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
-    const vv=window.visualViewport;
+    const nf=$('nickname-input');
+    const keyboardVisible=document.activeElement===nf;
     rs.style.transform='';
+    if(!keyboardVisible)return;
     requestAnimationFrame(()=>{
       const footer=rs.querySelector('.site-footer');
       if(!footer)return;
       const footerTop=footer.getBoundingClientRect().top;
+      const vv=window.visualViewport;
       const shift=footerTop-vv.height;
-      dbg.textContent=`vvH:${Math.round(vv.height)} footerT:${Math.round(footerTop)} shift:${Math.round(shift)}`;
       if(shift<0) rs.style.transform=`translateY(${-shift}px)`;
-      else rs.style.transform='';
     });
   }
   visualViewport.addEventListener('resize',onResultVV);
