@@ -1152,9 +1152,9 @@ if(window.visualViewport){
     requestAnimationFrame(()=>{
       const footer=rs.querySelector('.site-footer');
       if(!footer)return;
-      const footerBottom=footer.getBoundingClientRect().bottom;
-      const shift=footerBottom-vv.height;
-      dbg.textContent=`vvH:${Math.round(vv.height)} footerB:${Math.round(footerBottom)} shift:${Math.round(shift)}`;
+      const footerTop=footer.getBoundingClientRect().top;
+      const shift=footerTop-vv.height;
+      dbg.textContent=`vvH:${Math.round(vv.height)} footerT:${Math.round(footerTop)} shift:${Math.round(shift)}`;
       rs.style.transform=`translateY(${-shift}px)`;
     });
   }
