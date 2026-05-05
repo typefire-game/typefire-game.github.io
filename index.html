@@ -1155,7 +1155,8 @@ if(window.visualViewport){
       const footerTop=footer.getBoundingClientRect().top;
       const shift=footerTop-vv.height;
       dbg.textContent=`vvH:${Math.round(vv.height)} footerT:${Math.round(footerTop)} shift:${Math.round(shift)}`;
-      rs.style.transform=`translateY(${-shift}px)`;
+      if(shift<0) rs.style.transform=`translateY(${-shift}px)`;
+      else rs.style.transform='';
     });
   }
   visualViewport.addEventListener('resize',onResultVV);
