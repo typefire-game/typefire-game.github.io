@@ -1147,12 +1147,20 @@ if(window.visualViewport){
     if(!rs||!rs.classList.contains('show'))return;
     const scroll=document.getElementById('result-scroll');
     if(!scroll)return;
+    const vv=window.visualViewport;
+    const nf=$('nickname-input');
+    if(document.activeElement!==nf){
+      // delay reset to allow keyboard dismiss animation to complete
+      setTimeout(()=>{
+        if(document.activeElement!==nf) scroll.style.transform='';
+      },300);
+      return;
+    }
     scroll.style.transform='';
     requestAnimationFrame(()=>{
       const footer=rs.querySelector('.site-footer');
       if(!footer)return;
       const footerTop=footer.getBoundingClientRect().top;
-      const vv=window.visualViewport;
       const shift=footerTop-vv.height;
       if(shift<0) scroll.style.transform=`translateY(${-shift}px)`;
     });
