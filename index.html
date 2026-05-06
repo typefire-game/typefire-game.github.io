@@ -982,8 +982,8 @@ async function endGame(){
   // theme-color already restored by endGame; no extra handling needed here
   // Reset transform when keyboard closes
   nf.addEventListener('blur',()=>{
-    const rs=$('result-screen');
-    if(rs) rs.style.transform='';
+    const scroll=document.getElementById('result-scroll');
+    if(scroll) scroll.style.transform='';
   });
 }
 
@@ -1055,6 +1055,8 @@ function showHome(){
   rs.classList.remove('show');
   rs.style.transform='';
   rs.style.height='';
+  const scroll=document.getElementById('result-scroll');
+  if(scroll) scroll.style.transform='';
   $('mode-picker').classList.remove('show');
   $('start-screen').style.display='';
   document.documentElement.style.touchAction='pan-y';
@@ -1143,14 +1145,16 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Shift result-screen up when keyboard appears using transform
+// Shift result-scroll up when keyboard appears using transform
 if(window.visualViewport){
   function onResultVV(){
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
+    const scroll=document.getElementById('result-scroll');
+    if(!scroll)return;
     const nf=$('nickname-input');
     const keyboardVisible=document.activeElement===nf;
-    rs.style.transform='';
+    scroll.style.transform='';
     if(!keyboardVisible)return;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       const footer=rs.querySelector('.site-footer');
@@ -1158,7 +1162,7 @@ if(window.visualViewport){
       const footerTop=footer.getBoundingClientRect().top;
       const vv=window.visualViewport;
       const shift=footerTop-vv.height;
-      if(shift<0) rs.style.transform=`translateY(${-shift}px)`;
+      if(shift<0) scroll.style.transform=`translateY(${-shift}px)`;
     }));
   }
   visualViewport.addEventListener('resize',onResultVV);
