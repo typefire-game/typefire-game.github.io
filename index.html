@@ -980,6 +980,11 @@ async function endGame(){
   // If nickname already filled (from previous game), also mark submitted-ready
   if(nf.value.trim().length>=1) setTimeout(()=>submitOnLeave(),200);
   // theme-color already restored by endGame; no extra handling needed here
+  // Reset transform when keyboard closes
+  nf.addEventListener('blur',()=>{
+    const rs=$('result-screen');
+    if(rs) rs.style.transform='';
+  });
 }
 
 let scoreSubmitted=false;
@@ -1147,14 +1152,14 @@ if(window.visualViewport){
     const keyboardVisible=document.activeElement===nf;
     rs.style.transform='';
     if(!keyboardVisible)return;
-    requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
       const footer=rs.querySelector('.site-footer');
       if(!footer)return;
       const footerTop=footer.getBoundingClientRect().top;
       const vv=window.visualViewport;
       const shift=footerTop-vv.height;
       if(shift<0) rs.style.transform=`translateY(${-shift}px)`;
-    });
+    }));
   }
   visualViewport.addEventListener('resize',onResultVV);
 }
