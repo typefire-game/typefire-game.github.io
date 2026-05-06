@@ -980,11 +980,6 @@ async function endGame(){
   // If nickname already filled (from previous game), also mark submitted-ready
   if(nf.value.trim().length>=1) setTimeout(()=>submitOnLeave(),200);
   // theme-color already restored by endGame; no extra handling needed here
-  // Reset transform when keyboard closes
-  nf.addEventListener('blur',()=>{
-    const scroll=document.getElementById('result-scroll');
-    if(scroll) scroll.style.transform='';
-  });
 }
 
 let scoreSubmitted=false;
@@ -1145,27 +1140,25 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Shift result-scroll up when keyboard appears using transform
+// Shift result-scroll to keep footer top aligned with visualViewport bottom
 if(window.visualViewport){
   function onResultVV(){
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
     const scroll=document.getElementById('result-scroll');
     if(!scroll)return;
-    const nf=$('nickname-input');
-    const keyboardVisible=document.activeElement===nf;
     scroll.style.transform='';
-    if(!keyboardVisible)return;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
       const footer=rs.querySelector('.site-footer');
       if(!footer)return;
       const footerTop=footer.getBoundingClientRect().top;
       const vv=window.visualViewport;
       const shift=footerTop-vv.height;
       if(shift<0) scroll.style.transform=`translateY(${-shift}px)`;
-    }));
+    });
   }
   visualViewport.addEventListener('resize',onResultVV);
+  visualViewport.addEventListener('scroll',onResultVV);
 }
 let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
