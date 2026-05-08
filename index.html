@@ -1202,6 +1202,8 @@ if(window.visualViewport){
   document.getElementById('nickname-input').addEventListener('focus',()=>{
     clearTimeout(_rvv.tID);
     _rvv.active=true;
+    // visualViewport resize may fire before or after focus; trigger shift directly after keyboard appears
+    _rvv.tID=setTimeout(_applyResultShift, 350);
   });
   visualViewport.addEventListener('resize',_applyResultShift);
   visualViewport.addEventListener('scroll',_applyResultShift);
