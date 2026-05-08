@@ -1175,12 +1175,12 @@ if(window.visualViewport){
     _rvv.scroll.style.transition='transform .22s ease-out';
     requestAnimationFrame(()=>{
       if(!_rvv.scroll)return;
-      const agn=$('again-btn');
-      if(!agn)return;
-      const agnBottom=agn.getBoundingClientRect().bottom;
-      // target: again-btn bottom sits vv.height - small gap above keyboard
-      const GAP=parseFloat(getComputedStyle(document.documentElement).fontSize)*0.55;
-      const shift=agnBottom-(vv.height-GAP);
+      const rs=$('result-screen');
+      const footer=rs&&rs.querySelector('.site-footer');
+      if(!footer)return;
+      // shift until footer top aligns with vv.height (footer just disappears below keyboard top)
+      const footerTop=footer.getBoundingClientRect().top;
+      const shift=footerTop-vv.height;
       if(shift>0) _rvv.scroll.style.transform=`translateY(-${shift}px)`;
       else _rvv.scroll.style.transform='';
     });
