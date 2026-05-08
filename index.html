@@ -1141,20 +1141,23 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Keyboard handling for result screen: resize result-screen to visualViewport height
+// Keyboard handling for result screen: shrink result-screen to vv.height on keyboard open
 if(window.visualViewport){
   const _rvv={ nf:null, tID:null, active:false };
   function _applyResultShift(){
-    _rvv.nf=_rvv.nf||$('nickname-input');
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
     if(!_rvv.active)return;
     const vv=window.visualViewport;
+    const scroll=document.getElementById('result-scroll');
     rs.style.height=vv.height+'px';
+    if(scroll) scroll.style.justifyContent='flex-start';
   }
   function _resetResultShift(){
     const rs=$('result-screen');
     if(rs) rs.style.height='';
+    const scroll=document.getElementById('result-scroll');
+    if(scroll) scroll.style.justifyContent='';
   }
   const _ni=document.getElementById('nickname-input');
   _ni.addEventListener('focus',()=>{
