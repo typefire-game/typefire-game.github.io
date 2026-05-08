@@ -1172,17 +1172,20 @@ if(window.visualViewport){
     }
     _rvv.active=true;
     clearTimeout(_rvv.tID);
-    _rvv.scroll.style.transition='transform .22s ease-out';
+    _rvv.scroll.style.transition='';
+    _rvv.scroll.style.transform='';
     requestAnimationFrame(()=>{
       if(!_rvv.scroll)return;
       const rs=$('result-screen');
       const footer=rs&&rs.querySelector('.site-footer');
       if(!footer)return;
-      // shift until footer top aligns with vv.height (footer just disappears below keyboard top)
+      // getBoundingClientRect is relative to layout viewport top
+      // vv.offsetTop + vv.height = the position of the green URL bar top edge in layout viewport coords
       const footerTop=footer.getBoundingClientRect().top;
-      const shift=footerTop-vv.height;
+      const targetY=vv.offsetTop+vv.height;
+      const shift=footerTop-targetY;
+      _rvv.scroll.style.transition='transform .22s ease-out';
       if(shift>0) _rvv.scroll.style.transform=`translateY(-${shift}px)`;
-      else _rvv.scroll.style.transform='';
     });
   }
   // Also clear on focusout for instant response
