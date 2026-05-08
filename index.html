@@ -1155,13 +1155,13 @@ if(window.visualViewport){
   function _applyResultShift(){
     _rvv.nf=_rvv.nf||$('nickname-input');
     const rs=$('result-screen');
+    console.log('[rvv] _applyResultShift called, active='+_rvv.active+', show='+!!(rs&&rs.classList.contains('show')));
     if(!rs||!rs.classList.contains('show'))return;
     const vv=window.visualViewport;
     if(!_rvv.active){
       return;
     }
     clearTimeout(_rvv.tID);
-    // measure after next paint
     requestAnimationFrame(()=>{
       const spacer=document.getElementById('result-spacer');
       const footer=rs.querySelector('.site-footer');
@@ -1170,6 +1170,7 @@ if(window.visualViewport){
       const footerTop=footer.getBoundingClientRect().top;
       const targetY=vv.offsetTop+vv.height;
       const shift=footerTop-targetY;
+      console.log('[rvv] spacerH='+spacerH+' footerTop='+footerTop+' targetY='+targetY+' shift='+shift);
       if(shift<=0)return;
       const newH=Math.max(0,spacerH-shift);
       spacer.style.transition='height .22s ease-out, flex-basis .22s ease-out';
@@ -1183,9 +1184,13 @@ if(window.visualViewport){
     _rvv.tID=setTimeout(()=>{ if(!_rvv.active) _spacerReset(); },350);
   });
   document.getElementById('nickname-input').addEventListener('focus',()=>{
+    console.log('[rvv] focus fired, active=true');
     _rvv.active=true;
     clearTimeout(_rvv.tID);
-    _rvv.tID=setTimeout(_applyResultShift,350);
+    _rvv.tID=setTimeout(()=>{
+      console.log('[rvv] setTimeout fired, calling _applyResultShift');
+      _applyResultShift();
+    },350);
   });
   visualViewport.addEventListener('resize',_applyResultShift);
   visualViewport.addEventListener('scroll',_applyResultShift);
