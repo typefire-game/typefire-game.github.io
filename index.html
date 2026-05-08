@@ -1176,6 +1176,7 @@ if(window.visualViewport){
   document.getElementById('nickname-input').addEventListener('focus',()=>{
     _rvv.active=true;
     clearTimeout(_rvv.tID);
+    _hideForKeyboard();
   });
   visualViewport.addEventListener('resize',_applyResultShift);
   visualViewport.addEventListener('scroll',_applyResultShift);
