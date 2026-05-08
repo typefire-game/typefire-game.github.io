@@ -1148,11 +1148,11 @@ if(window.visualViewport){
   function _getSpacer(){ return document.getElementById('result-spacer'); }
   function _hideForKeyboard(){
     const footer=_getFooter(); if(footer) footer.style.display='none';
-    const spacer=_getSpacer(); if(spacer){ spacer.style.flexBasis='0'; spacer.style.height='0'; spacer.style.overflow='hidden'; }
+    const spacer=_getSpacer(); if(spacer){ spacer.style.flex='0 0 0'; spacer.style.overflow='hidden'; }
   }
   function _restoreForKeyboard(){
     const footer=_getFooter(); if(footer) footer.style.display='';
-    const spacer=_getSpacer(); if(spacer){ spacer.style.flexBasis=''; spacer.style.height=''; spacer.style.overflow=''; }
+    const spacer=_getSpacer(); if(spacer){ spacer.style.flex=''; spacer.style.overflow=''; }
   }
   function _applyResultShift(){
     _rvv.nf=_rvv.nf||$('nickname-input');
