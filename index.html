@@ -297,7 +297,7 @@ img, video { max-width:100%; height:auto; }
 #result-screen {
   display:none; position:fixed; top:0; left:0; right:0; height:100dvh; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:10; padding:0; gap:0; overflow:clip;
+  z-index:10; padding:0; gap:0;
 }
 #result-screen.show { display:flex; }
 #result-screen > header {
@@ -1141,7 +1141,7 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Keyboard handling for result screen: shrink result-screen to vv.height on keyboard open
+// Keyboard handling for result screen: translateY result-scroll up when keyboard appears
 if(window.visualViewport){
   const _rvv={ nf:null, tID:null, active:false };
   function _applyResultShift(){
@@ -1150,18 +1150,16 @@ if(window.visualViewport){
     if(!_rvv.active)return;
     const vv=window.visualViewport;
     const scroll=document.getElementById('result-scroll');
-    const spacer=document.getElementById('result-spacer');
-    rs.style.height=vv.height+'px';
-    if(scroll) scroll.style.justifyContent='flex-start';
-    if(spacer){ spacer.style.flex='0 0 0'; spacer.style.height='0'; spacer.style.minHeight='0'; }
+    const footer=rs.querySelector('.site-footer');
+    if(!scroll||!footer)return;
+    const footerTop=footer.getBoundingClientRect().top;
+    const targetY=vv.offsetTop+vv.height;
+    const shift=footerTop-targetY;
+    if(shift>0) scroll.style.transform=`translateY(-${shift}px)`;
   }
   function _resetResultShift(){
-    const rs=$('result-screen');
-    if(rs) rs.style.height='';
     const scroll=document.getElementById('result-scroll');
-    if(scroll) scroll.style.justifyContent='';
-    const spacer=document.getElementById('result-spacer');
-    if(spacer){ spacer.style.flex=''; spacer.style.height=''; spacer.style.minHeight=''; }
+    if(scroll) scroll.style.transform='';
   }
   const _ni=document.getElementById('nickname-input');
   _ni.addEventListener('focus',()=>{
