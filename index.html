@@ -1141,12 +1141,18 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Keyboard handling for result screen: hide footer when keyboard appears
+// Keyboard handling for result screen: hide footer+spacer when keyboard appears
 if(window.visualViewport){
   const _rvv={ nf:null, tID:null, active:false };
-  function _getFooter(){
-    const rs=$('result-screen');
-    return rs&&rs.querySelector('.site-footer');
+  function _getFooter(){ const rs=$('result-screen'); return rs&&rs.querySelector('.site-footer'); }
+  function _getSpacer(){ return document.getElementById('result-spacer'); }
+  function _hideForKeyboard(){
+    const footer=_getFooter(); if(footer) footer.style.display='none';
+    const spacer=_getSpacer(); if(spacer){ spacer.style.flexBasis='0'; spacer.style.height='0'; spacer.style.overflow='hidden'; }
+  }
+  function _restoreForKeyboard(){
+    const footer=_getFooter(); if(footer) footer.style.display='';
+    const spacer=_getSpacer(); if(spacer){ spacer.style.flexBasis=''; spacer.style.height=''; spacer.style.overflow=''; }
   }
   function _applyResultShift(){
     _rvv.nf=_rvv.nf||$('nickname-input');
@@ -1156,21 +1162,16 @@ if(window.visualViewport){
     const vv=window.visualViewport;
     const footer=_getFooter();
     if(!footer)return;
+    // use natural (pre-hide) footer position: measure only if not already hidden
+    if(footer.style.display==='none') return;
     const footerTop=footer.getBoundingClientRect().top;
     const targetY=vv.offsetTop+vv.height;
-    if(footerTop<targetY){
-      footer.style.display='none';
-    }
+    if(footerTop<targetY) _hideForKeyboard();
   }
   document.getElementById('nickname-input').addEventListener('focusout',()=>{
     _rvv.active=false;
     clearTimeout(_rvv.tID);
-    _rvv.tID=setTimeout(()=>{
-      if(!_rvv.active){
-        const footer=_getFooter();
-        if(footer) footer.style.display='';
-      }
-    },350);
+    _rvv.tID=setTimeout(()=>{ if(!_rvv.active) _restoreForKeyboard(); },350);
   });
   document.getElementById('nickname-input').addEventListener('focus',()=>{
     _rvv.active=true;
