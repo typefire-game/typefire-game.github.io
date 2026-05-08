@@ -297,7 +297,7 @@ img, video { max-width:100%; height:auto; }
 #result-screen {
   display:none; position:fixed; top:0; left:0; right:0; height:100dvh; background:var(--bg);
   flex-direction:column; align-items:center; justify-content:flex-start;
-  z-index:10; padding:0; gap:0; overflow:hidden;
+  z-index:10; padding:0; gap:0; overflow:clip;
 }
 #result-screen.show { display:flex; }
 #result-screen > header {
@@ -1141,20 +1141,20 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Keyboard handling for result screen: shrink #result-spacer to push content up
+// Keyboard handling for result screen: translate #result-scroll up when keyboard appears
 if(window.visualViewport){
   const _rvv={
     nf:null,
     tID:null,
     active:false,
-    origSpacerH:null  // original spacer height before any keyboard adjustment
+    origSpacerH:null
   };
   function _spacerReset(){
     const spacer=document.getElementById('result-spacer');
     if(spacer){
       spacer.style.transition='height .3s ease-in-out, flex-basis .3s ease-in-out';
-      spacer.style.height=_rvv.origSpacerH!==null?_rvv.origSpacerH+'px':'';
-      spacer.style.flexBasis=_rvv.origSpacerH!==null?_rvv.origSpacerH+'px':'';
+      if(_rvv.origSpacerH!==null){ spacer.style.height=_rvv.origSpacerH+'px'; spacer.style.flexBasis=_rvv.origSpacerH+'px'; }
+      else { spacer.style.height=''; spacer.style.flexBasis=''; }
     }
     _rvv.origSpacerH=null;
   }
@@ -1167,27 +1167,34 @@ if(window.visualViewport){
     const spacer=document.getElementById('result-spacer');
     const footer=rs.querySelector('.site-footer');
     if(!spacer||!footer)return;
-    // store original height once
-    if(_rvv.origSpacerH===null){
-      _rvv.origSpacerH=spacer.getBoundingClientRect().height;
-    }
+    if(_rvv.origSpacerH===null) _rvv.origSpacerH=spacer.getBoundingClientRect().height;
     const footerTop=footer.getBoundingClientRect().top;
     const targetY=vv.offsetTop+vv.height;
     const shift=footerTop-targetY;
     if(shift<=0)return;
-    const newH=Math.max(0,_rvv.origSpacerH-shift);
+    // first drain spacer, then use negative margin-top for the rest
+    const spacerNew=Math.max(0,_rvv.origSpacerH-shift);
+    const extra=shift-(_rvv.origSpacerH-spacerNew); // remaining shift after spacer is 0
     spacer.style.transition='';
-    spacer.style.flexBasis=newH+'px';
-    spacer.style.height=newH+'px';
+    spacer.style.height=spacerNew+'px';
+    spacer.style.flexBasis=spacerNew+'px';
+    if(extra>0) spacer.style.marginTop=(-extra)+'px';
+    else spacer.style.marginTop='';
   }
   document.getElementById('nickname-input').addEventListener('focusout',()=>{
     _rvv.active=false;
     clearTimeout(_rvv.tID);
-    _rvv.tID=setTimeout(()=>{ if(!_rvv.active) _spacerReset(); },350);
+    _rvv.tID=setTimeout(()=>{
+      if(!_rvv.active){
+        const spacer=document.getElementById('result-spacer');
+        if(spacer) spacer.style.marginTop='';
+        _spacerReset();
+      }
+    },350);
   });
   document.getElementById('nickname-input').addEventListener('focus',()=>{
     _rvv.active=true;
-    _rvv.origSpacerH=null; // reset so we measure fresh
+    _rvv.origSpacerH=null;
     clearTimeout(_rvv.tID);
   });
   visualViewport.addEventListener('resize',_applyResultShift);
