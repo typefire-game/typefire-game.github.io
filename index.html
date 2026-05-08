@@ -1174,19 +1174,19 @@ if(window.visualViewport){
     clearTimeout(_rvv.tID);
     _rvv.scroll.style.transition='';
     _rvv.scroll.style.transform='';
-    requestAnimationFrame(()=>{
+    // double rAF: first frame clears transform, second frame measures after repaint
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
       if(!_rvv.scroll)return;
       const rs=$('result-screen');
       const footer=rs&&rs.querySelector('.site-footer');
       if(!footer)return;
-      // getBoundingClientRect is relative to layout viewport top
-      // vv.offsetTop + vv.height = the position of the green URL bar top edge in layout viewport coords
-      const footerBottom=footer.getBoundingClientRect().bottom;
+      // footerTop in layout viewport coords; targetY = green URL bar top edge
+      const footerTop=footer.getBoundingClientRect().top;
       const targetY=vv.offsetTop+vv.height;
-      const shift=footerBottom-targetY;
+      const shift=footerTop-targetY;
       _rvv.scroll.style.transition='transform .22s ease-out';
       if(shift>0) _rvv.scroll.style.transform=`translateY(-${shift}px)`;
-    });
+    }));
   }
   // Also clear on focusout for instant response
   document.getElementById('nickname-input').addEventListener('focusout',()=>{
