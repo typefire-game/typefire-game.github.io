@@ -326,7 +326,7 @@ img, video { max-width:100%; height:auto; }
 #result-top-area { display:contents; }
 #result-mid-spacer { display:none; }
 #result-bottom { display:contents; }
-#result-spacer { flex:1; flex-shrink:0; }
+#result-spacer { flex:1 1 0; min-height:0; }
 /* footer */
 #result-screen .site-footer {
   width:calc(100% + 3rem); align-self:stretch;
@@ -1141,16 +1141,18 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Keyboard handling for result screen: translate #result-scroll up when keyboard appears
+// Keyboard handling for result screen: shrink #result-spacer to push content up
 if(window.visualViewport){
   const _rvv={
-    scroll:document.getElementById('result-scroll'),
-    nf:null, // populated lazily
+    nf:null,
     tID:null,
     active:false
   };
+  function _spacerReset(){
+    const spacer=document.getElementById('result-spacer');
+    if(spacer){ spacer.style.transition=''; spacer.style.height=''; spacer.style.flexBasis=''; }
+  }
   function _applyResultShift(){
-    if(!_rvv.scroll)return;
     _rvv.nf=_rvv.nf||$('nickname-input');
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
@@ -1159,51 +1161,42 @@ if(window.visualViewport){
     if(!isKbOpen){
       if(_rvv.active){
         _rvv.active=false;
-        // wait for keyboard dismiss animation, then clear
         clearTimeout(_rvv.tID);
         _rvv.tID=setTimeout(()=>{
-          if(document.activeElement!==_rvv.nf){
-            _rvv.scroll.style.transition='';
-            _rvv.scroll.style.transform='';
-          }
+          if(document.activeElement!==_rvv.nf) _spacerReset();
         },350);
       }
       return;
     }
     _rvv.active=true;
     clearTimeout(_rvv.tID);
-    _rvv.scroll.style.transition='';
-    _rvv.scroll.style.transform='';
-    // double rAF: first frame clears transform, second frame measures after repaint
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      if(!_rvv.scroll)return;
-      const rs=$('result-screen');
-      const footer=rs&&rs.querySelector('.site-footer');
-      if(!footer)return;
-      // footerTop in layout viewport coords; targetY = green URL bar top edge
+    // measure after next paint
+    requestAnimationFrame(()=>{
+      const spacer=document.getElementById('result-spacer');
+      const footer=rs.querySelector('.site-footer');
+      if(!spacer||!footer)return;
+      const spacerH=spacer.getBoundingClientRect().height;
       const footerTop=footer.getBoundingClientRect().top;
       const targetY=vv.offsetTop+vv.height;
       const shift=footerTop-targetY;
-      _rvv.scroll.style.transition='transform .22s ease-out';
-      if(shift>0) _rvv.scroll.style.transform=`translateY(-${shift}px)`;
-    }));
+      if(shift<=0)return; // footer already above keyboard
+      const newH=Math.max(0,spacerH-shift);
+      spacer.style.transition='height .22s ease-out, flex-basis .22s ease-out';
+      spacer.style.flexBasis=newH+'px';
+      spacer.style.height=newH+'px';
+    });
   }
-  // Also clear on focusout for instant response
   document.getElementById('nickname-input').addEventListener('focusout',()=>{
     _rvv.active=false;
     clearTimeout(_rvv.tID);
     _rvv.tID=setTimeout(()=>{
-      if(document.activeElement!==_rvv.nf){
-        _rvv.scroll.style.transition='transform .3s ease-in-out';
-        _rvv.scroll.style.transform='';
-      }
+      if(document.activeElement!==_rvv.nf) _spacerReset();
     },100);
   });
   document.getElementById('nickname-input').addEventListener('focus',()=>{
     clearTimeout(_rvv.tID);
     _rvv.active=true;
-    // visualViewport resize may fire before or after focus; trigger shift directly after keyboard appears
-    _rvv.tID=setTimeout(_applyResultShift, 350);
+    _rvv.tID=setTimeout(_applyResultShift,350);
   });
   visualViewport.addEventListener('resize',_applyResultShift);
   visualViewport.addEventListener('scroll',_applyResultShift);
