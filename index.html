@@ -1181,9 +1181,9 @@ if(window.visualViewport){
       if(!footer)return;
       // getBoundingClientRect is relative to layout viewport top
       // vv.offsetTop + vv.height = the position of the green URL bar top edge in layout viewport coords
-      const footerTop=footer.getBoundingClientRect().top;
+      const footerBottom=footer.getBoundingClientRect().bottom;
       const targetY=vv.offsetTop+vv.height;
-      const shift=footerTop-targetY;
+      const shift=footerBottom-targetY;
       _rvv.scroll.style.transition='transform .22s ease-out';
       if(shift>0) _rvv.scroll.style.transform=`translateY(-${shift}px)`;
     });
