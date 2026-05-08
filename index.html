@@ -1157,18 +1157,9 @@ if(window.visualViewport){
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
     const vv=window.visualViewport;
-    const isKbOpen=document.activeElement===_rvv.nf;
-    if(!isKbOpen){
-      if(_rvv.active){
-        _rvv.active=false;
-        clearTimeout(_rvv.tID);
-        _rvv.tID=setTimeout(()=>{
-          if(document.activeElement!==_rvv.nf) _spacerReset();
-        },350);
-      }
+    if(!_rvv.active){
       return;
     }
-    _rvv.active=true;
     clearTimeout(_rvv.tID);
     // measure after next paint
     requestAnimationFrame(()=>{
@@ -1179,7 +1170,7 @@ if(window.visualViewport){
       const footerTop=footer.getBoundingClientRect().top;
       const targetY=vv.offsetTop+vv.height;
       const shift=footerTop-targetY;
-      if(shift<=0)return; // footer already above keyboard
+      if(shift<=0)return;
       const newH=Math.max(0,spacerH-shift);
       spacer.style.transition='height .22s ease-out, flex-basis .22s ease-out';
       spacer.style.flexBasis=newH+'px';
@@ -1189,13 +1180,11 @@ if(window.visualViewport){
   document.getElementById('nickname-input').addEventListener('focusout',()=>{
     _rvv.active=false;
     clearTimeout(_rvv.tID);
-    _rvv.tID=setTimeout(()=>{
-      if(document.activeElement!==_rvv.nf) _spacerReset();
-    },100);
+    _rvv.tID=setTimeout(()=>{ if(!_rvv.active) _spacerReset(); },350);
   });
   document.getElementById('nickname-input').addEventListener('focus',()=>{
-    clearTimeout(_rvv.tID);
     _rvv.active=true;
+    clearTimeout(_rvv.tID);
     _rvv.tID=setTimeout(_applyResultShift,350);
   });
   visualViewport.addEventListener('resize',_applyResultShift);
