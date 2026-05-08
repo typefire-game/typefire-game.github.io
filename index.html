@@ -1141,22 +1141,12 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Keyboard handling for result screen: translate #result-scroll up when keyboard appears
+// Keyboard handling for result screen: hide footer when keyboard appears
 if(window.visualViewport){
-  const _rvv={
-    nf:null,
-    tID:null,
-    active:false,
-    origSpacerH:null
-  };
-  function _spacerReset(){
-    const spacer=document.getElementById('result-spacer');
-    if(spacer){
-      spacer.style.transition='height .3s ease-in-out, flex-basis .3s ease-in-out';
-      if(_rvv.origSpacerH!==null){ spacer.style.height=_rvv.origSpacerH+'px'; spacer.style.flexBasis=_rvv.origSpacerH+'px'; }
-      else { spacer.style.height=''; spacer.style.flexBasis=''; }
-    }
-    _rvv.origSpacerH=null;
+  const _rvv={ nf:null, tID:null, active:false };
+  function _getFooter(){
+    const rs=$('result-screen');
+    return rs&&rs.querySelector('.site-footer');
   }
   function _applyResultShift(){
     _rvv.nf=_rvv.nf||$('nickname-input');
@@ -1164,37 +1154,26 @@ if(window.visualViewport){
     if(!rs||!rs.classList.contains('show'))return;
     if(!_rvv.active)return;
     const vv=window.visualViewport;
-    const spacer=document.getElementById('result-spacer');
-    const footer=rs.querySelector('.site-footer');
-    if(!spacer||!footer)return;
-    if(_rvv.origSpacerH===null) _rvv.origSpacerH=spacer.getBoundingClientRect().height;
+    const footer=_getFooter();
+    if(!footer)return;
     const footerTop=footer.getBoundingClientRect().top;
     const targetY=vv.offsetTop+vv.height;
-    const shift=footerTop-targetY;
-    if(shift<=0)return;
-    // first drain spacer, then use negative margin-top for the rest
-    const spacerNew=Math.max(0,_rvv.origSpacerH-shift);
-    const extra=shift-(_rvv.origSpacerH-spacerNew); // remaining shift after spacer is 0
-    spacer.style.transition='';
-    spacer.style.height=spacerNew+'px';
-    spacer.style.flexBasis=spacerNew+'px';
-    if(extra>0) spacer.style.marginTop=(-extra)+'px';
-    else spacer.style.marginTop='';
+    if(footerTop<targetY){
+      footer.style.display='none';
+    }
   }
   document.getElementById('nickname-input').addEventListener('focusout',()=>{
     _rvv.active=false;
     clearTimeout(_rvv.tID);
     _rvv.tID=setTimeout(()=>{
       if(!_rvv.active){
-        const spacer=document.getElementById('result-spacer');
-        if(spacer) spacer.style.marginTop='';
-        _spacerReset();
+        const footer=_getFooter();
+        if(footer) footer.style.display='';
       }
     },350);
   });
   document.getElementById('nickname-input').addEventListener('focus',()=>{
     _rvv.active=true;
-    _rvv.origSpacerH=null;
     clearTimeout(_rvv.tID);
   });
   visualViewport.addEventListener('resize',_applyResultShift);
