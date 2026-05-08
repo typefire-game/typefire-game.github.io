@@ -321,19 +321,19 @@ img, video { max-width:100%; height:auto; }
   padding:0 1.5rem;
   box-sizing:border-box;
   gap:.55rem;
-  justify-content:center;
+  justify-content:flex-start;
 }
 #result-top-area { display:contents; }
 #result-mid-spacer { display:none; }
 #result-bottom { display:contents; }
-#result-spacer { display:none; }
+#result-spacer { flex:1; flex-shrink:0; }
 /* footer */
 #result-screen .site-footer {
   width:calc(100% + 3rem); align-self:stretch;
   border-top:1px solid var(--border);
   padding:.3rem 1.5rem max(.7rem, env(safe-area-inset-bottom));
   flex-shrink:0; background:var(--bg);
-  margin:auto -1.5rem 0;
+  margin:0 -1.5rem 0;
   display:flex; align-items:center; justify-content:center; gap:.1rem; flex-wrap:wrap;
 }
 /* nickname row */
@@ -1141,33 +1141,67 @@ $('start-btn').addEventListener('click',()=>{
 
 $('again-btn').addEventListener('click',async()=>{await submitOnLeave();openModePicker('result');});
 
-// Shift result-scroll to keep footer top aligned with visualViewport bottom
+// Keyboard handling for result screen: translate #result-scroll up when keyboard appears
 if(window.visualViewport){
-  function onResultVV(){
+  const _rvv={
+    scroll:document.getElementById('result-scroll'),
+    nf:null, // populated lazily
+    tID:null,
+    active:false
+  };
+  function _applyResultShift(){
+    if(!_rvv.scroll)return;
+    _rvv.nf=_rvv.nf||$('nickname-input');
     const rs=$('result-screen');
     if(!rs||!rs.classList.contains('show'))return;
-    const scroll=document.getElementById('result-scroll');
-    if(!scroll)return;
     const vv=window.visualViewport;
-    const nf=$('nickname-input');
-    if(document.activeElement!==nf){
-      // delay reset to allow keyboard dismiss animation to complete
-      setTimeout(()=>{
-        if(document.activeElement!==nf) scroll.style.transform='';
-      },300);
+    const isKbOpen=document.activeElement===_rvv.nf;
+    if(!isKbOpen){
+      if(_rvv.active){
+        _rvv.active=false;
+        // wait for keyboard dismiss animation, then clear
+        clearTimeout(_rvv.tID);
+        _rvv.tID=setTimeout(()=>{
+          if(document.activeElement!==_rvv.nf){
+            _rvv.scroll.style.transition='';
+            _rvv.scroll.style.transform='';
+          }
+        },350);
+      }
       return;
     }
-    scroll.style.transform='';
+    _rvv.active=true;
+    clearTimeout(_rvv.tID);
+    _rvv.scroll.style.transition='transform .22s ease-out';
     requestAnimationFrame(()=>{
-      const footer=rs.querySelector('.site-footer');
-      if(!footer)return;
-      const footerTop=footer.getBoundingClientRect().top;
-      const shift=footerTop-vv.height;
-      if(shift<0) scroll.style.transform=`translateY(${-shift}px)`;
+      if(!_rvv.scroll)return;
+      const agn=$('again-btn');
+      if(!agn)return;
+      const agnBottom=agn.getBoundingClientRect().bottom;
+      // target: again-btn bottom sits vv.height - small gap above keyboard
+      const GAP=parseFloat(getComputedStyle(document.documentElement).fontSize)*0.55;
+      const shift=agnBottom-(vv.height-GAP);
+      if(shift>0) _rvv.scroll.style.transform=`translateY(-${shift}px)`;
+      else _rvv.scroll.style.transform='';
     });
   }
-  visualViewport.addEventListener('resize',onResultVV);
-  visualViewport.addEventListener('scroll',onResultVV);
+  // Also clear on focusout for instant response
+  document.getElementById('nickname-input').addEventListener('focusout',()=>{
+    _rvv.active=false;
+    clearTimeout(_rvv.tID);
+    _rvv.tID=setTimeout(()=>{
+      if(document.activeElement!==_rvv.nf){
+        _rvv.scroll.style.transition='transform .3s ease-in-out';
+        _rvv.scroll.style.transform='';
+      }
+    },100);
+  });
+  document.getElementById('nickname-input').addEventListener('focus',()=>{
+    clearTimeout(_rvv.tID);
+    _rvv.active=true;
+  });
+  visualViewport.addEventListener('resize',_applyResultShift);
+  visualViewport.addEventListener('scroll',_applyResultShift);
 }
 let pickerSelectedTime=totalTime,pickerCaller=null;
 function openModePicker(caller){
@@ -1287,35 +1321,6 @@ function drawShareCard(wpm,acc,errors,duration){
 
 // Init
 genWords();render();
-
-// ── PWA KEYBOARD ADJUST — shift result-screen up when keyboard appears ──
-// result-screen is position:fixed, so we translate it up by keyboard height
-// leaving a small breathing gap below PLAY AGAIN
-if(window.visualViewport){
-  const rs=$('result-screen');
-  let _kbAdjust=0;
-  const BREATH=24; // px breathing space below PLAY AGAIN
-  function onVVResize(){
-    if(!rs.classList.contains('show'))return;
-    const vvH=window.visualViewport.height;
-    const winH=window.innerHeight;
-    const kbH=Math.max(0,winH-vvH);
-    if(kbH!==_kbAdjust){
-      _kbAdjust=kbH;
-      if(kbH>0){
-        // Shift screen up: keyboard height minus breathing gap
-        const shift=Math.max(0,kbH-BREATH);
-        rs.style.transform=`translateY(-${shift}px)`;
-        rs.style.height=(winH+shift)+'px';
-      } else {
-        rs.style.transform='';
-        rs.style.height='';
-      }
-    }
-  }
-  window.visualViewport.addEventListener('resize',onVVResize);
-  window.visualViewport.addEventListener('scroll',onVVResize);
-}
 </script>
 </body>
 </html>
